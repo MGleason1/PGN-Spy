@@ -1,0 +1,316 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\PGNSpy.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PGN Spy.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 315, 130
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About PGN Spy"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
+    LTEXT           "PGN Spy Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2016 Michael J. Gleason",IDC_STATIC,40,25,123,8
+    DEFPUSHBUTTON   "OK",IDOK,258,7,50,16,WS_GROUP
+    LTEXT           "Thanks to David Barnes for the use of uci-analyser and pgn-extract",IDC_STATIC,40,43,217,8
+    LTEXT           "Thanks to Ben Bryant of firstobject.com for the use of CMarkup",IDC_STATIC,40,59,204,8
+    LTEXT           "Thanks to LegoPirateSenior and others who gave advice that was very helpful",IDC_STATIC,40,75,251,8
+END
+
+IDD_PGNSPY_DIALOG DIALOGEX 0, 0, 325, 248
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "PGN Spy"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Input file",IDC_STATIC,7,7,30,8
+    EDITTEXT        IDC_INPUTANALYSE,81,7,227,14,ES_AUTOHSCROLL
+    PUSHBUTTON      ">",IDC_BROWSEANALYSE,308,7,10,14
+    LTEXT           "Player to investigate (blank for all)",IDC_STATIC,7,27,111,8
+    EDITTEXT        IDC_PLAYER,127,27,181,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "?",IDC_HELPPLAYER,308,27,10,14
+    DEFPUSHBUTTON   "Run Analysis",IDC_RUNANALYSIS,91,47,142,14
+    CONTROL         "Exclude forced moves",IDC_EXCLUDEFORCED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,67,86,10
+    LTEXT           "Forced move threshold",IDC_STATIC,188,67,74,8
+    EDITTEXT        IDC_FORCEDMOVECUTOFF,268,67,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_FORCEDMOVEHELP,308,67,10,14
+    CONTROL         "Include only unclear positions",IDC_INCLUDEONLYUNCLEAR,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,110,10
+    LTEXT           "Unclear position threshold",IDC_STATIC,178,87,84,8
+    EDITTEXT        IDC_UNCLEARPOSITIONTHRESHOLD,268,87,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_UNCLEARPOSITIONHELP,308,87,10,14
+    LTEXT           "Blunder threshold",IDC_STATIC,7,107,57,8
+    EDITTEXT        IDC_BLUNDERTHRESHOLD,70,107,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_BLUNDERTHRESHOLDHELP,110,107,10,14
+    LTEXT           "Equal position threshold",IDC_STATIC,185,107,77,8
+    EDITTEXT        IDC_EQUALPOSITIONTHRESHOLD,268,107,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_EQUALPOSITIONHELP,308,107,10,14
+    LTEXT           "Book depth",IDC_STATIC,7,127,37,8
+    EDITTEXT        IDC_BOOKDEPTH,70,127,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPBOOKDEPTH,110,127,10,14
+    LTEXT           "Losing position threshold",IDC_STATIC,182,127,80,8
+    EDITTEXT        IDC_LOSINGPOSITIONTHRESHOLD,268,127,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_LOSINGTHRESHOLDHELP,308,127,10,14
+    LTEXT           "Variations",IDC_STATIC,7,147,32,8
+    EDITTEXT        IDC_VARIATIONS,70,147,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_NUMVARIATIONSHELP,110,147,10,14
+    LTEXT           "Min time per move (milliseconds)",IDC_STATIC,159,147,103,8
+    EDITTEXT        IDC_MINTIME,268,147,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPMINTIME,308,147,10,14
+    LTEXT           "Threads",IDC_STATIC,7,167,27,8
+    EDITTEXT        IDC_NUMTHREADS,70,167,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPTHREADS,110,167,10,14
+    LTEXT           "Max time per move (milliseconds)",IDC_STATIC,156,167,106,8
+    EDITTEXT        IDC_MAXTIME,268,167,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPMAXTIME,308,167,10,14
+    LTEXT           "Hash size (MB)",IDC_STATIC,7,187,48,8
+    EDITTEXT        IDC_HASHSIZE,70,187,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPPHASHSIZE,110,187,10,14
+    LTEXT           "Min search depth",IDC_STATIC,206,187,56,8
+    EDITTEXT        IDC_SEARCHDEPTH,268,187,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "?",IDC_HELPDEPTH,308,187,10,14
+    LTEXT           "Engine",IDC_STATIC,7,207,22,8
+    EDITTEXT        IDC_ENGINE,70,207,238,14,ES_AUTOHSCROLL
+    PUSHBUTTON      ">",IDC_BROWSEENGINE,308,207,10,14
+    PUSHBUTTON      "Save Settings",IDC_SAVESETTINGS,132,227,61,14
+END
+
+IDD_RESULTS DIALOGEX 0, 0, 267, 278
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Results"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_RESULTS,7,7,253,244,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN
+    PUSHBUTTON      "About these results",IDC_ABOUT,7,257,120,14
+    PUSHBUTTON      "Save raw move data to file...",IDC_SAVEDATA,140,257,120,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "FileDescription", "PGN Spy"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "PGN Spy.exe"
+            VALUE "LegalCopyright", "(c) 2016 Michael J. Gleason"
+            VALUE "OriginalFilename", "PGN Spy.exe"
+            VALUE "ProductName", "PGN Spy"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 308
+        VERTGUIDE, 40
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 123
+    END
+
+    IDD_PGNSPY_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 318
+        VERTGUIDE, 64
+        VERTGUIDE, 70
+        VERTGUIDE, 110
+        VERTGUIDE, 120
+        VERTGUIDE, 262
+        VERTGUIDE, 268
+        VERTGUIDE, 308
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 241
+        HORZGUIDE, 21
+        HORZGUIDE, 27
+        HORZGUIDE, 41
+        HORZGUIDE, 47
+        HORZGUIDE, 61
+        HORZGUIDE, 67
+        HORZGUIDE, 81
+        HORZGUIDE, 87
+        HORZGUIDE, 101
+        HORZGUIDE, 107
+        HORZGUIDE, 121
+        HORZGUIDE, 127
+        HORZGUIDE, 141
+        HORZGUIDE, 147
+        HORZGUIDE, 161
+        HORZGUIDE, 167
+        HORZGUIDE, 181
+        HORZGUIDE, 187
+        HORZGUIDE, 201
+        HORZGUIDE, 207
+        HORZGUIDE, 221
+        HORZGUIDE, 227
+    END
+
+    IDD_RESULTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 260
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 271
+        HORZGUIDE, 251
+        HORZGUIDE, 257
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PGNSPY_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_RESULTS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About PGN Spy..."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\PGNSpy.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

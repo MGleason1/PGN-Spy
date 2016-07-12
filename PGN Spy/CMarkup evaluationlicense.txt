@@ -1,0 +1,46 @@
+The evaluation version of CMarkup is provided by specific written permission
+from Ben Bryant at http://www.firstobject.com.  He may be contacted at info@firstobject.com.
+
+The normal evaluation license for CMarkup is below.
+
+*********************************************
+
+CMarkup Evaluation License Agreement
+
+
+Carefully read the following license agreement. By using this product, you are consenting to be bound by and are becoming a party to this agreement. If you do not agree to all of the terms of this agreement, do not use CMarkup.
+
+The CMarkup product contains source code ("Software") which refers to all the source code classes and components in the CMarkup product downloads. "Software" includes any upgrades, modified versions, updates, additions and copies of the Software. "You" means the person or company being licensed to use the Software. "We" and "us" means First Objective Software, inc.
+
+"Commercial Programs" are programs sold or programs delivered under contract. This includes but is not restricted to off-the-shelf software, shareware, contract software deliverables, and program components of websites.
+
+License Grant
+
+We grant you a nonexclusive license to use the Software in non-commercial programs and evaluate the Software for use in commercial programs. You may modify the Software source code provided that the source code files retain the following notice and disclaimer:
+
+// Copyright (C) 1999-2011 First Objective Software, Inc. All rights reserved
+// Go to www.firstobject.com for the latest CMarkup and EDOM documentation
+// Use in commercial applications requires written permission
+// This software is provided "as is", with no warranty.
+
+
+You may compile the Software into test versions of your commercial software for evaluation purposes only. You agree to purchase a developer license before you distribute a commercial program that incorporates the Software. You may copy the source code as required for your projects and archives.
+
+The Software is protected by the United States copyright laws and international treaties. You may not redistribute or republish the Software source code. You may not sublicense, rent, lease or lend any portion of the Software.
+
+Title
+
+We remain the owner of all right, title and interest in the Software.
+
+Limited Warranty/Limitation of Liability
+
+This Software is provided "as is" and any expressed or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall we or our contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this Software, even if advised of the possibility of such damage.
+
+Term and Termination
+
+This license agreement takes effect upon your use of the Software and remains effective until terminated. This license agreement is automatically terminated if you fail to comply with any term or condition of this license agreement.
+
+General Provisions
+
+This license agreement is governed by the laws of the state of Virginia. You agree that the Software will not be used in a manner prohibited by the United States Export Administration Act or any other export laws, restrictions or regulations.
+
