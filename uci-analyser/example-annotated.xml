@@ -1,0 +1,88 @@
+<gamelist>
+<game>
+<tags>
+<tag name = "Event" value = "World Championship 23th" />
+<tag name = "Site" value = "Moscow" />
+<tag name = "Date" value = "1960.03.17" />
+<tag name = "Round" value = "2" />
+<tag name = "White" value = "Botvinnik, Mikhail" />
+<tag name = "Black" value = "Tal, Mihail" />
+<tag name = "Result" value = "1/2-1/2" />
+<tag name = "BookDepth" value = "17" />
+</tags>
+<annotation>
+d2d4 g8f6 c2c4 c7c5 d4d5 e7e6 b1c3 e6d5 c4d5 d7d6 g1f3 g7g6 c1g5 f8g7 f3d2 h7h6 g5h4 g6g5 { -92 } ( b8d7 { -32 }) ( e8g8 { -32 }) 
+h4g3 { 137 } 
+f6h5 { -113 } ( e8g8 { -60 }) 
+d2c4 { 60 } ( d1a4 { 133 }) 
+h5g3 { -60 } ( g7c3 { -60 }) 
+h2g3 { 60 } 
+e8g8 { -145 } ( g7c3 { -68 }) 
+e2e3 { 20 } ( c3e4 { 113 }) 
+d8e7 { -101 } ( g7c3 { -60 }) 
+f1e2 { 56 } ( f1d3 { 92 }) ( d1f3 { 92 }) 
+f8d8 { -64 } ( b8a6 { -36 }) 
+e1g1 { 56 } ( e1f1 { 76 }) ( d1b3 { 76 }) 
+b8d7 { -68 } ( g7c3 { -36 }) 
+a2a4 { 0 } ( d1a4 { 60 }) 
+d7e5 { -8 } 
+c4e5 { 8 } ( d1c2 { 8 }) 
+e7e5 { -12 } ( g7e5 { -8 }) 
+a4a5 { 12 } ( e2d3 { 20 }) ( a1c1 { 20 }) 
+a8b8 { -28 } ( c8f5 { -20 }) 
+a1a2 { -8 } ( e2d3 { 20 }) ( d1c2 { 20 }) 
+c8d7 { -4 } ( c8f5 { 0 }) ( d8e8 { 0 }) 
+c3b5 { -32 } ( e2b5 { 0 }) 
+d7b5 { 8 } ( b8a8 { 20 }) 
+e2b5 { 4 } 
+b7b6 { -32 } ( b8c8 { 0 }) 
+a5a6 { 16 } 
+b8c8 { -20 } ( f7f5 { -12 }) 
+d1d3 { 24 } ( g3g4 { 28 }) 
+c8c7 { -12 } 
+b2b3 { 12 } ( f1b1 { 16 }) 
+e5c3 { -48 } ( c7e7 { -4 }) 
+d3c3 { 32 } ( g3g4 { 36 }) 
+g7c3 { -32 } 
+a2c2 { 8 } ( f1c1 { 16 }) 
+c3f6 { -8 } ( c3b4 { 4 }) 
+g3g4 { -8 } ( b3b4 { 8 }) 
+c7e7 { 12 } 
+c2c4 { 4 } 
+d8c8 { 0 } ( g8f8 { 0 }) ( g8h7 { 0 }) ( g8h8 { 0 }) 
+g2g3 { 12 } 
+f6g7 { -44 } ( g8g7 { -40 }) ( g8h7 { -40 }) 
+f1d1 { 32 } ( g1g2 { 40 }) 
+c8f8 { -12 } 
+d1d3 { -20 } ( c4c2 { 44 }) 
+g8h7 { 20 } ( f7f5 { 20 }) 
+g1g2 { -4 } ( c4c2 { 36 }) 
+h7g6 { 4 } 
+d3d1 { 8 } 
+h6h5 { -24 } ( f7f5 { -8 }) 
+g4h5 { 44 } 
+g6h5 { -44 } 
+g3g4 { 52 } 
+h5g6 { -52 } 
+c4c2 { 16 } ( c4c1 { 52 }) 
+f8h8 { -24 } ( e7e5 { -24 }) 
+b5d3 { 28 } 
+g6f6 { -28 } 
+g2g3 { 20 } ( c2c1 { 28 }) 
+e7e8 { -16 } 
+d3b5 { -4 } ( d1c1 { 0 }) ( d3f5 { 0 }) 
+e8e4 { 4 } 
+c2c4 { -36 } ( b5d3 { 0 }) 
+e4c4 { 24 } 
+b3c4 { -20 } 
+f6e7 { 24 } 
+b5a4 { -24 } ( b5c6 { -16 }) ( f2f4 { -16 }) ( d1b1 { -16 }) 
+g7e5 { 12 } ( g7c3 { 28 }) 
+g3f3 { -8 } 
+h8h4 { 24 } ( h8h3 { 24 }) 
+d1g1 { -20 } ( d1b1 { -8 }) 
+f7f5 { -44 } ( e5g7 { 20 }) 
+1/2-1/2
+</annotation>
+</game>
+</gamelist>
