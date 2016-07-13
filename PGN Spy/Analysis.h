@@ -118,24 +118,3 @@ public:
    CString m_sBlack;
    CString m_sFileName;
 };
-
-class CAnalyser
-{
-public:
-   CAnalyser();
-   CAnalysisSettings m_vAnalysisSettings;
-   int m_iGamesWithErrors;
-   CArray<HANDLE, HANDLE> m_ahChildStdInRead;
-   CArray<HANDLE, HANDLE> m_ahChildStdInWrite;
-   CArray<HANDLE, HANDLE> m_ahChildStdOutRead;
-   CArray<HANDLE, HANDLE> m_ahChildStdOutWrite;
-   CArray<HANDLE, HANDLE> m_ahChildStdErrRead;
-   CArray<HANDLE, HANDLE> m_ahChildStdErrWrite;
-   CArray<HANDLE, HANDLE> m_ahProcesses;
-   CArray<CGame, CGame> m_avGames;
-   CString m_sMessage;
-   bool ProcessGames(CString sConvertedPGN);
-   bool LaunchAnalyser(CGamePGN vGamePGN, int iCurThread);
-   void ReadFromThread(int iThread, CString IN OUT &rsResults, bool IN OUT &rbError);
-   void ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves);
-};

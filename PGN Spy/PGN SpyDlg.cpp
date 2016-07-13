@@ -24,6 +24,7 @@
 #include "PGN Spy.h"
 #include "PGN SpyDlg.h"
 #include "Analysis.h"
+#include "AnalysisDlg.h"
 #include "ResultsDlg.h"
 
 #ifdef _DEBUG
@@ -294,20 +295,20 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
    }
 
    //file is converted; now process it
-   CAnalyser vAnalyser;
-   vAnalyser.m_vAnalysisSettings = m_vAnalysisSettings;
-   bool bSuccess = vAnalyser.ProcessGames(sTemporaryFile);
-   MessageBox(vAnalyser.m_sMessage, "PGN Spy", bSuccess ? MB_ICONINFORMATION : MB_ICONEXCLAMATION);
+   CAnalysisDlg vAnalyserDlg;
+   vAnalyserDlg.m_sConvertedPGN = sTemporaryFile;
+   vAnalyserDlg.m_vAnalysisSettings = m_vAnalysisSettings;
+   vAnalyserDlg.DoModal();
 
    //delete temporary file
    DeleteFile(sTemporaryFile);
 
-   if (vAnalyser.m_avGames.GetSize() == 0)
+   if (vAnalyserDlg.m_avGames.GetSize() == 0)
       return;
    
    //now launch the window to process and display the results
    CResultsDlg vResultsDlg;
-   vResultsDlg.m_avGames.Copy(vAnalyser.m_avGames);
+   vResultsDlg.m_avGames.Copy(vAnalyserDlg.m_avGames);
    vResultsDlg.m_vSettings = m_vAnalysisSettings;
    vResultsDlg.DoModal();
 }

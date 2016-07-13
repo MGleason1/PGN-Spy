@@ -186,9 +186,14 @@ void CResultsDlg::CalculateStats()
       //T-values
       for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
       {
-         double dFrac = ((double)m_vEqualPositions.m_aiTValues[i] / (double)m_vEqualPositions.m_aiTMoves[i]);
-         double dStdError = sqrt(dFrac * (1 - dFrac) / m_vEqualPositions.m_aiTMoves[i]) * 100;
-         sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vEqualPositions.m_aiTValues[i], m_vEqualPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
+         if (m_vEqualPositions.m_aiTMoves[i] == 0)
+            sLine.Format("T%i: 0/0", i);
+         else
+         {
+            double dFrac = ((double)m_vEqualPositions.m_aiTValues[i] / (double)m_vEqualPositions.m_aiTMoves[i]);
+            double dStdError = sqrt(dFrac * (1 - dFrac) / m_vEqualPositions.m_aiTMoves[i]) * 100;
+            sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vEqualPositions.m_aiTValues[i], m_vEqualPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
+         }
          m_sResults += sLine + "\r\n";
       }
       //blunders
@@ -213,9 +218,14 @@ void CResultsDlg::CalculateStats()
       //T-values
       for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
       {
-         double dFrac = ((double)m_vLosingPositions.m_aiTValues[i] / (double)m_vLosingPositions.m_aiTMoves[i]);
-         double dStdError = sqrt(dFrac * (1 - dFrac) / m_vLosingPositions.m_aiTMoves[i]) * 100;
-         sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vLosingPositions.m_aiTValues[i], m_vLosingPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
+         if (m_vLosingPositions.m_aiTMoves[i] == 0)
+            sLine.Format("T%i: 0/0", i);
+         else
+         {
+            double dFrac = ((double)m_vLosingPositions.m_aiTValues[i] / (double)m_vLosingPositions.m_aiTMoves[i]);
+            double dStdError = sqrt(dFrac * (1 - dFrac) / m_vLosingPositions.m_aiTMoves[i]) * 100;
+            sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vLosingPositions.m_aiTValues[i], m_vLosingPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
+         }
          m_sResults += sLine + "\r\n";
       }
       //blunders
