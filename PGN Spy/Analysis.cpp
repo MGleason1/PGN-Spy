@@ -450,7 +450,7 @@ bool CAnalyser::ProcessGames(CString sConvertedPGN)
          {
             //still loading the latest game
             avGames[avGames.GetUpperBound()].m_sPGNText.Append(sLine + "\n");
-            if (sLine.Left(6).CompareNoCase("[White") == 0)
+            if (sLine.Left(8).CompareNoCase("[White \"") == 0)
             {
                //found white player name
                int iLeftQuote, iRightQuote;
@@ -458,7 +458,7 @@ bool CAnalyser::ProcessGames(CString sConvertedPGN)
                iRightQuote = sLine.Find("\"", iLeftQuote + 1);
                avGames[avGames.GetUpperBound()].m_sWhite = sLine.Mid(iLeftQuote + 1, iRightQuote - iLeftQuote - 1);
             }
-            if (sLine.Left(6).CompareNoCase("[Black") == 0)
+            if (sLine.Left(8).CompareNoCase("[Black \"") == 0)
             {
                //found black player name
                int iLeftQuote, iRightQuote;
