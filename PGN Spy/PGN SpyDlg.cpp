@@ -322,7 +322,7 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
    //delete temporary file
    DeleteFile(sTemporaryFile);
 
-   if (vAnalyserDlg.m_avGames.GetSize() == 0)
+   if (vAnalyserDlg.m_avGames.GetSize() == 0 || vAnalyserDlg.m_bCancelled)
       return;
    
    //now launch the window to process and display the results
