@@ -94,7 +94,7 @@ void CAnalysisDlg::OnBnClickedOK()
 
 void CAnalysisDlg::OnBnClickedCancel()
 {
-   if (IDYES == MessageBox("Are you sure you wish to cancel?", "PGN Spy", MB_ICONQUESTION | MB_YESNO))
+   if (IDNO == MessageBox("Are you sure you wish to cancel?", "PGN Spy", MB_ICONQUESTION | MB_YESNO))
       return;
    m_bCancelled = true;
 
@@ -318,6 +318,7 @@ bool CAnalysisDlg::ProcessGames()
             ReadFromThread(iCurThread, asResults[iCurThread], abErrors[iCurThread]);
          }
       }
+      Sleep(50); //so we don't eat lots of CPU trying to check on every process constantly
    }
 
    if (m_bCancelled)
@@ -347,7 +348,9 @@ bool CAnalysisDlg::ProcessGames()
       m_bShowResults = true;
 
    CString sMessage;
-   if (m_iGamesWithErrors > 0)
+   if (m_bCancelled)
+      sMessage = "Analysis cancelled.";
+   else if (m_iGamesWithErrors > 0)
       sMessage.Format("Errors were encountered on %i games out of a total %i to be analysed.", m_iGamesWithErrors, avGamePGNs.GetSize());
    else
       sMessage.Format("Analysis of %i games completed with no errors.", avGamePGNs.GetSize());
@@ -367,7 +370,7 @@ void CAnalysisDlg::ReadFromThread(int iThread, CString IN OUT &rsResults, bool I
    CFile vOutFile(m_ahChildStdOutRead[iThread]);
    //we won't need to close these handles; they're closed elsewhere
 
-   char sBuf[101];
+   char sBuf[1001];
    ZeroMemory(sBuf, sizeof(sBuf));
 
    //check for failure
@@ -377,33 +380,32 @@ void CAnalysisDlg::ReadFromThread(int iThread, CString IN OUT &rsResults, bool I
    {
       //found error
       rbError = true;
+   }
 
-      DWORD iBytesAvailable;
-      PeekNamedPipe(m_ahChildStdErrRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
-      if (iBytesAvailable > 0)
-      {
-         //Read error for debugging purposes
-         CFile vErrFile(m_ahChildStdErrRead[iThread]);
-         int iBytesRead = vOutFile.Read(sBuf, 100);
-      }
+   //process hasn't terminated; check for error anyway
+   DWORD iBytesAvailable;
+   PeekNamedPipe(m_ahChildStdErrRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
+   if (iBytesAvailable > 0)
+   {
+      //Read error for debugging purposes - also to ensure pipe doesn't fill up and lock up the analyser
+      CFile vErrFile(m_ahChildStdErrRead[iThread]);
+      int iBytesRead = vOutFile.Read(sBuf, 1000);
       return;
    }
 
    //no failure, keep reading until we reach end of results or end of what's currently in the pipe
    while (rsResults.Find("</gamelist>") == -1)
    {
-      if (iExitCode != STILL_ACTIVE)
-      {
-         //if process closed, ensure there's still data to read
-         DWORD iBytesAvailable;
-         PeekNamedPipe(m_ahChildStdOutRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
-         if (iBytesAvailable <= 0)
-            break; //hit end of pipe
-      }
-      int iBytesRead = vOutFile.Read(sBuf, 100);
-      rsResults.Append(sBuf);
-      if (iBytesRead < 100)
+      //ensure there's still data to read
+      DWORD iBytesAvailable;
+      PeekNamedPipe(m_ahChildStdOutRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
+      if (iBytesAvailable <= 0)
          break; //hit end of pipe
+
+      int iBytesRead = vOutFile.Read(sBuf, 1000);
+      rsResults.Append(sBuf);
+//       if (iBytesRead < 1000) //not needed if we're doing PeekNamedPipe
+//          break; //hit end of pipe
       ZeroMemory(sBuf, sizeof(sBuf)); //initialise for next time round
    }
 }
