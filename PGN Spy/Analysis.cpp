@@ -650,10 +650,14 @@ void CAnalyser::ReadFromThread(int iThread, CString IN OUT &rsResults, bool IN O
    //no failure, keep reading until we reach end of results or end of what's currently in the pipe
    while (rsResults.Find("</gamelist>") == -1)
    {
-//       DWORD iBytesAvailable;
-//       PeekNamedPipe(m_ahChildStdOutRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
-//       if (iBytesAvailable <= 0)
-//          break; //hit end of pipe
+      if (iExitCode != STILL_ACTIVE)
+      {
+         //if process closed, ensure there's still data to read
+         DWORD iBytesAvailable;
+         PeekNamedPipe(m_ahChildStdOutRead[iThread], NULL, NULL, NULL, &iBytesAvailable, NULL);
+         if (iBytesAvailable <= 0)
+            break; //hit end of pipe
+      }
       int iBytesRead = vOutFile.Read(sBuf, 100);
       rsResults.Append(sBuf);
       if (iBytesRead < 100)
