@@ -44,23 +44,42 @@ public:
 
    protected:
    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+   virtual BOOL OnInitDialog();
 
 // Implementation
 protected:
    DECLARE_MESSAGE_MAP()
+public:
+   CString m_sCredits;
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+, m_sCredits(_T(""))
 {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
    CDialog::DoDataExchange(pDX);
+   DDX_Text(pDX, IDC_CREDITS, m_sCredits);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
+
+BOOL CAboutDlg::OnInitDialog()
+{
+   CDialog::OnInitDialog();
+
+   m_sCredits = "This project would have been much more difficult without the contributions of several different people.\r\n"
+                "I would especially like to thank David Barnes for the use of uci-analyser and pgn-extract,\r\n"
+                "Ben Bryant of firstobject.com for the use of CMarkup,\r\n"
+                "and LegoPirateSenior and others who gave advice and/or contributed to testing.\r\n";
+   UpdateData(FALSE);
+
+   return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
 
 
 // CPGNSpyDlg dialog

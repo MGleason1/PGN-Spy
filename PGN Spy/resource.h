@@ -8,7 +8,6 @@
 #define IDD_PGNSPY_DIALOG               102
 #define IDR_MAINFRAME                   128
 #define IDD_RESULTS                     129
-#define IDD_STATUSDISPLAY               131
 #define IDD_ANALYSIS                    131
 #define IDC_INPUTANALYSE                1005
 #define IDC_BROWSEANALYSE               1006
@@ -19,7 +18,6 @@
 #define IDC_SEARCHDEPTH                 1012
 #define IDC_BOOKDEPTH                   1013
 #define IDC_NUMTHREADS                  1014
-#define IDC_CHECK1                      1015
 #define IDC_EXCLUDEFORCED               1015
 #define IDC_HELPPLAYER                  1016
 #define IDC_HELPDEPTH                   1017
@@ -30,7 +28,6 @@
 #define IDC_HELPMINTIME                 1022
 #define IDC_HELPMAXTIME                 1023
 #define IDC_HASHSIZE                    1024
-#define IDC_BUTTON7                     1025
 #define IDC_HELPPHASHSIZE               1025
 #define IDC_RESULTS                     1028
 #define IDC_SAVEDATA                    1029
@@ -50,6 +47,7 @@
 #define IDC_VARIATIONS                  1043
 #define IDC_NUMVARIATIONSHELP           1044
 #define IDC_STATUS                      1045
+#define IDC_CREDITS                     1047
 
 // Next default values for new objects
 // 
@@ -57,7 +55,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -70,18 +70,16 @@ IDR_MAINFRAME           ICON                    "res\\PGN Spy.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 315, 130
+IDD_ABOUTBOX DIALOGEX 0, 0, 315, 99
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About PGN Spy"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
     LTEXT           "PGN Spy Version 0.1.1",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2016 Michael J. Gleason",IDC_STATIC,40,25,123,8
     DEFPUSHBUTTON   "OK",IDOK,258,7,50,16,WS_GROUP
-    LTEXT           "Thanks to David Barnes for the use of uci-analyser and pgn-extract",IDC_STATIC,40,43,217,8
-    LTEXT           "Thanks to Ben Bryant of firstobject.com for the use of CMarkup",IDC_STATIC,40,59,204,8
-    LTEXT           "Thanks to LegoPirateSenior and others who gave advice that was very helpful",IDC_STATIC,40,75,251,8
+    LTEXT           "Static",IDC_CREDITS,40,37,268,55
 END
 
 IDD_PGNSPY_DIALOG DIALOGEX 0, 0, 325, 248
@@ -213,7 +211,8 @@ BEGIN
         RIGHTMARGIN, 308
         VERTGUIDE, 40
         TOPMARGIN, 7
-        BOTTOMMARGIN, 123
+        BOTTOMMARGIN, 92
+        HORZGUIDE, 37
     END
 
     IDD_PGNSPY_DIALOG, DIALOG
