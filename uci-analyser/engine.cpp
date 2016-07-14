@@ -141,7 +141,6 @@ bool Engine::checkIsReady(void) {
 
 void Engine::quitEngine(void) {
     send("quit");
-//    CloseHandle(engineLog);
 }
 
 /*
@@ -163,16 +162,14 @@ void Engine::send(const char *str) {
 	DWORD dwWritten;
 	BOOL bSuccess = FALSE;
 
-	bSuccess = WriteFile(writeToEngine, str, strlen(str), &dwWritten, NULL);
+   bSuccess = WriteFile(writeToEngine, str, strlen(str), &dwWritten, NULL);
 	if (bSuccess) {
 		static const char *newl = "\n";
 		bSuccess |= WriteFile(writeToEngine, newl, strlen(newl), &dwWritten, NULL);
 	}
 
-//    DWORD bytesWritten;
-//    WriteFile(engineLog, "\nanalyse:\t", 10, &bytesWritten, NULL);
-//    for (unsigned int i = 0; i < strlen(str); i++)
-//      WriteFile(engineLog, &str[i], 1, &bytesWritten, NULL);
+//    communications.append("\nAnalyser:\t");
+//    communications.append(str);
 #endif
 }
 
@@ -194,7 +191,7 @@ bool Engine::waitForResponse(const char *str) {
  * Set eof if the end of file is reached.
  */
 string Engine::getResponse(bool& eof) {
-	const int MAXBUFF = 100;
+	const int MAXBUFF = 1000;
 	// Since the reads are not guaranteed to be line-based, buffer retains
 	// text read but not returned on a previous call.
     static char buffer[MAXBUFF + 1] = "";
@@ -212,10 +209,30 @@ string Engine::getResponse(bool& eof) {
 				eof = true;
 			}
 #else
+
+//          DWORD bytesAvailable;
+//          do 
+//          {
+//             PeekNamedPipe(readFromEngine, NULL, NULL, NULL, &bytesAvailable, NULL);
+//             if (bytesAvailable > 0)
+//                break;
+// 
+//             if (false)
+//             {
+//                HANDLE engineLog;
+//                engineLog = CreateFile("C:\\Source\\Other NonWork\\engine.log", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+// 
+//                DWORD bytesWritten;
+//                for (unsigned int i = 0; i < communications.length(); i++)
+//                   WriteFile(engineLog, &communications[i], 1, &bytesWritten, NULL);
+//                CloseHandle(engineLog);
+//             }
+//             Sleep(10);
+//          } while (bytesAvailable == 0);
          DWORD bytesRead;
-			DWORD success = ReadFile(readFromEngine, buffer, MAXBUFF, &bytesRead, NULL);
-			buffer[bytesRead] = '\0';
-			eof = !success || bytesRead == 0;
+         DWORD success = ReadFile(readFromEngine, buffer, MAXBUFF, &bytesRead, NULL);
+         buffer[bytesRead] = '\0';
+         eof = !success || bytesRead == 0;
 #endif
 		}
 		if (!eof) {
@@ -257,10 +274,8 @@ string Engine::getResponse(bool& eof) {
 	if (!eof) {
 		//cout << "# [" << result << "]" << endl;
 	}
-//    DWORD bytesWritten;
-//    WriteFile(engineLog, "\nEngine:\t", 9, &bytesWritten, NULL);
-//    for (unsigned int i = 0; i < result.length(); i++)
-//       WriteFile(engineLog, &result[i], 1, &bytesWritten, NULL);
+//     communications.append("\nEngine:\t");
+//     communications.append(result);
 	return result;
 }
 
@@ -359,8 +374,6 @@ bool Engine::startEngine(const string& engineName) {
 		return false;
 	}
 
-//    engineLog = CreateFile("C:\\Source\\Other NonWork\\engine.log", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
 	// Create the child process. 
 	PROCESS_INFORMATION piProcInfo;
 	STARTUPINFO siStartInfo;
@@ -408,6 +421,8 @@ bool Engine::startEngine(const string& engineName) {
 		CloseHandle(piProcInfo.hThread);
 		return true;
 	}
+
+//    communications = "";
 
 #endif
 }

@@ -44,7 +44,7 @@ static const char *VERSION = "2014.06.02";
 // The length of algebraic moves expected by a UCI engine.
 #define ALGEBRAIC_MOVELEN 4
 
-void extractInfo(string& info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated);
+void extractInfo(string& info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck);
 bool readGame(istream &movestream, vector<string> &movelist,
               string& fenstring, int& bookDepth);
 void sendGame(vector<string> &movelist, const string& fenstring, int bookDepth);
@@ -554,7 +554,7 @@ void sendGame(vector<string> &movelist, const string& fenstring, int bookDepth) 
  * Extract the information from an info line returned
  * by the engine.
  */
-void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated) {
+void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck) {
     reachedDepth = false;
     ASSERT_IS("info", infoTokens[0]);
     if (info.find("multipv ") != string::npos) {
@@ -567,25 +567,29 @@ void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int s
         while (i < numTokens && infoTokens[i] != "time") {
             i++;
         }
+        int multipvIndex = 1, multipv;
+        while (multipvIndex +1 < numTokens && infoTokens[multipvIndex] != "multipv")
+           multipvIndex++;
+        multipv = atoi(infoTokens[multipvIndex + 1].c_str());
+        if (multipv != 1)
+           engineCouldBeStuck = false; //if we're stuck, we only ever report one variation
         if (info.find("mate") != string::npos)
         {
            //there's a forced mate; check if it's happening to us on our best move
            int mate = 1;
            while (mate+1 < numTokens && infoTokens[mate] != "mate")
               mate++;
-           int multipv = 1;
-           while (multipv +1 < numTokens && infoTokens[multipv] != "multipv")
-              multipv++;
-           if (atoi(infoTokens[multipv + 1].c_str()) == 1 && atoi(infoTokens[mate + 1].c_str()) < 0)
+           if (multipv == 1 && atoi(infoTokens[mate + 1].c_str()) < 0)
               beingMated = true;
         }
         if (t < numTokens) {
             int depth = strToInt(infoTokens[t + 1]);
             int time = strToInt(infoTokens[i + 1]);
-            if (time < searchMinTime && !beingMated)
-                return; //keep searching at least until we hit min time - unless we're mated by force
-            if (depth < searchDepth && time <= searchMaxTime && !beingMated)
-                return; //keep searching until we hit either search depth or max time - unless we're mated by force
+            bool engineStuck = engineCouldBeStuck && depth > 50; //if we've at depth 50 and never been given another variation, assume engine's stuck and bail out
+            if (time < searchMinTime && !beingMated && !engineStuck)
+                return; //keep searching at least until we hit min time - unless we're mated by force or engine's stuck
+            if (depth < searchDepth && time <= searchMaxTime && !beingMated && !engineStuck)
+                return; //keep searching until we hit either search depth or max time - unless we're mated by force or engine's stuck
             reachedDepth = true;
             Evaluation *ev = new Evaluation(infoTokens, info);
             saveEvaluation(ev, info);
@@ -817,6 +821,7 @@ void obtainEvaluations() {
     vector<string> tokens;
     bool bestMoveFound = false;
     bool beingMated = false;
+    bool engineCouldBeStuck = true; //when being mated by force or drawn by force, sometimes the engine gets stuck
     bool eof = false;
     bool engineStopped = false;
 
@@ -830,7 +835,7 @@ void obtainEvaluations() {
                 string tokenType = tokens[0];
                 if (tokenType == "info") {
                     bool reachedDepth = false;
-                    extractInfo(reply, tokens, searchDepth, searchMaxTime, searchMinTime, reachedDepth, beingMated);
+                    extractInfo(reply, tokens, searchDepth, searchMaxTime, searchMinTime, reachedDepth, beingMated, engineCouldBeStuck);
                     if ((reachedDepth || beingMated) && !engineStopped)
                     {
                         engineStopped = true;

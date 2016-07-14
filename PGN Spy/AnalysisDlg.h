@@ -67,5 +67,5 @@ public:
    bool ProcessGames();
    bool LaunchAnalyser(CGamePGN vGamePGN, int iCurThread);
    void ReadFromThread(int iThread, CString IN OUT &rsResults, bool IN OUT &rbError);
-   void ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves);
+   bool ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves);
 };

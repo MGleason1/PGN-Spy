@@ -303,8 +303,10 @@ bool CAnalysisDlg::ProcessGames()
             }
             else
             {
-               ProcessOutput(asResults[iCurThread], m_vAnalysisSettings.m_bExcludeForcedMoves);
-               sStatusLine.Format("Finished game: %s v %s", m_avGames[m_avGames.GetUpperBound()].m_sWhite, m_avGames[m_avGames.GetUpperBound()].m_sBlack);
+               if (ProcessOutput(asResults[iCurThread], m_vAnalysisSettings.m_bExcludeForcedMoves))
+                  sStatusLine.Format("Finished game: %s v %s", m_avGames[m_avGames.GetUpperBound()].m_sWhite, m_avGames[m_avGames.GetUpperBound()].m_sBlack);
+               else
+                  sStatusLine = "Encountered game with error";
             }
             m_sStatusHistory = sStatusLine + "\r\n" + m_sStatusHistory;
             asResults[iCurThread].Empty();
@@ -389,7 +391,7 @@ void CAnalysisDlg::ReadFromThread(int iThread, CString IN OUT &rsResults, bool I
    {
       //Read error for debugging purposes - also to ensure pipe doesn't fill up and lock up the analyser
       CFile vErrFile(m_ahChildStdErrRead[iThread]);
-      int iBytesRead = vOutFile.Read(sBuf, 1000);
+      int iBytesRead = vErrFile.Read(sBuf, 1000);
       return;
    }
 
@@ -497,27 +499,33 @@ bool CAnalysisDlg::LaunchAnalyser(CGamePGN vGamePGN, int iCurThread)
    return true;
 }
 
-void CAnalysisDlg::ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves)
+bool CAnalysisDlg::ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves)
 {
-   //    if (false)
-   //    {
-   //       //debugging code to dump sample xml output to a file
-   //       CString sFileName = GetTemporaryPGNFilePath(1);
-   //       sFileName.Replace(".pgn", ".xml");
-   //       CFile vFile;
-   //       if (!vFile.Open(sFileName, CFile::modeCreate | CFile::modeWrite))
-   //       {
-   //          CString sMessage = "Failed to create temporary output file.";
-   //          MessageBox(sMessage, "PGN Spy", MB_ICONEXCLAMATION);
-   //          return;
-   //       }
-   // 
-   //       vFile.Write(sOutput.GetBuffer(), sOutput.GetLength());
-   //       sOutput.ReleaseBuffer();
-   //       vFile.Close();
-   //    }
+   if (false)
+   {
+      //debugging code to dump sample xml output to a file
+      CString sFileName = GetTemporaryPGNFilePath(1);
+      sFileName.Replace(".pgn", ".xml");
+      CFile vFile;
+      if (!vFile.Open(sFileName, CFile::modeCreate | CFile::modeWrite))
+      {
+         CString sMessage = "Failed to create temporary output file.";
+         MessageBox(sMessage, "PGN Spy", MB_ICONEXCLAMATION);
+         return false;
+      }
+
+      vFile.Write(sOutput.GetBuffer(), sOutput.GetLength());
+      sOutput.ReleaseBuffer();
+      vFile.Close();
+   }
 
    CGame vGame;
-   vGame.LoadGame(sOutput);
-   m_avGames.Add(vGame);
+   if (vGame.LoadGame(sOutput))
+      m_avGames.Add(vGame);
+   else
+   {
+      m_iGamesWithErrors++;
+      return false;
+   }
+   return true;
 }

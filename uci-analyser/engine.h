@@ -86,8 +86,8 @@ private:
 #else
 	HANDLE writeToEngine;
 	HANDLE readFromEngine;
-   HANDLE engineLog;
 #endif
+//    string communications;
     // The number of variations to analyse.
     int variations;
     // The depth to analyse.
