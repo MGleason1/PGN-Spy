@@ -137,7 +137,7 @@ bool CAnalysisDlg::ProcessGames()
       CString sLine;
       if (vConvertedPGN.ReadString(sLine))
       {
-         if (avGamePGNs.GetSize() == 0 || sLine.Left(6).CompareNoCase("[Event") == 0)
+         if (avGamePGNs.GetSize() == 0 || sLine.Left(8).CompareNoCase("[Event \"") == 0)
          {
             //found a new game
             CGamePGN vGamePGN;
