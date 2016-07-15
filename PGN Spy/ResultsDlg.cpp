@@ -123,14 +123,14 @@ void CResultsDlg::OnBnClickedSavedata()
          //move number and coordinates
          sText.Format("%i\t", iPosition + m_vSettings.m_iBookDepth + 1);
          sLine += sText + pPosition->m_avTopMoves[pPosition->m_iMovePlayed].m_sMove + "\t";
-         //T-number of move
-         sText.Format("%i\t", pPosition->m_iMovePlayed + 1);
-         sLine += sText;
          //max depth searched
          int iMaxDepth = 0;
          for (int i = 0; i < pPosition->m_avTopMoves.GetSize(); i++)
             iMaxDepth = max(iMaxDepth, pPosition->m_avTopMoves[i].m_iDepth);
          sText.Format("%i\t", iMaxDepth);
+         sLine += sText;
+         //T-number of move
+         sText.Format("%i\t", pPosition->m_iMovePlayed + 1);
          sLine += sText;
          //evaluation of variants
          int iMove = 0;

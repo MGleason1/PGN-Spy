@@ -168,8 +168,10 @@ void Engine::send(const char *str) {
 		bSuccess |= WriteFile(writeToEngine, newl, strlen(newl), &dwWritten, NULL);
 	}
 
-//    communications.append("\nAnalyser:\t");
-//    communications.append(str);
+#ifdef _DEBUG
+   communications.append("\nAnalyser:\t");
+   communications.append(str);
+#endif
 #endif
 }
 
@@ -210,25 +212,27 @@ string Engine::getResponse(bool& eof) {
 			}
 #else
 
-//          DWORD bytesAvailable;
-//          do 
-//          {
-//             PeekNamedPipe(readFromEngine, NULL, NULL, NULL, &bytesAvailable, NULL);
-//             if (bytesAvailable > 0)
-//                break;
-// 
-//             if (false)
-//             {
-//                HANDLE engineLog;
-//                engineLog = CreateFile("C:\\Source\\Other NonWork\\engine.log", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-// 
-//                DWORD bytesWritten;
-//                for (unsigned int i = 0; i < communications.length(); i++)
-//                   WriteFile(engineLog, &communications[i], 1, &bytesWritten, NULL);
-//                CloseHandle(engineLog);
-//             }
-//             Sleep(10);
-//          } while (bytesAvailable == 0);
+#ifdef _DEBUG
+         DWORD bytesAvailable;
+         do 
+         {
+            PeekNamedPipe(readFromEngine, NULL, NULL, NULL, &bytesAvailable, NULL);
+            if (bytesAvailable > 0)
+               break;
+
+            if (false)
+            {
+               HANDLE engineLog;
+               engineLog = CreateFile("C:\\Source\\Other NonWork\\engine.log", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+               DWORD bytesWritten;
+               for (unsigned int i = 0; i < communications.length(); i++)
+                  WriteFile(engineLog, &communications[i], 1, &bytesWritten, NULL);
+               CloseHandle(engineLog);
+            }
+            Sleep(10);
+         } while (bytesAvailable == 0);
+#endif
          DWORD bytesRead;
          DWORD success = ReadFile(readFromEngine, buffer, MAXBUFF, &bytesRead, NULL);
          buffer[bytesRead] = '\0';
@@ -274,8 +278,10 @@ string Engine::getResponse(bool& eof) {
 	if (!eof) {
 		//cout << "# [" << result << "]" << endl;
 	}
-//     communications.append("\nEngine:\t");
-//     communications.append(result);
+#ifdef _DEBUG
+    communications.append("\nEngine:\t");
+    communications.append(result);
+#endif
 	return result;
 }
 
@@ -422,7 +428,9 @@ bool Engine::startEngine(const string& engineName) {
 		return true;
 	}
 
-//    communications = "";
+#ifdef _DEBUG
+   communications = "";
+#endif
 
 #endif
 }

@@ -87,7 +87,10 @@ private:
 	HANDLE writeToEngine;
 	HANDLE readFromEngine;
 #endif
-//    string communications;
+
+#ifdef _DEBUG
+    string communications;
+#endif
     // The number of variations to analyse.
     int variations;
     // The depth to analyse.

@@ -586,6 +586,8 @@ void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int s
             int depth = strToInt(infoTokens[t + 1]);
             int time = strToInt(infoTokens[i + 1]);
             bool engineStuck = engineCouldBeStuck && depth > 50; //if we've at depth 50 and never been given another variation, assume engine's stuck and bail out
+            if (!engineStuck && depth > 30 && time < 1000)
+               engineStuck = true; //if we reach depth 30 in under a second, we probably have some very forced lines, which tends to mean we get stuck
             if (time < searchMinTime && !beingMated && !engineStuck)
                 return; //keep searching at least until we hit min time - unless we're mated by force or engine's stuck
             if (depth < searchDepth && time <= searchMaxTime && !beingMated && !engineStuck)

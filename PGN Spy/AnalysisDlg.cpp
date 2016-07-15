@@ -473,9 +473,9 @@ bool CAnalysisDlg::LaunchAnalyser(CGamePGN vGamePGN, int iCurThread)
    CString sWhiteOrBlack = "";
    if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty())
    {
-      if (m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGamePGN.m_sWhite))
+      if (m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGamePGN.m_sWhite) == 0)
          sWhiteOrBlack = "--whiteonly ";
-      if (m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGamePGN.m_sBlack))
+      else if (m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGamePGN.m_sBlack) == 0)
          sWhiteOrBlack = "--blackonly ";
       else
          ASSERT(false); //we should have discarded this game before this point
