@@ -103,13 +103,13 @@ void CResultsDlg::OnBnClickedSavedata()
       return;
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tMove Played\tT-number";
+   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tMove Played\tDepth Searched\tT-number";
    for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
       sReport += sText;
    }
-   sReport += "\tNon-top move eval\tDepth searched";
+   sReport += "\tNon-top move eval";
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
    {
       CGame *pGame = &m_avGames[iGame];
@@ -120,22 +120,27 @@ void CResultsDlg::OnBnClickedSavedata()
          sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
 
          //got all game data, now get move data
+         //move number and coordinates
          sText.Format("%i\t", iPosition + m_vSettings.m_iBookDepth + 1);
          sLine += sText + pPosition->m_avTopMoves[pPosition->m_iMovePlayed].m_sMove + "\t";
+         //T-number of move
          sText.Format("%i\t", pPosition->m_iMovePlayed + 1);
          sLine += sText;
+         //max depth searched
          int iMaxDepth = 0;
+         for (int i = 0; i < pPosition->m_avTopMoves.GetSize(); i++)
+            iMaxDepth = max(iMaxDepth, pPosition->m_avTopMoves[i].m_iDepth);
+         sText.Format("%i\t", iMaxDepth);
+         sLine += sText;
+         //evaluation of variants
          int iMove = 0;
          for (; iMove < pPosition->m_avTopMoves.GetSize(); iMove++)
          {
-            iMaxDepth = max(iMaxDepth, pPosition->m_avTopMoves[iMove].m_iDepth);
             sText.Format("%i\t", pPosition->m_avTopMoves[iMove].m_iScore);
             sLine += sText;
          }
          for (; iMove < m_vSettings.m_iNumVariations + 1; iMove++)
             sLine += "N/A\t";
-         sText.Format("%i\t", iMaxDepth);
-
          sReport += "\r\n" + sLine;
       }
    }
