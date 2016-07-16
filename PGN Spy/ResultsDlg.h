@@ -52,6 +52,6 @@ public:
    CString m_sResults;
    CArray<CGame, CGame> m_avGames;
    CAnalysisSettings m_vSettings;
-   CStats m_vEqualPositions;
+   CStats m_vUndecidedPositions;
    CStats m_vLosingPositions;
 };

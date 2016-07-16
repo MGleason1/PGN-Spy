@@ -416,7 +416,9 @@ void CPGNSpyDlg::OnBnClickedHelpthreads()
                       "\n"
                       "Also note that the architecture of chess engines is not usually very well suited to hyperthreading.  "
                       "It is therefore recommended that this not be set to a number larger than the number of physical cores "
-                      "in your machine.";
+                      "in your machine.\n"
+                      "\n";
+                      "This number can be adjusted while analysis is running.";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }
 

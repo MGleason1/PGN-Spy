@@ -39,6 +39,8 @@ CAnalysisDlg::CAnalysisDlg(CWnd* pParent /*=NULL*/)
    , m_iGamesWithErrors(0)
    , m_bShowResults(false)
    , m_bCancelled(false)
+   , m_iTargetThreads(0)
+   , m_iMaxThreads(0)
 {
 
 }
@@ -58,6 +60,8 @@ BEGIN_MESSAGE_MAP(CAnalysisDlg, CDialogEx)
    ON_BN_CLICKED(IDOK, &CAnalysisDlg::OnBnClickedOK)
    ON_BN_CLICKED(IDCANCEL, &CAnalysisDlg::OnBnClickedCancel)
    ON_WM_TIMER()
+   ON_BN_CLICKED(IDC_DECREASETHREADS, &CAnalysisDlg::OnBnClickedDecreasethreads)
+   ON_BN_CLICKED(IDC_INCREASETHREADS, &CAnalysisDlg::OnBnClickedIncreasethreads)
 END_MESSAGE_MAP()
 
 
@@ -79,12 +83,25 @@ void CAnalysisDlg::OnTimer(UINT_PTR nIDEvent)
 
    CWaitCursor vWaitCursor;
 
+   m_iTargetThreads = m_vAnalysisSettings.m_iNumThreads;
+
+   SYSTEM_INFO vSysInfo;
+   GetSystemInfo(&vSysInfo);
+   m_iMaxThreads = (int)vSysInfo.dwNumberOfProcessors;
+   UpdateThreadControlButtons();
+
    //do stuff
    ProcessGames();
 
    CDialog::OnTimer(nIDEvent);
 
    OnOK();//close the dialog
+}
+
+void CAnalysisDlg::UpdateThreadControlButtons()
+{
+   GetDlgItem(IDC_INCREASETHREADS)->EnableWindow(m_iTargetThreads < m_iMaxThreads);
+   GetDlgItem(IDC_DECREASETHREADS)->EnableWindow(m_iTargetThreads > 0);
 }
 
 void CAnalysisDlg::OnBnClickedOK()
@@ -215,6 +232,10 @@ bool CAnalysisDlg::ProcessGames()
 
    //We now have a complete set of files; time to process them
 
+   CStringArray asResults;
+   CArray<bool, bool> abErrors;
+   asResults.SetSize(m_vAnalysisSettings.m_iNumThreads);
+   abErrors.SetSize(m_vAnalysisSettings.m_iNumThreads);
    //initialize handles
    m_ahChildStdInRead.SetSize(m_vAnalysisSettings.m_iNumThreads);
    m_ahChildStdInWrite.SetSize(m_vAnalysisSettings.m_iNumThreads);
@@ -232,15 +253,12 @@ bool CAnalysisDlg::ProcessGames()
       m_ahChildStdErrRead[i] = NULL;
       m_ahChildStdErrWrite[i] = NULL;
       m_ahProcesses[i] = NULL;
+      abErrors[i] = false;
    }
 
    int iActiveProcesses = 0;
    int iNextGame = 0;
    bool bThreadsStillRunning = false;
-   CStringArray asResults;
-   CArray<bool, bool> abErrors;
-   asResults.SetSize(m_vAnalysisSettings.m_iNumThreads);
-   abErrors.SetSize(m_vAnalysisSettings.m_iNumThreads);
    while ((iNextGame < avGamePGNs.GetSize() || bThreadsStillRunning) && !m_bCancelled)
    {
       CString sTopLine;
@@ -311,6 +329,24 @@ bool CAnalysisDlg::ProcessGames()
             m_sStatusHistory = sStatusLine + "\r\n" + m_sStatusHistory;
             asResults[iCurThread].Empty();
             abErrors[iCurThread] = false;
+
+            //check if we're supposed to be decrementing threads
+            if (m_iTargetThreads < m_vAnalysisSettings.m_iNumThreads)
+            {
+               //remove array members for current thread
+               asResults.RemoveAt(iCurThread);
+               abErrors.RemoveAt(iCurThread);
+               m_ahChildStdInRead.RemoveAt(iCurThread);
+               m_ahChildStdInWrite.RemoveAt(iCurThread);
+               m_ahChildStdOutRead.RemoveAt(iCurThread);
+               m_ahChildStdOutWrite.RemoveAt(iCurThread);
+               m_ahChildStdErrRead.RemoveAt(iCurThread);
+               m_ahChildStdErrWrite.RemoveAt(iCurThread);
+               m_ahProcesses.RemoveAt(iCurThread);
+
+               //decrement thread count
+               m_vAnalysisSettings.m_iNumThreads--;
+            }
          }
          else
          {
@@ -321,6 +357,31 @@ bool CAnalysisDlg::ProcessGames()
          }
       }
       Sleep(50); //so we don't eat lots of CPU trying to check on every process constantly
+
+      //check if we've incremented the thread count
+      if (m_iTargetThreads > m_vAnalysisSettings.m_iNumThreads)
+      {
+         m_vAnalysisSettings.m_iNumThreads++;
+         //add a member to arrays and initialize values
+         asResults.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         abErrors.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         //initialize handles
+         m_ahChildStdInRead.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdInWrite.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdOutRead.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdOutWrite.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdErrRead.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdErrWrite.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahProcesses.SetSize(m_vAnalysisSettings.m_iNumThreads);
+         m_ahChildStdInRead[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahChildStdInWrite[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahChildStdOutRead[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahChildStdOutWrite[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahChildStdErrRead[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahChildStdErrWrite[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         m_ahProcesses[m_vAnalysisSettings.m_iNumThreads - 1] = NULL;
+         abErrors[m_vAnalysisSettings.m_iNumThreads - 1] = false;
+      }
    }
 
    if (m_bCancelled)
@@ -528,4 +589,37 @@ bool CAnalysisDlg::ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves)
       return false;
    }
    return true;
+}
+
+
+void CAnalysisDlg::OnBnClickedDecreasethreads()
+{
+   m_iTargetThreads--;
+   if (m_iTargetThreads < 0)
+   {
+      ASSERT(false);
+      m_iTargetThreads = 0;
+   }
+   CString sStatusLine;
+   if (m_iTargetThreads > 0)
+      sStatusLine.Format("Number of threads will be decreased to %i as active threads are completed.\r\n", m_iTargetThreads);
+   else
+      sStatusLine = "Analysis will be paused when all currently active threads are completed.\r\n";
+   m_sStatusHistory = sStatusLine + m_sStatusHistory;
+   UpdateThreadControlButtons();
+}
+
+
+void CAnalysisDlg::OnBnClickedIncreasethreads()
+{
+   m_iTargetThreads++;
+   if (m_iTargetThreads > m_iMaxThreads)
+   {
+      ASSERT(false);
+      m_iTargetThreads = m_iMaxThreads;
+   }
+   CString sStatusLine;
+   sStatusLine.Format("Number of threads increased to %i.\r\n", m_iTargetThreads);
+   m_sStatusHistory = sStatusLine + m_sStatusHistory;
+   UpdateThreadControlButtons();
 }

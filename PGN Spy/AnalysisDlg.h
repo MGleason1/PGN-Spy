@@ -63,9 +63,14 @@ public:
    CString m_sStatusHistory;
    bool m_bShowResults;
    bool m_bCancelled;
+   int m_iTargetThreads;
+   int m_iMaxThreads;
    CString m_sConvertedPGN;
+   void UpdateThreadControlButtons();
    bool ProcessGames();
    bool LaunchAnalyser(CGamePGN vGamePGN, int iCurThread);
    void ReadFromThread(int iThread, CString IN OUT &rsResults, bool IN OUT &rbError);
    bool ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves);
+   afx_msg void OnBnClickedDecreasethreads();
+   afx_msg void OnBnClickedIncreasethreads();
 };

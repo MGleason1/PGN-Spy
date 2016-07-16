@@ -48,6 +48,9 @@
 #define IDC_NUMVARIATIONSHELP           1044
 #define IDC_STATUS                      1045
 #define IDC_CREDITS                     1047
+#define IDC_DECREASETHREADS             1048
+#define IDC_BUTTON2                     1049
+#define IDC_INCREASETHREADS             1049
 
 // Next default values for new objects
 // 
@@ -55,7 +58,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_CONTROL_VALUE         1050
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

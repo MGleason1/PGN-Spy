@@ -61,12 +61,12 @@ move); the unclear position setting compares each move to the best option.
 
 Blunder threshold - moves that are worse than the best option by this value will be reported as blunders.
 
-Equal position threshold - positions that are evaluated such that neither side has an advantage
-greater than the specified threshold are reported in the results for equal positions.  Positions
+Undecided position threshold - positions that are evaluated such that neither side has an advantage
+greater than the specified threshold are reported in the results for undecided positions.  Positions
 where one side or the other has a large advantage are excluded.
 
 Losing position threshold - positions that are evaluated such that the player in question is losing by
-more than the equal position threshold but less than the losing position threshold are reported in
+more than the undecided position threshold but less than the losing position threshold are reported in
 the results for losing positions.  All other positions are excluded.
 
 Book depth - the number of opening moves to exclude from analysis.  Strong players will often have a
@@ -103,11 +103,11 @@ very strong UCI-compatible engine that is available for free: http://stockfishch
 
 RESULTS
 
-Equal positions - positions where neither side is winning by more than the "Equal positions threshold"
+Undecided positions - positions where neither side is winning by more than the "Undecided positions threshold"
 setting are included in this category.  A player who cheats until he gets ahead may have suspicious
 results in this category.
 
-Losing positions - positions where the player in question is losing by more than the equal positions
+Losing positions - positions where the player in question is losing by more than the undecided positions
 threshold but less than the losing positions threshold are included in this category.  A player who
 cheats to try to save a lost position may have suspicious results in this category.
 
