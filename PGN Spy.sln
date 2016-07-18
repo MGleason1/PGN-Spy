@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PGN Spy", "PGN Spy\PGN Spy.vcxproj", "{2BB5302E-46F1-465F-86ED-5C613B26449A}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{ECBF0281-BDB8-4586-8EE3-14C5366365BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,6 +17,8 @@ Global
 		{2BB5302E-46F1-465F-86ED-5C613B26449A}.Debug|Win32.Build.0 = Debug|Win32
 		{2BB5302E-46F1-465F-86ED-5C613B26449A}.Release|Win32.ActiveCfg = Release|Win32
 		{2BB5302E-46F1-465F-86ED-5C613B26449A}.Release|Win32.Build.0 = Release|Win32
+		{ECBF0281-BDB8-4586-8EE3-14C5366365BC}.Debug|Win32.ActiveCfg = Debug
+		{ECBF0281-BDB8-4586-8EE3-14C5366365BC}.Release|Win32.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

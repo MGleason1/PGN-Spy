@@ -68,6 +68,15 @@ BOOL CPGNSpyApp::InitInstance()
 
    AfxEnableControlContainer();
 
+   // Standard initialization
+   // If you are not using these features and wish to reduce the size
+   // of your final executable, you should remove from the following
+   // the specific initialization routines you do not need
+   // Change the registry key under which our settings are stored
+   // TODO: You should modify this string to be something appropriate
+   // such as the name of your company or organization
+   SetRegistryKey(_T("PGNSpy"));
+
    FindDataFolder();
 
    CPGNSpyDlg dlg;
@@ -112,14 +121,24 @@ CString GetSettingsFilePath()
 
 CString GetConvertedPGNFilePath()
 {
-   CTime vTime = CTime::GetCurrentTime();
-   return theApp.m_sDataFolder + vTime.Format("Temp %y%m%d%H%M%S.pgn");
+   char sTempPath[500];
+   char sFilePath[500];
+   GetTempPath(500, sTempPath);
+   GetTempFileName(sTempPath, "PGN", 0, sFilePath);
+   return CString(sFilePath);
+//    CTime vTime = CTime::GetCurrentTime();
+//    return theApp.m_sDataFolder + vTime.Format("Temp %y%m%d%H%M%S.pgn");
 }
 
 CString GetTemporaryPGNFilePath(int i)
 {
-   CTime vTime = CTime::GetCurrentTime();
-   CString sCounter;
-   sCounter.Format(" %i.pgn", i);
-   return theApp.m_sDataFolder + vTime.Format("Temp %y%m%d%H%M%S") + sCounter;
+   char sTempPath[500];
+   char sFilePath[500];
+   GetTempPath(500, sTempPath);
+   GetTempFileName(sTempPath, "PGN", 0, sFilePath);
+   return CString(sFilePath);
+//    CTime vTime = CTime::GetCurrentTime();
+//    CString sCounter;
+//    sCounter.Format(" %i.pgn", i);
+//    return theApp.m_sDataFolder + vTime.Format("Temp %y%m%d%H%M%S") + sCounter;
 }

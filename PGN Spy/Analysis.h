@@ -26,8 +26,10 @@ class CAnalysisSettings
 {
 public:
    CAnalysisSettings();
-   bool LoadSettings();
-   bool SaveSettings();
+   bool LoadSettingsFromFile();
+   bool SaveSettingsToFile();
+   bool LoadSettingsFromRegistry();
+   bool SaveSettingsToRegistry();
 
    CString m_sPlayerName;
    BOOL m_bExcludeForcedMoves;

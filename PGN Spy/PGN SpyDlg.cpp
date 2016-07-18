@@ -184,7 +184,7 @@ BOOL CPGNSpyDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
-   if (!m_vAnalysisSettings.LoadSettings()) //load settings from file
+   if (!m_vAnalysisSettings.LoadSettingsFromRegistry()) //load settings from file
       m_vAnalysisSettings = CAnalysisSettings(); //failed to load, so restore defaults
    UpdateData(FALSE);
 
@@ -337,7 +337,7 @@ void CPGNSpyDlg::OnBnClickedSavesettings()
    if (!ValidateSettings())
       return;
 
-   if (!m_vAnalysisSettings.SaveSettings())
+   if (!m_vAnalysisSettings.SaveSettingsToRegistry())
       MessageBox("Failed to save settings.", "PGN Spy", MB_ICONEXCLAMATION);
    else
       MessageBox("Settings saved.", "PGN Spy", MB_ICONINFORMATION);

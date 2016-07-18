@@ -49,7 +49,7 @@ CAnalysisSettings::CAnalysisSettings()
    m_iNumThreads = max((int)vSysInfo.dwNumberOfProcessors / 2, 1);
 }
 
-bool CAnalysisSettings::LoadSettings()
+bool CAnalysisSettings::LoadSettingsFromFile()
 {
    CMarkup vXML;
    CString sText;
@@ -138,7 +138,7 @@ bool CAnalysisSettings::LoadSettings()
    return true;
 }
 
-bool CAnalysisSettings::SaveSettings()
+bool CAnalysisSettings::SaveSettingsToFile()
 {
    CMarkup vXML;
 
@@ -178,6 +178,53 @@ bool CAnalysisSettings::SaveSettings()
       return false;
 
    return vXML.Save(GetSettingsFilePath());
+}
+
+bool CAnalysisSettings::LoadSettingsFromRegistry()
+{
+   //calc number of cores and divide by two; engines aren't great with hyper-threading; checking for
+   //hyper-threading seems to be a little more complex, so just assume it's present for setting the default
+   //subtract one to allow for the OS
+   SYSTEM_INFO vSysInfo;
+   GetSystemInfo(&vSysInfo);
+   int iDefaultThreads = max((int)vSysInfo.dwNumberOfProcessors / 2, 1);
+
+   m_bExcludeForcedMoves = theApp.GetProfileInt("PGNSpy", "ExcludeForcedMoves", 1) == 1;
+   m_iForcedMoveCutoff = theApp.GetProfileInt("PGNSpy", "ForcedMoveCutoff", 50);
+   m_bIncludeOnlyUnclearPositions = theApp.GetProfileInt("PGNSpy", "IncludeOnlyUnclearPositions", 1) == 1;
+   m_iUnclearPositionCutoff = theApp.GetProfileInt("PGNSpy", "UnclearPositionCutoff", 100);
+   m_iBlunderThreshold = theApp.GetProfileInt("PGNSpy", "BlunderThreshold", 100);
+   m_iEqualPositionThreshold = theApp.GetProfileInt("PGNSpy", "EqualPositionThreshold", 200);
+   m_iLosingThreshold = theApp.GetProfileInt("PGNSpy", "LosingThreshold", 500);
+   m_iBookDepth = theApp.GetProfileInt("PGNSpy", "BookDepth", 10);
+   m_sEnginePath = theApp.GetProfileString("PGNSpy", "EnginePath", "");
+   m_iNumVariations = theApp.GetProfileInt("PGNSpy", "NumVariations", 3);
+   m_iSearchDepth = theApp.GetProfileInt("PGNSpy", "SearchDepth", 20);
+   m_iMaxTime = theApp.GetProfileInt("PGNSpy", "MaxTime", 20000);
+   m_iMinTime = theApp.GetProfileInt("PGNSpy", "MinTime", 10000);
+   m_iNumThreads = theApp.GetProfileInt("PGNSpy", "NumThreads", iDefaultThreads);
+   m_iHashSize = theApp.GetProfileInt("PGNSpy", "HashSize", 24);
+   return true;
+}
+
+bool CAnalysisSettings::SaveSettingsToRegistry()
+{
+   theApp.WriteProfileInt("PGNSpy", "ExcludeForcedMoves", m_bExcludeForcedMoves ? 1 : 0);
+   theApp.WriteProfileInt("PGNSpy", "ForcedMoveCutoff", m_iForcedMoveCutoff);
+   theApp.WriteProfileInt("PGNSpy", "IncludeOnlyUnclearPositions", m_bIncludeOnlyUnclearPositions ? 1 : 0);
+   theApp.WriteProfileInt("PGNSpy", "UnclearPositionCutoff", m_iUnclearPositionCutoff);
+   theApp.WriteProfileInt("PGNSpy", "BlunderThreshold", m_iBlunderThreshold);
+   theApp.WriteProfileInt("PGNSpy", "EqualPositionThreshold", m_iEqualPositionThreshold);
+   theApp.WriteProfileInt("PGNSpy", "LosingThreshold", m_iLosingThreshold);
+   theApp.WriteProfileInt("PGNSpy", "BookDepth", m_iBookDepth);
+   theApp.WriteProfileString("PGNSpy", "EnginePath", m_sEnginePath);
+   theApp.WriteProfileInt("PGNSpy", "NumVariations", m_iNumVariations);
+   theApp.WriteProfileInt("PGNSpy", "SearchDepth", m_iSearchDepth);
+   theApp.WriteProfileInt("PGNSpy", "MaxTime", m_iMaxTime);
+   theApp.WriteProfileInt("PGNSpy", "MinTime", m_iMinTime);
+   theApp.WriteProfileInt("PGNSpy", "NumThreads", m_iNumThreads);
+   theApp.WriteProfileInt("PGNSpy", "HashSize", m_iHashSize);
+   return true;
 }
 
 CMove::CMove()
