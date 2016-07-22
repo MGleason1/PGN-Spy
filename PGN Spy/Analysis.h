@@ -96,6 +96,8 @@ class CStats
 {
 public:
    CStats();
+   int m_iNumVariations;
+
    int m_iNumPositions;
    CArray<int, int> m_aiTValues; //T1/T2/T3/etc. totals
    CArray<int, int> m_aiTMoves; //T1/T2/T3/etc. totals
@@ -105,10 +107,13 @@ public:
 
    double m_dAvgCentipawnLoss;
    double m_dCentipawnLossStdDeviation;
+   double m_dMedianCPLoss;
+   double m_dThirdQuartileCPLoss;
 
    void Initialize(const CAnalysisSettings &vSettings);
    void AddPosition(CPosition &vPosition, const CAnalysisSettings &vSettings);
    void FinaliseStats();
+   CString GetResultsText();
 };
 
 class CGamePGN

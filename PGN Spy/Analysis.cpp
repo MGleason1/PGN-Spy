@@ -409,16 +409,20 @@ bool CGame::LoadGame(CString sGameText)
 
 CStats::CStats()
 {
+   m_iNumVariations = 0;
    m_iNumPositions = 0;
    m_iBlunders = 0;
    m_iTotalCentipawnLoss = 0;
    m_aiCentipawnLosses.RemoveAll();
    m_dAvgCentipawnLoss = 0;
    m_dCentipawnLossStdDeviation = 0;
+   m_dMedianCPLoss = 0;
+   m_dThirdQuartileCPLoss = 0;
 }
 
 void CStats::Initialize(const CAnalysisSettings &vSettings)
 {
+   m_iNumVariations = vSettings.m_iNumVariations;
    m_aiTValues.SetSize(vSettings.m_iNumVariations + 1);
    m_aiTMoves.SetSize(vSettings.m_iNumVariations + 1);
    for (int i = 0; i < vSettings.m_iNumVariations + 1; i++)
@@ -434,7 +438,12 @@ void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSetting
    if (vPosition.IsBlunder(vSettings.m_iBlunderThreshold))
       m_iBlunders++;
    m_iTotalCentipawnLoss += vPosition.GetCentipawnLoss();
-   m_aiCentipawnLosses.Add(vPosition.GetCentipawnLoss());
+
+   int iCPLossIndex = 0;
+   int iCPLoss = vPosition.GetCentipawnLoss();
+   while (iCPLossIndex < m_aiCentipawnLosses.GetSize() && m_aiCentipawnLosses[iCPLossIndex] > iCPLoss)
+      iCPLossIndex++; //sort cp loss array highest to lowest
+   m_aiCentipawnLosses.InsertAt(iCPLossIndex, iCPLoss);
 
    for (int i = 0; i < vSettings.m_iNumVariations; i++)
    {
@@ -460,6 +469,70 @@ void CStats::FinaliseStats()
       double dDiffFromMean = (double)m_aiCentipawnLosses[i] - m_dAvgCentipawnLoss;
       dTotalVariance += dDiffFromMean * dDiffFromMean;
    }
+
+   //calculate cp loss median and third quartile
+   if (m_aiCentipawnLosses.GetSize() == 0)
+   {
+      m_dMedianCPLoss = m_dThirdQuartileCPLoss = 0;
+   }
+   else
+   {
+      int iMedianIndex = m_aiCentipawnLosses.GetSize() / 2;
+      if (m_aiCentipawnLosses.GetSize() % 2 == 0) //even number, must take avg of two
+         m_dMedianCPLoss = (double)(m_aiCentipawnLosses[iMedianIndex] + m_aiCentipawnLosses[iMedianIndex - 1]) / 2.0;
+      else
+         m_dMedianCPLoss = m_aiCentipawnLosses[iMedianIndex];
+
+      int iQuartileIndex = (m_aiCentipawnLosses.GetSize() / 4) - 1; //cp loss array is sorted highest to lowest
+      if (iQuartileIndex < 0)
+         m_dThirdQuartileCPLoss = m_aiCentipawnLosses[0]; //fewer than four numbers, just take the first value
+      else
+      {
+         int iWeightLower = m_aiCentipawnLosses.GetSize() % 4;
+         double dHighValue = m_aiCentipawnLosses[iQuartileIndex] * (4 - iWeightLower);
+         double dLowValue = m_aiCentipawnLosses[iQuartileIndex + 1] * iWeightLower;
+         m_dThirdQuartileCPLoss = (dHighValue + dLowValue) / 4.0;
+      }
+   }
+
    double dVariance = dTotalVariance / (double)m_iNumPositions;
    m_dCentipawnLossStdDeviation = sqrt(dVariance);
+}
+
+CString CStats::GetResultsText()
+{
+   CString sLine;
+   CString sResults;
+   sLine.Format("Positions: %i", m_iNumPositions);
+   sResults = sLine + "\r\n";
+   if (m_iNumPositions > 0)
+   {
+      //T-values
+      for (int i = 0; i < m_iNumVariations; i++)
+      {
+         if (m_aiTMoves[i] == 0)
+            sLine.Format("T%i: 0/0", i);
+         else
+         {
+            double dFrac = ((double)m_aiTValues[i] / (double)m_aiTMoves[i]);
+            double dStdError = sqrt(dFrac * (1 - dFrac) / m_aiTMoves[i]) * 100;
+            sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_aiTValues[i], m_aiTMoves[i], dFrac*100.0, dStdError);
+         }
+         sResults += sLine + "\r\n";
+      }
+      //blunders
+      {
+         double dFrac = ((double)m_iBlunders / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format("Blunders: %i/%i; %.2f%% (std error %.2f)", m_iBlunders, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+
+      sLine.Format("Avg centipawn loss: %.2f (std deviation %.2f)", m_dAvgCentipawnLoss, m_dCentipawnLossStdDeviation);
+      sResults += sLine + "\r\n";
+
+      sLine.Format("Centipawn loss median: %.2f, 3rd quartile: %.2f", m_dMedianCPLoss, m_dThirdQuartileCPLoss);
+      sResults += sLine + "\r\n";
+   }
+   return sResults;
 }

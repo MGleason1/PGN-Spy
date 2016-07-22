@@ -182,66 +182,9 @@ void CResultsDlg::CalculateStats()
    m_vLosingPositions.FinaliseStats();
 
    //Now dump results to text
-   CString sLine;
-   m_sResults = "UNDECIDED POSITIONS\r\n";
-   sLine.Format("Positions: %i", m_vUndecidedPositions.m_iNumPositions);
-   m_sResults += sLine + "\r\n";
-   if (m_vUndecidedPositions.m_iNumPositions > 0)
-   {
-      //T-values
-      for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
-      {
-         if (m_vUndecidedPositions.m_aiTMoves[i] == 0)
-            sLine.Format("T%i: 0/0", i);
-         else
-         {
-            double dFrac = ((double)m_vUndecidedPositions.m_aiTValues[i] / (double)m_vUndecidedPositions.m_aiTMoves[i]);
-            double dStdError = sqrt(dFrac * (1 - dFrac) / m_vUndecidedPositions.m_aiTMoves[i]) * 100;
-            sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vUndecidedPositions.m_aiTValues[i], m_vUndecidedPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
-         }
-         m_sResults += sLine + "\r\n";
-      }
-      //blunders
-      {
-         double dFrac = ((double)m_vUndecidedPositions.m_iBlunders / (double)m_vUndecidedPositions.m_iNumPositions);
-         double dStdError = sqrt(dFrac * (1 - dFrac) / m_vUndecidedPositions.m_iNumPositions) * 100;
-         sLine.Format("Blunders: %i/%i; %.2f%% (std error %.2f)", m_vUndecidedPositions.m_iBlunders, m_vUndecidedPositions.m_iNumPositions, dFrac*100.0, dStdError);
-         m_sResults += sLine + "\r\n";
-      }
-
-      sLine.Format("Avg centipawn loss: %.2f (std deviation %.2f)", m_vUndecidedPositions.m_dAvgCentipawnLoss, m_vUndecidedPositions.m_dCentipawnLossStdDeviation);
-      m_sResults += sLine + "\r\n";
-   }
-   m_sResults += "\r\n";
-
-   sLine = "LOSING POSITIONS";
-   m_sResults += sLine + "\r\n";
-   sLine.Format("Positions: %i", m_vLosingPositions.m_iNumPositions);
-   m_sResults += sLine + "\r\n";
-   if (m_vLosingPositions.m_iNumPositions > 0)
-   {
-      //T-values
-      for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
-      {
-         if (m_vLosingPositions.m_aiTMoves[i] == 0)
-            sLine.Format("T%i: 0/0", i);
-         else
-         {
-            double dFrac = ((double)m_vLosingPositions.m_aiTValues[i] / (double)m_vLosingPositions.m_aiTMoves[i]);
-            double dStdError = sqrt(dFrac * (1 - dFrac) / m_vLosingPositions.m_aiTMoves[i]) * 100;
-            sLine.Format("T%i: %i/%i; %.2f%% (std error %.2f)", i + 1, m_vLosingPositions.m_aiTValues[i], m_vLosingPositions.m_aiTMoves[i], dFrac*100.0, dStdError);
-         }
-         m_sResults += sLine + "\r\n";
-      }
-      //blunders
-      {
-         double dFrac = ((double)m_vLosingPositions.m_iBlunders / (double)m_vLosingPositions.m_iNumPositions);
-         double dStdError = sqrt(dFrac * (1 - dFrac) / m_vLosingPositions.m_iNumPositions) * 100;
-         sLine.Format("Blunders: %i/%i; %.2f%% (std error %.2f)", m_vLosingPositions.m_iBlunders, m_vLosingPositions.m_iNumPositions, dFrac*100.0, dStdError);
-         m_sResults += sLine + "\r\n";
-      }
-
-      sLine.Format("Avg centipawn loss: %.2f (std deviation %.2f)", m_vLosingPositions.m_dAvgCentipawnLoss, m_vLosingPositions.m_dCentipawnLossStdDeviation);
-      m_sResults += sLine + "\r\n";
-   }
+   m_sResults.Format("%i games\r\n\r\n", m_avGames.GetSize());
+   m_sResults += "UNDECIDED POSITIONS\r\n";
+   m_sResults += m_vUndecidedPositions.GetResultsText() + "\r\n";
+   m_sResults += "LOSING POSITIONS\r\n";
+   m_sResults += m_vLosingPositions.GetResultsText();
 }
