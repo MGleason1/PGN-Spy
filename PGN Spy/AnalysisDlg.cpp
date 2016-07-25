@@ -528,7 +528,8 @@ bool CAnalysisDlg::LaunchAnalyser(CGamePGN vGamePGN, int iCurThread)
    vStartupInfo.hStdInput = m_ahChildStdInWrite[iCurThread];
    vStartupInfo.hStdOutput = m_ahChildStdOutWrite[iCurThread];
    vStartupInfo.hStdError = m_ahChildStdErrWrite[iCurThread];
-   vStartupInfo.dwFlags = STARTF_USESTDHANDLES;
+   vStartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+   vStartupInfo.wShowWindow = SW_HIDE;
 
    CString sCommandLine;
    CString sWhiteOrBlack = "";

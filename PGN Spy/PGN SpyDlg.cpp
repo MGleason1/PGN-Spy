@@ -280,6 +280,8 @@ bool CPGNSpyDlg::ConvertFileForAnalysis(CString OUT &sConvertedFile)
    PROCESS_INFORMATION vProcessInfo;
    STARTUPINFO vStartupInfo = {0};
    vStartupInfo.cb = sizeof(vStartupInfo);
+   vStartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+   vStartupInfo.wShowWindow = SW_HIDE;
    if (!CreateProcess(GetConverterFilePath(), sCommandLine.GetBuffer(), NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &vStartupInfo, &vProcessInfo))
    {
       sCommandLine.ReleaseBuffer();

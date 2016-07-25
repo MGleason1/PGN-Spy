@@ -528,10 +528,7 @@ CString CStats::GetResultsText()
          sResults += sLine + "\r\n";
       }
 
-      sLine.Format("Avg centipawn loss: %.2f (std deviation %.2f)", m_dAvgCentipawnLoss, m_dCentipawnLossStdDeviation);
-      sResults += sLine + "\r\n";
-
-      sLine.Format("Centipawn loss median: %.2f, 3rd quartile: %.2f", m_dMedianCPLoss, m_dThirdQuartileCPLoss);
+      sLine.Format("Centipawn loss: mean %.2f, std deviation %.2f\r\nmedian %.2f, 3rd quartile %.2f", m_dAvgCentipawnLoss,m_dCentipawnLossStdDeviation, m_dMedianCPLoss, m_dThirdQuartileCPLoss);
       sResults += sLine + "\r\n";
    }
    return sResults;
