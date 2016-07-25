@@ -104,6 +104,9 @@ public:
    int m_iBlunders;
    int m_iTotalCentipawnLoss;
    CArray<int, int> m_aiCentipawnLosses; //for calculating std deviation
+   int m_i0CPLoss;
+   int m_i10CPLoss;
+   int m_i25CPLoss;
 
    double m_dAvgCentipawnLoss;
    double m_dCentipawnLossStdDeviation;

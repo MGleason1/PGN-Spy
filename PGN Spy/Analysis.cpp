@@ -418,6 +418,9 @@ CStats::CStats()
    m_dCentipawnLossStdDeviation = 0;
    m_dMedianCPLoss = 0;
    m_dThirdQuartileCPLoss = 0;
+   m_i0CPLoss = 0;
+   m_i10CPLoss = 0;
+   m_i25CPLoss = 0;
 }
 
 void CStats::Initialize(const CAnalysisSettings &vSettings)
@@ -444,6 +447,13 @@ void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSetting
    while (iCPLossIndex < m_aiCentipawnLosses.GetSize() && m_aiCentipawnLosses[iCPLossIndex] > iCPLoss)
       iCPLossIndex++; //sort cp loss array highest to lowest
    m_aiCentipawnLosses.InsertAt(iCPLossIndex, iCPLoss);
+
+   if (iCPLoss <= 0)
+      m_i0CPLoss++;
+   if (iCPLoss <= 10)
+      m_i10CPLoss++;
+   if (iCPLoss <= 25)
+      m_i25CPLoss++;
 
    for (int i = 0; i < vSettings.m_iNumVariations; i++)
    {
@@ -520,6 +530,27 @@ CString CStats::GetResultsText()
          }
          sResults += sLine + "\r\n";
       }
+      //0 CP loss
+      {
+         double dFrac = ((double)m_i0CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format("0 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i0CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+      //10 CP loss
+      {
+         double dFrac = ((double)m_i10CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format("<=10 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i10CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+      //25 CP loss
+      {
+         double dFrac = ((double)m_i25CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format("<=25 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i25CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
       //blunders
       {
          double dFrac = ((double)m_iBlunders / (double)m_iNumPositions);
@@ -528,7 +559,7 @@ CString CStats::GetResultsText()
          sResults += sLine + "\r\n";
       }
 
-      sLine.Format("Centipawn loss: mean %.2f, std deviation %.2f\r\nmedian %.2f, 3rd quartile %.2f", m_dAvgCentipawnLoss,m_dCentipawnLossStdDeviation, m_dMedianCPLoss, m_dThirdQuartileCPLoss);
+      sLine.Format("CP loss mean %.2f, std deviation %.2f\r\nCP loss median %.2f, 3rd quartile %.2f", m_dAvgCentipawnLoss,m_dCentipawnLossStdDeviation, m_dMedianCPLoss, m_dThirdQuartileCPLoss);
       sResults += sLine + "\r\n";
    }
    return sResults;
