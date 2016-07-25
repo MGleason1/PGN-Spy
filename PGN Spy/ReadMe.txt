@@ -59,8 +59,6 @@ This is similar to the forced move setting; however, the force moved setting com
 the next-best option (i.e. comparing the 2nd move to the 3rd move, comparing the 3rd move to the 4th
 move); the unclear position setting compares each move to the best option.
 
-Blunder threshold - moves that are worse than the best option by this value will be reported as blunders.
-
 Undecided position threshold - positions that are evaluated such that neither side has an advantage
 greater than the specified threshold are reported in the results for undecided positions.  Positions
 where one side or the other has a large advantage are excluded.
@@ -118,8 +116,8 @@ Note that the number of positions here is less than the total positions; this is
 "Exclude forced moves" and "Include only unclear positions" settings.  This is also why the
 number of positions for T1 is not the same as for T2, and neither is the same as T3.
 
-Blunders - the number of times the player made a move that was significantly worse than the
-best option.  The precise threshold is determined by the "Blunder threshold" setting.
+>0 CP Loss - the number of positions where the move the player made was worse than the top
+engine move by more than the specified value (in centipawns).
 
 Avg centipawn loss - the average difference between the evaluation of the best move and
 the move that was actually played.  Note that a move that concedes a forced mate will be

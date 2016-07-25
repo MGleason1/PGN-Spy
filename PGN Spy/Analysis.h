@@ -67,7 +67,6 @@ public:
    CPosition &operator=(const CPosition &rSrc);
    bool IsForcedMove(int iVariation, int iForcedMoveThreshold);
    bool IsUnclearPosition(int iVariation, int iUnclearPositionThreshold);
-   bool IsBlunder(int iBlunderThreshold);
    bool IsEqualPosition(int iEqualPositionThreshold);
    bool IsLosingPosition(int iEqualPositionThreshold, int iLosingPositionThreshold);
    int GetCentipawnLoss();
@@ -101,17 +100,19 @@ public:
    int m_iNumPositions;
    CArray<int, int> m_aiTValues; //T1/T2/T3/etc. totals
    CArray<int, int> m_aiTMoves; //T1/T2/T3/etc. totals
-   int m_iBlunders;
    int m_iTotalCentipawnLoss;
    CArray<int, int> m_aiCentipawnLosses; //for calculating std deviation
    int m_i0CPLoss;
    int m_i10CPLoss;
    int m_i25CPLoss;
+   int m_i50CPLoss;
+   int m_i100CPLoss;
+   int m_i200CPLoss;
+   int m_i300CPLoss;
+   int m_i500CPLoss;
 
    double m_dAvgCentipawnLoss;
    double m_dCentipawnLossStdDeviation;
-   double m_dMedianCPLoss;
-   double m_dThirdQuartileCPLoss;
 
    void Initialize(const CAnalysisSettings &vSettings);
    void AddPosition(CPosition &vPosition, const CAnalysisSettings &vSettings);

@@ -122,8 +122,6 @@ void CPGNSpyDlg::DoDataExchange(CDataExchange* pDX)
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iEqualPositionThreshold, 25, 10000);
    DDX_Text(pDX, IDC_LOSINGPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iLosingThreshold);
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iLosingThreshold, 25, 10000);
-   DDX_Text(pDX, IDC_BLUNDERTHRESHOLD, m_vAnalysisSettings.m_iBlunderThreshold);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iBlunderThreshold, 25, 10000);
    DDX_Text(pDX, IDC_VARIATIONS, m_vAnalysisSettings.m_iNumVariations);
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iNumVariations, 1, 10);
 }
@@ -148,7 +146,6 @@ BEGIN_MESSAGE_MAP(CPGNSpyDlg, CDialog)
    ON_BN_CLICKED(IDC_UNCLEARPOSITIONHELP, &CPGNSpyDlg::OnBnClickedUnclearpositionhelp)
    ON_BN_CLICKED(IDC_EQUALPOSITIONHELP, &CPGNSpyDlg::OnBnClickedEqualpositionhelp)
    ON_BN_CLICKED(IDC_LOSINGTHRESHOLDHELP, &CPGNSpyDlg::OnBnClickedLosingthresholdhelp)
-   ON_BN_CLICKED(IDC_BLUNDERTHRESHOLDHELP, &CPGNSpyDlg::OnBnClickedBlunderthresholdhelp)
    ON_BN_CLICKED(IDC_NUMVARIATIONSHELP, &CPGNSpyDlg::OnBnClickedNumvariationshelp)
    ON_BN_CLICKED(IDC_EXCLUDEFORCED, &CPGNSpyDlg::OnBnClickedExcludeforced)
    ON_BN_CLICKED(IDC_INCLUDEONLYUNCLEAR, &CPGNSpyDlg::OnBnClickedIncludeonlyunclear)
@@ -480,13 +477,6 @@ void CPGNSpyDlg::OnBnClickedLosingthresholdhelp()
    CString sMessage = "Positions where the player behind by more than the equal position threshold and less than the "
                       "losing position threshold will be analysed.  This is to help detect cheaters who only cheat once "
                       "they start to lose.\n\nThese results will be reported separately from those for equal positions.";
-   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
-}
-
-void CPGNSpyDlg::OnBnClickedBlunderthresholdhelp()
-{
-   CString sMessage = "Moves that are evaluated to be worse than the best move by the specified threshold will be "
-                      "counted as blunders.";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }
 

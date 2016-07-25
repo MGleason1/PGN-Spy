@@ -31,7 +31,6 @@ CAnalysisSettings::CAnalysisSettings()
    m_iForcedMoveCutoff = 50;
    m_bIncludeOnlyUnclearPositions = true;
    m_iUnclearPositionCutoff = 100;
-   m_iBlunderThreshold = 100;
    m_iEqualPositionThreshold = 200;
    m_iLosingThreshold = 500;
    m_iBookDepth = 10;
@@ -80,11 +79,6 @@ bool CAnalysisSettings::LoadSettingsFromFile()
       return false;
    sText = vXML.GetData();
    m_iUnclearPositionCutoff = atoi(sText);
-
-   if (!vXML.FindElem("BlunderThreshold"))
-      return false;
-   sText = vXML.GetData();
-   m_iBlunderThreshold = atoi(sText);
 
    if (!vXML.FindElem("EqualPositionThreshold"))
       return false;
@@ -154,8 +148,6 @@ bool CAnalysisSettings::SaveSettingsToFile()
       return false;
    if (!vXML.AddElem("UnclearPositionCutoff", m_iUnclearPositionCutoff))
       return false;
-   if (!vXML.AddElem("BlunderThreshold", m_iBlunderThreshold))
-      return false;
    if (!vXML.AddElem("EqualPositionThreshold", m_iEqualPositionThreshold))
       return false;
    if (!vXML.AddElem("LosingThreshold", m_iLosingThreshold))
@@ -193,7 +185,6 @@ bool CAnalysisSettings::LoadSettingsFromRegistry()
    m_iForcedMoveCutoff = theApp.GetProfileInt("PGNSpy", "ForcedMoveCutoff", 50);
    m_bIncludeOnlyUnclearPositions = theApp.GetProfileInt("PGNSpy", "IncludeOnlyUnclearPositions", 1) == 1;
    m_iUnclearPositionCutoff = theApp.GetProfileInt("PGNSpy", "UnclearPositionCutoff", 100);
-   m_iBlunderThreshold = theApp.GetProfileInt("PGNSpy", "BlunderThreshold", 100);
    m_iEqualPositionThreshold = theApp.GetProfileInt("PGNSpy", "EqualPositionThreshold", 200);
    m_iLosingThreshold = theApp.GetProfileInt("PGNSpy", "LosingThreshold", 500);
    m_iBookDepth = theApp.GetProfileInt("PGNSpy", "BookDepth", 10);
@@ -213,7 +204,6 @@ bool CAnalysisSettings::SaveSettingsToRegistry()
    theApp.WriteProfileInt("PGNSpy", "ForcedMoveCutoff", m_iForcedMoveCutoff);
    theApp.WriteProfileInt("PGNSpy", "IncludeOnlyUnclearPositions", m_bIncludeOnlyUnclearPositions ? 1 : 0);
    theApp.WriteProfileInt("PGNSpy", "UnclearPositionCutoff", m_iUnclearPositionCutoff);
-   theApp.WriteProfileInt("PGNSpy", "BlunderThreshold", m_iBlunderThreshold);
    theApp.WriteProfileInt("PGNSpy", "EqualPositionThreshold", m_iEqualPositionThreshold);
    theApp.WriteProfileInt("PGNSpy", "LosingThreshold", m_iLosingThreshold);
    theApp.WriteProfileInt("PGNSpy", "BookDepth", m_iBookDepth);
@@ -269,11 +259,6 @@ bool CPosition::IsUnclearPosition(int iVariation, int iUnclearPositionThreshold)
    if (m_avTopMoves[0].m_iScore > m_avTopMoves[iVariation + 1].m_iScore + iUnclearPositionThreshold)
       return false;
    return true;
-}
-
-bool CPosition::IsBlunder(int iBlunderThreshold)
-{
-   return GetCentipawnLoss() > iBlunderThreshold;
 }
 
 bool CPosition::IsEqualPosition(int iEqualPositionThreshold)
@@ -411,16 +396,17 @@ CStats::CStats()
 {
    m_iNumVariations = 0;
    m_iNumPositions = 0;
-   m_iBlunders = 0;
    m_iTotalCentipawnLoss = 0;
    m_aiCentipawnLosses.RemoveAll();
    m_dAvgCentipawnLoss = 0;
    m_dCentipawnLossStdDeviation = 0;
-   m_dMedianCPLoss = 0;
-   m_dThirdQuartileCPLoss = 0;
    m_i0CPLoss = 0;
    m_i10CPLoss = 0;
    m_i25CPLoss = 0;
+   m_i50CPLoss = 0;
+   m_i100CPLoss = 0;
+   m_i200CPLoss = 0;
+   m_i500CPLoss = 0;
 }
 
 void CStats::Initialize(const CAnalysisSettings &vSettings)
@@ -438,8 +424,6 @@ void CStats::Initialize(const CAnalysisSettings &vSettings)
 void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSettings)
 {
    m_iNumPositions++;
-   if (vPosition.IsBlunder(vSettings.m_iBlunderThreshold))
-      m_iBlunders++;
    m_iTotalCentipawnLoss += vPosition.GetCentipawnLoss();
 
    int iCPLossIndex = 0;
@@ -448,12 +432,20 @@ void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSetting
       iCPLossIndex++; //sort cp loss array highest to lowest
    m_aiCentipawnLosses.InsertAt(iCPLossIndex, iCPLoss);
 
-   if (iCPLoss <= 0)
+   if (iCPLoss > 0)
       m_i0CPLoss++;
-   if (iCPLoss <= 10)
+   if (iCPLoss > 10)
       m_i10CPLoss++;
-   if (iCPLoss <= 25)
+   if (iCPLoss > 25)
       m_i25CPLoss++;
+   if (iCPLoss > 50)
+      m_i50CPLoss++;
+   if (iCPLoss > 100)
+      m_i100CPLoss++;
+   if (iCPLoss > 200)
+      m_i200CPLoss++;
+   if (iCPLoss > 500)
+      m_i500CPLoss++;
 
    for (int i = 0; i < vSettings.m_iNumVariations; i++)
    {
@@ -480,31 +472,6 @@ void CStats::FinaliseStats()
       dTotalVariance += dDiffFromMean * dDiffFromMean;
    }
 
-   //calculate cp loss median and third quartile
-   if (m_aiCentipawnLosses.GetSize() == 0)
-   {
-      m_dMedianCPLoss = m_dThirdQuartileCPLoss = 0;
-   }
-   else
-   {
-      int iMedianIndex = m_aiCentipawnLosses.GetSize() / 2;
-      if (m_aiCentipawnLosses.GetSize() % 2 == 0) //even number, must take avg of two
-         m_dMedianCPLoss = (double)(m_aiCentipawnLosses[iMedianIndex] + m_aiCentipawnLosses[iMedianIndex - 1]) / 2.0;
-      else
-         m_dMedianCPLoss = m_aiCentipawnLosses[iMedianIndex];
-
-      int iQuartileIndex = (m_aiCentipawnLosses.GetSize() / 4) - 1; //cp loss array is sorted highest to lowest
-      if (iQuartileIndex < 0)
-         m_dThirdQuartileCPLoss = m_aiCentipawnLosses[0]; //fewer than four numbers, just take the first value
-      else
-      {
-         int iWeightLower = m_aiCentipawnLosses.GetSize() % 4;
-         double dHighValue = m_aiCentipawnLosses[iQuartileIndex] * (4 - iWeightLower);
-         double dLowValue = m_aiCentipawnLosses[iQuartileIndex + 1] * iWeightLower;
-         m_dThirdQuartileCPLoss = (dHighValue + dLowValue) / 4.0;
-      }
-   }
-
    double dVariance = dTotalVariance / (double)m_iNumPositions;
    m_dCentipawnLossStdDeviation = sqrt(dVariance);
 }
@@ -521,7 +488,7 @@ CString CStats::GetResultsText()
       for (int i = 0; i < m_iNumVariations; i++)
       {
          if (m_aiTMoves[i] == 0)
-            sLine.Format("T%i: 0/0", i);
+            sLine.Format("T%i: 0/0", i+1);
          else
          {
             double dFrac = ((double)m_aiTValues[i] / (double)m_aiTMoves[i]);
@@ -530,36 +497,57 @@ CString CStats::GetResultsText()
          }
          sResults += sLine + "\r\n";
       }
-      //0 CP loss
+      //>0 CP loss
       {
          double dFrac = ((double)m_i0CPLoss / (double)m_iNumPositions);
          double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
-         sLine.Format("0 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i0CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sLine.Format(">0 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i0CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
          sResults += sLine + "\r\n";
       }
-      //10 CP loss
+      //>10 CP loss
       {
          double dFrac = ((double)m_i10CPLoss / (double)m_iNumPositions);
          double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
-         sLine.Format("<=10 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i10CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sLine.Format(">10 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i10CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
          sResults += sLine + "\r\n";
       }
-      //25 CP loss
+      //>25 CP loss
       {
          double dFrac = ((double)m_i25CPLoss / (double)m_iNumPositions);
          double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
-         sLine.Format("<=25 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i25CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sLine.Format(">25 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i25CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
          sResults += sLine + "\r\n";
       }
-      //blunders
+      //>50 CP loss
       {
-         double dFrac = ((double)m_iBlunders / (double)m_iNumPositions);
+         double dFrac = ((double)m_i50CPLoss / (double)m_iNumPositions);
          double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
-         sLine.Format("Blunders: %i/%i; %.2f%% (std error %.2f)", m_iBlunders, m_iNumPositions, dFrac*100.0, dStdError);
+         sLine.Format(">50 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i50CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+      //>100 CP loss
+      {
+         double dFrac = ((double)m_i100CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format(">100 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i100CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+      //>200 CP loss
+      {
+         double dFrac = ((double)m_i200CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format(">200 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i200CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
+      //>500 CP loss
+      {
+         double dFrac = ((double)m_i500CPLoss / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format(">500 CP loss: %i/%i; %.2f%% (std error %.2f)", m_i500CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
          sResults += sLine + "\r\n";
       }
 
-      sLine.Format("CP loss mean %.2f, std deviation %.2f\r\nCP loss median %.2f, 3rd quartile %.2f", m_dAvgCentipawnLoss,m_dCentipawnLossStdDeviation, m_dMedianCPLoss, m_dThirdQuartileCPLoss);
+      sLine.Format("CP loss mean %.2f, std deviation %.2f", m_dAvgCentipawnLoss,m_dCentipawnLossStdDeviation);
       sResults += sLine + "\r\n";
    }
    return sResults;

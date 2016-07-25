@@ -68,7 +68,6 @@ public:
    afx_msg void OnBnClickedUnclearpositionhelp();
    afx_msg void OnBnClickedEqualpositionhelp();
    afx_msg void OnBnClickedLosingthresholdhelp();
-   afx_msg void OnBnClickedBlunderthresholdhelp();
    afx_msg void OnBnClickedNumvariationshelp();
    afx_msg void OnBnClickedExcludeforced();
    afx_msg void OnBnClickedIncludeonlyunclear();
