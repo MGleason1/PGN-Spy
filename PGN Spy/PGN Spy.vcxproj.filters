@@ -79,6 +79,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <Text Include="..\ReadMe.txt" />
   </ItemGroup>
 </Project>

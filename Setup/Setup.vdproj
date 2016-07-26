@@ -27,12 +27,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3A3BB70E350046DFB9E0F2D6900A8EB9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_4AF52385E97042CF8D7C3CADD683BE06"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -40,6 +34,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4C844B718A084A1C9DBEFF21515C9747"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4DF96AF194524E48A724A5D06AD2152A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -53,6 +53,24 @@
         {
         "MsmKey" = "8:_659F1DA154404367A4F6B0C67306587A"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65E2011ABEE0BB5EEAF62FFB9CD1DC96"
+        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_74E8AA55970DFD49EE85A5CAAB685669"
+        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7909641053B54E51B184AD694DA3C231"
+        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -77,6 +95,12 @@
         {
         "MsmKey" = "8:_BDBB114D33D642F5BC9808C2611A2B15"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BED37366D782C7445D6F4CE60C91890D"
+        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -110,6 +134,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
             }
         }
         "Release"
@@ -134,6 +166,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
             }
         }
     }
@@ -196,12 +236,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A3BB70E350046DFB9E0F2D6900A8EB9"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4AF52385E97042CF8D7C3CADD683BE06"
             {
-            "SourcePath" = "8:..\\PGN Spy\\ReadMe.txt"
-            "TargetName" = "8:ReadMe.txt"
+            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish 7 x64.exe"
+            "TargetName" = "8:stockfish 7 x64.exe"
             "Tag" = "8:"
-            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -216,12 +256,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4AF52385E97042CF8D7C3CADD683BE06"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DF96AF194524E48A724A5D06AD2152A"
             {
-            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish 7 x64.exe"
-            "TargetName" = "8:stockfish 7 x64.exe"
+            "SourcePath" = "8:..\\ReadMe.txt"
+            "TargetName" = "8:ReadMe.txt"
             "Tag" = "8:"
-            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
+            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -276,6 +316,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65E2011ABEE0BB5EEAF62FFB9CD1DC96"
+            {
+            "SourcePath" = "8:VCRUNTIME140D.dll"
+            "TargetName" = "8:VCRUNTIME140D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74E8AA55970DFD49EE85A5CAAB685669"
+            {
+            "SourcePath" = "8:gdiplus.dll"
+            "TargetName" = "8:gdiplus.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_896A1A449A48465B9D1C353DD6413E67"
             {
             "SourcePath" = "8:..\\..\\Binaries for release\\pgn-extract.exe"
@@ -314,6 +394,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BED37366D782C7445D6F4CE60C91890D"
+            {
+            "SourcePath" = "8:ucrtbased.dll"
+            "TargetName" = "8:ucrtbased.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3A0907CB85B4F209554E22EA0E3643D"
@@ -426,7 +526,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PGN Spy"
         "ProductCode" = "8:{584A7593-B064-4716-978F-4D03ACB67643}"
-        "PackageCode" = "8:{E3BBAC7F-5419-47BA-BD5D-AD1047562C4E}"
+        "PackageCode" = "8:{9FB48A99-4E36-4AC9-8043-74940B3F1F47}"
         "UpgradeCode" = "8:{00D42D50-2D9E-42A0-B420-DD266245F089}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -574,7 +674,7 @@
             "Icon" = "8:_659F1DA154404367A4F6B0C67306587A"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_778C206E48024C9CAAAF33CA262B35D8"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_2B24DB99B6FF4DF9ACCC715E904BC059"
             {
             "Name" = "8:ReadMe.txt"
             "Arguments" = "8:"
@@ -582,7 +682,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_3A3BB70E350046DFB9E0F2D6900A8EB9"
+            "Target" = "8:_4DF96AF194524E48A724A5D06AD2152A"
             "Folder" = "8:_18919B6D54BA4DB989DE9EE577CD0114"
             "WorkingFolder" = "8:_6BF4778150664D6598B870BFF223BF01"
             "Icon" = "8:"
@@ -762,8 +862,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:Copyright (C) 2016 Michael J. Gleason"
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -916,8 +1016,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:Copyright (C) 2016 Michael J. Gleason"
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -1012,6 +1112,20 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7909641053B54E51B184AD694DA3C231"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc140_debugmfc_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
             "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BDBB114D33D642F5BC9808C2611A2B15"
             {
             "UseDynamicProperties" = "11:TRUE"
@@ -1031,7 +1145,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_890F35534BC04477BF10F6A68E0C8C7A"
             {
-            "SourcePath" = "8:..\\Release\\PGN Spy.exe"
+            "SourcePath" = "8:..\\Debug\\PGN Spy.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
