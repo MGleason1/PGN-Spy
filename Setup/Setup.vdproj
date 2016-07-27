@@ -15,7 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_1BE3D08DA91249358D992257074440CF"
+        "MsmKey" = "8:_09C13F15758F4E5B9947234A5F07BB5A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0D7AE1368B8743C78244FBAAE77F0815"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -23,6 +29,12 @@
         {
         "MsmKey" = "8:_2BE538929E0147DF93F666FE61CC1DAC"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_317B261DB27745379BC63AF67C8E6875"
+        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -40,12 +52,6 @@
         "Entry"
         {
         "MsmKey" = "8:_4DF96AF194524E48A724A5D06AD2152A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4E68D97108174F348BDE65385C106B27"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -69,12 +75,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7909641053B54E51B184AD694DA3C231"
-        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -88,6 +88,12 @@
         "Entry"
         {
         "MsmKey" = "8:_986EBFED2EBC484C88AE1FD08FA49456"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_ADF0030D85B941E59668D15B3C50E3E6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -196,10 +202,30 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BE3D08DA91249358D992257074440CF"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09C13F15758F4E5B9947234A5F07BB5A"
             {
-            "SourcePath" = "8:..\\..\\Data sets\\Blitz\\grand chess tour blitz paris 2016.pgn"
-            "TargetName" = "8:grand chess tour blitz paris 2016.pgn"
+            "SourcePath" = "8:..\\..\\Data sets\\Blitz\\grand chess tour 5 2 blitz paris 2016.pgn"
+            "TargetName" = "8:grand chess tour 5 2 blitz paris 2016.pgn"
+            "Tag" = "8:"
+            "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D7AE1368B8743C78244FBAAE77F0815"
+            {
+            "SourcePath" = "8:..\\..\\Data sets\\Bullet\\Hikaru 1 0 Bullet.pgn"
+            "TargetName" = "8:Hikaru 1 0 Bullet.pgn"
             "Tag" = "8:"
             "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
             "Condition" = "8:"
@@ -262,26 +288,6 @@
             "TargetName" = "8:ReadMe.txt"
             "Tag" = "8:"
             "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E68D97108174F348BDE65385C106B27"
-            {
-            "SourcePath" = "8:..\\..\\Data sets\\Rapid\\grand chess tour rapid paris 2016.pgn"
-            "TargetName" = "8:grand chess tour rapid paris 2016.pgn"
-            "Tag" = "8:"
-            "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -382,6 +388,26 @@
             "TargetName" = "8:stockfish 7 32bit.exe"
             "Tag" = "8:"
             "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ADF0030D85B941E59668D15B3C50E3E6"
+            {
+            "SourcePath" = "8:..\\..\\Data sets\\Rapid\\grand chess tour 25 10 rapid paris 2016.pgn"
+            "TargetName" = "8:grand chess tour 25 10 rapid paris 2016.pgn"
+            "Tag" = "8:"
+            "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1098,11 +1124,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4C844B718A084A1C9DBEFF21515C9747"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_317B261DB27745379BC63AF67C8E6875"
             {
             "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC140_MFC_x86.msm"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc140_debugmfc_x86.msm"
                 "Properties"
                 {
                 }
@@ -1112,11 +1138,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7909641053B54E51B184AD694DA3C231"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4C844B718A084A1C9DBEFF21515C9747"
             {
             "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc140_debugmfc_x86.msm"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC140_MFC_x86.msm"
                 "Properties"
                 {
                 }
