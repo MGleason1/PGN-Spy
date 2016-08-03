@@ -39,6 +39,7 @@ CAnalysisDlg::CAnalysisDlg(CWnd* pParent /*=NULL*/)
    , m_iGamesWithErrors(0)
    , m_bShowResults(false)
    , m_bCancelled(false)
+   , m_bStatusChanged(true)
    , m_iTargetThreads(0)
    , m_iMaxThreads(0)
 {
@@ -120,7 +121,9 @@ void CAnalysisDlg::OnBnClickedCancel()
 
 void CAnalysisDlg::UpdateDisplay()
 {
-   UpdateData(FALSE);
+   if (m_bStatusChanged)
+      UpdateData(FALSE);
+   m_bStatusChanged = false;
 
    MSG msg;
    while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -145,6 +148,7 @@ bool CAnalysisDlg::ProcessGames()
 
    m_sStatusHistory = "Reading pgn file...";
    m_sStatus = m_sStatusHistory;
+   m_bStatusChanged = true;
    UpdateDisplay();
    //Pull games out of file
    bool bKeepLooping = true;
@@ -213,6 +217,7 @@ bool CAnalysisDlg::ProcessGames()
 
    m_sStatusHistory = "Creating temporary files...\r\n" + m_sStatusHistory;
    m_sStatus = m_sStatusHistory;
+   m_bStatusChanged = true;
    UpdateDisplay();
    //We now have a complete list of games; dump them to files
    for (int i = 0; i < avGamePGNs.GetSize(); i++)
@@ -259,6 +264,7 @@ bool CAnalysisDlg::ProcessGames()
    int iActiveProcesses = 0;
    int iNextGame = 0;
    bool bThreadsStillRunning = false;
+   m_bStatusChanged = true;
    while ((iNextGame < avGamePGNs.GetSize() || bThreadsStillRunning) && !m_bCancelled)
    {
       CString sTopLine;
@@ -286,6 +292,7 @@ bool CAnalysisDlg::ProcessGames()
             iActiveProcesses++;
             bThreadsStillRunning = true; //we're launching a new thread
             iNextGame++;
+            m_bStatusChanged = true;
             //bail out of loop; we'll check other processes next time through
             break;
          }
@@ -327,6 +334,7 @@ bool CAnalysisDlg::ProcessGames()
                   sStatusLine = "Encountered game with error";
             }
             m_sStatusHistory = sStatusLine + "\r\n" + m_sStatusHistory;
+            m_bStatusChanged = true;
             asResults[iCurThread].Empty();
             abErrors[iCurThread] = false;
 
@@ -543,7 +551,7 @@ bool CAnalysisDlg::LaunchAnalyser(CGamePGN vGamePGN, int iCurThread)
          ASSERT(false); //we should have discarded this game before this point
    }
    int iBookDepthPlies = m_vAnalysisSettings.m_iBookDepth * 2; //double book depth, since analyser uses plies, not moves
-   sCommandLine.Format("--bookdepth %i --searchdepth %i --searchmaxtime %i --searchmintime %i --variations %i %s--setoption Hash %i --engine \"%s\" \"%s\"",
+   sCommandLine.Format("--bookdepth %i --searchdepth %i --searchmaxtime %i --searchmintime %i --variations %i %s --setoption Hash %i --setoption Threads 1 --engine \"%s\" \"%s\"",
       iBookDepthPlies, m_vAnalysisSettings.m_iSearchDepth, m_vAnalysisSettings.m_iMaxTime,
       m_vAnalysisSettings.m_iMinTime, m_vAnalysisSettings.m_iNumVariations + 1, sWhiteOrBlack,
       m_vAnalysisSettings.m_iHashSize, m_vAnalysisSettings.m_sEnginePath, vGamePGN.m_sFileName);
@@ -607,6 +615,7 @@ void CAnalysisDlg::OnBnClickedDecreasethreads()
    else
       sStatusLine = "Analysis will be paused when all currently active threads are completed.\r\n";
    m_sStatusHistory = sStatusLine + m_sStatusHistory;
+   m_bStatusChanged = true;
    UpdateThreadControlButtons();
 }
 
@@ -622,5 +631,6 @@ void CAnalysisDlg::OnBnClickedIncreasethreads()
    CString sStatusLine;
    sStatusLine.Format("Number of threads increased to %i.\r\n", m_iTargetThreads);
    m_sStatusHistory = sStatusLine + m_sStatusHistory;
+   m_bStatusChanged = true;
    UpdateThreadControlButtons();
 }

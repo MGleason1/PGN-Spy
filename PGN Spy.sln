@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PGN Spy", "PGN Spy\PGN Spy.vcxproj", "{2BB5302E-46F1-465F-86ED-5C613B26449A}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{ECBF0281-BDB8-4586-8EE3-14C5366365BC}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PGN Spy", "Setup\Setup.vdproj", "{ECBF0281-BDB8-4586-8EE3-14C5366365BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

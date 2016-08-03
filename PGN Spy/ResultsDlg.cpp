@@ -99,7 +99,7 @@ void CResultsDlg::OnBnClickedSavedata()
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
    sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tMove Played\tDepth Searched\tT-number";
-   for (int i = 0; i < m_vSettings.m_iNumVariations; i++)
+   for (int i = 0; i < m_vSettings.m_iNumVariations+1; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
       sReport += sText;

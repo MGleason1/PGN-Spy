@@ -63,6 +63,7 @@ public:
    CString m_sStatusHistory;
    bool m_bShowResults;
    bool m_bCancelled;
+   bool m_bStatusChanged;
    int m_iTargetThreads;
    int m_iMaxThreads;
    CString m_sConvertedPGN;
