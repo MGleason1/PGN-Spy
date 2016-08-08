@@ -50,6 +50,7 @@ protected:
    DECLARE_MESSAGE_MAP()
 public:
    CString m_sInputFile;
+   CEngineSettings m_vEngineSettings;
    CAnalysisSettings m_vAnalysisSettings;
    afx_msg void OnBnClickedBrowseanalyse();
    afx_msg void OnBnClickedBrowseengine();

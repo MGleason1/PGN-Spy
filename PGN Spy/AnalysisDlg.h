@@ -50,7 +50,7 @@ public:
    afx_msg void OnBnClickedCancel();
    afx_msg void OnTimer(UINT_PTR nIDEvent);
 
-   CAnalysisSettings m_vAnalysisSettings;
+   CEngineSettings m_vEngineSettings;
    int m_iGamesWithErrors;
    CArray<HANDLE, HANDLE> m_ahChildStdInRead;
    CArray<HANDLE, HANDLE> m_ahChildStdInWrite;
@@ -71,7 +71,7 @@ public:
    bool ProcessGames();
    bool LaunchAnalyser(CGamePGN vGamePGN, int iCurThread);
    void ReadFromThread(int iThread, CString IN OUT &rsResults, bool IN OUT &rbError);
-   bool ProcessOutput(CString sOutput, BOOL bExcludeForcedMoves);
+   bool ProcessOutput(CString sOutput);
    afx_msg void OnBnClickedDecreasethreads();
    afx_msg void OnBnClickedIncreasethreads();
 };

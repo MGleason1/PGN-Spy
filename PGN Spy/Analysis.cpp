@@ -34,142 +34,6 @@ CAnalysisSettings::CAnalysisSettings()
    m_iEqualPositionThreshold = 200;
    m_iLosingThreshold = 500;
    m_iBookDepth = 10;
-   m_iNumVariations = 3;
-   m_iSearchDepth = 20;
-   m_iMaxTime = 20000;
-   m_iMinTime = 10000;
-   m_iHashSize = 24;
-
-   //calc number of cores and divide by two; engines aren't great with hyper-threading; checking for
-   //hyper-threading seems to be a little more complex, so just assume it's present for setting the default
-   //subtract one to allow for the OS
-   SYSTEM_INFO vSysInfo;
-   GetSystemInfo(&vSysInfo);
-   m_iNumThreads = max((int)vSysInfo.dwNumberOfProcessors / 2, 1);
-}
-
-bool CAnalysisSettings::LoadSettingsFromFile()
-{
-   CMarkup vXML;
-   CString sText;
-   if (!vXML.Load(GetSettingsFilePath()))
-      return false;
-
-   if (!vXML.FindElem()) //find root <settings> elem
-      return false;
-   if (!vXML.IntoElem())
-      return false;
-
-   if (!vXML.FindElem("ExcludeForcedMoves"))
-      return false;
-   sText = vXML.GetData();
-   m_bExcludeForcedMoves = sText.CompareNoCase("yes") == 0;
-
-   if (!vXML.FindElem("ForcedMoveCutoff"))
-      return false;
-   sText = vXML.GetData();
-   m_iForcedMoveCutoff = atoi(sText);
-
-   if (!vXML.FindElem("IncludeOnlyUnclearPositions"))
-      return false;
-   sText = vXML.GetData();
-   m_bIncludeOnlyUnclearPositions = sText.CompareNoCase("yes") == 0;
-
-   if (!vXML.FindElem("UnclearPositionCutoff"))
-      return false;
-   sText = vXML.GetData();
-   m_iUnclearPositionCutoff = atoi(sText);
-
-   if (!vXML.FindElem("EqualPositionThreshold"))
-      return false;
-   sText = vXML.GetData();
-   m_iEqualPositionThreshold = atoi(sText);
-
-   if (!vXML.FindElem("LosingThreshold"))
-      return false;
-   sText = vXML.GetData();
-   m_iLosingThreshold = atoi(sText);
-
-   if (!vXML.FindElem("BookDepth"))
-      return false;
-   sText = vXML.GetData();
-   m_iBookDepth = atoi(sText);
-
-   if (!vXML.FindElem("EnginePath"))
-      return false;
-   m_sEnginePath = vXML.GetData();
-
-   if (!vXML.FindElem("NumVariations"))
-      return false;
-   sText = vXML.GetData();
-   m_iNumVariations = atoi(sText);
-
-   if (!vXML.FindElem("SearchDepth"))
-      return false;
-   sText = vXML.GetData();
-   m_iSearchDepth = atoi(sText);
-
-   if (!vXML.FindElem("MaxTime"))
-      return false;
-   sText = vXML.GetData();
-   m_iMaxTime = atoi(sText);
-
-   if (!vXML.FindElem("MinTime"))
-      return false;
-   sText = vXML.GetData();
-   m_iMinTime = atoi(sText);
-
-   if (!vXML.FindElem("NumThreads"))
-      return false;
-   sText = vXML.GetData();
-   m_iNumThreads = atoi(sText);
-
-   if (!vXML.FindElem("HashSize"))
-      return false;
-   sText = vXML.GetData();
-   m_iHashSize = atoi(sText);
-
-   return true;
-}
-
-bool CAnalysisSettings::SaveSettingsToFile()
-{
-   CMarkup vXML;
-
-   if (!vXML.AddElem("settings"))
-      return false;
-   if (!vXML.IntoElem())
-      return false;
-   if (!vXML.AddElem("ExcludeForcedMoves", m_bExcludeForcedMoves ? "yes" : "no"))
-      return false;
-   if (!vXML.AddElem("ForcedMoveCutoff", m_iForcedMoveCutoff))
-      return false;
-   if (!vXML.AddElem("IncludeOnlyUnclearPositions", m_bIncludeOnlyUnclearPositions ? "yes" : "no"))
-      return false;
-   if (!vXML.AddElem("UnclearPositionCutoff", m_iUnclearPositionCutoff))
-      return false;
-   if (!vXML.AddElem("EqualPositionThreshold", m_iEqualPositionThreshold))
-      return false;
-   if (!vXML.AddElem("LosingThreshold", m_iLosingThreshold))
-      return false;
-   if (!vXML.AddElem("BookDepth", m_iBookDepth))
-      return false;
-   if (!vXML.AddElem("EnginePath", m_sEnginePath))
-      return false;
-   if (!vXML.AddElem("NumVariations", m_iNumVariations))
-      return false;
-   if (!vXML.AddElem("SearchDepth", m_iSearchDepth))
-      return false;
-   if (!vXML.AddElem("MaxTime", m_iMaxTime))
-      return false;
-   if (!vXML.AddElem("MinTime", m_iMinTime))
-      return false;
-   if (!vXML.AddElem("NumThreads", m_iNumThreads))
-      return false;
-   if (!vXML.AddElem("HashSize", m_iHashSize))
-      return false;
-
-   return vXML.Save(GetSettingsFilePath());
 }
 
 bool CAnalysisSettings::LoadSettingsFromRegistry()
@@ -188,13 +52,6 @@ bool CAnalysisSettings::LoadSettingsFromRegistry()
    m_iEqualPositionThreshold = theApp.GetProfileInt("PGNSpy", "EqualPositionThreshold", 200);
    m_iLosingThreshold = theApp.GetProfileInt("PGNSpy", "LosingThreshold", 500);
    m_iBookDepth = theApp.GetProfileInt("PGNSpy", "BookDepth", 10);
-   m_sEnginePath = theApp.GetProfileString("PGNSpy", "EnginePath", "");
-   m_iNumVariations = theApp.GetProfileInt("PGNSpy", "NumVariations", 3);
-   m_iSearchDepth = theApp.GetProfileInt("PGNSpy", "SearchDepth", 20);
-   m_iMaxTime = theApp.GetProfileInt("PGNSpy", "MaxTime", 20000);
-   m_iMinTime = theApp.GetProfileInt("PGNSpy", "MinTime", 10000);
-   m_iNumThreads = theApp.GetProfileInt("PGNSpy", "NumThreads", iDefaultThreads);
-   m_iHashSize = theApp.GetProfileInt("PGNSpy", "HashSize", 24);
    return true;
 }
 
@@ -206,6 +63,49 @@ bool CAnalysisSettings::SaveSettingsToRegistry()
    theApp.WriteProfileInt("PGNSpy", "UnclearPositionCutoff", m_iUnclearPositionCutoff);
    theApp.WriteProfileInt("PGNSpy", "EqualPositionThreshold", m_iEqualPositionThreshold);
    theApp.WriteProfileInt("PGNSpy", "LosingThreshold", m_iLosingThreshold);
+   theApp.WriteProfileInt("PGNSpy", "BookDepth", m_iBookDepth);
+   return true;
+}
+
+CEngineSettings::CEngineSettings()
+{
+   m_iBookDepth = 10;
+   m_iNumVariations = 3;
+   m_iSearchDepth = 20;
+   m_iMaxTime = 20000;
+   m_iMinTime = 10000;
+   m_iHashSize = 24;
+
+   //calc number of cores and divide by two; engines aren't great with hyper-threading; checking for
+   //hyper-threading seems to be a little more complex, so just assume it's present for setting the default
+   //subtract one to allow for the OS
+   SYSTEM_INFO vSysInfo;
+   GetSystemInfo(&vSysInfo);
+   m_iNumThreads = max((int)vSysInfo.dwNumberOfProcessors / 2, 1);
+}
+
+bool CEngineSettings::LoadSettingsFromRegistry()
+{
+   //calc number of cores and divide by two; engines aren't great with hyper-threading; checking for
+   //hyper-threading seems to be a little more complex, so just assume it's present for setting the default
+   //subtract one to allow for the OS
+   SYSTEM_INFO vSysInfo;
+   GetSystemInfo(&vSysInfo);
+   int iDefaultThreads = max((int)vSysInfo.dwNumberOfProcessors / 2, 1);
+
+   m_iBookDepth = theApp.GetProfileInt("PGNSpy", "BookDepth", 10);
+   m_sEnginePath = theApp.GetProfileString("PGNSpy", "EnginePath", "");
+   m_iNumVariations = theApp.GetProfileInt("PGNSpy", "NumVariations", 3);
+   m_iSearchDepth = theApp.GetProfileInt("PGNSpy", "SearchDepth", 20);
+   m_iMaxTime = theApp.GetProfileInt("PGNSpy", "MaxTime", 20000);
+   m_iMinTime = theApp.GetProfileInt("PGNSpy", "MinTime", 10000);
+   m_iNumThreads = theApp.GetProfileInt("PGNSpy", "NumThreads", iDefaultThreads);
+   m_iHashSize = theApp.GetProfileInt("PGNSpy", "HashSize", 24);
+   return true;
+}
+
+bool CEngineSettings::SaveSettingsToRegistry()
+{
    theApp.WriteProfileInt("PGNSpy", "BookDepth", m_iBookDepth);
    theApp.WriteProfileString("PGNSpy", "EnginePath", m_sEnginePath);
    theApp.WriteProfileInt("PGNSpy", "NumVariations", m_iNumVariations);
@@ -409,7 +309,7 @@ CStats::CStats()
    m_i500CPLoss = 0;
 }
 
-void CStats::Initialize(const CAnalysisSettings &vSettings)
+void CStats::Initialize(const CEngineSettings &vSettings)
 {
    m_iNumVariations = vSettings.m_iNumVariations;
    m_aiTValues.SetSize(vSettings.m_iNumVariations + 1);
@@ -447,7 +347,7 @@ void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSetting
    if (iCPLoss > 500)
       m_i500CPLoss++;
 
-   for (int i = 0; i < vSettings.m_iNumVariations; i++)
+   for (int i = 0; i < m_iNumVariations; i++)
    {
       if (vSettings.m_bExcludeForcedMoves && vPosition.IsForcedMove(i, vSettings.m_iForcedMoveCutoff))
          break; //exclude forced moves

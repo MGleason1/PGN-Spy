@@ -54,6 +54,5 @@ extern CPGNSpyApp theApp;
 
 CString GetConverterFilePath();
 CString GetAnalyserFilePath();
-CString GetSettingsFilePath();
 CString GetConvertedPGNFilePath();
 CString GetTemporaryPGNFilePath(int i);

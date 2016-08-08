@@ -98,21 +98,21 @@ void CPGNSpyDlg::DoDataExchange(CDataExchange* pDX)
 {
    CDialog::DoDataExchange(pDX);
    DDX_Text(pDX, IDC_INPUTANALYSE, m_sInputFile);
-   DDX_Text(pDX, IDC_PLAYER, m_vAnalysisSettings.m_sPlayerName);
-   DDX_Text(pDX, IDC_ENGINE, m_vAnalysisSettings.m_sEnginePath);
-   DDX_Text(pDX, IDC_SEARCHDEPTH, m_vAnalysisSettings.m_iSearchDepth);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iSearchDepth, 1, 50);
-   DDX_Text(pDX, IDC_BOOKDEPTH, m_vAnalysisSettings.m_iBookDepth);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iBookDepth, 0, 30);
-   DDX_Text(pDX, IDC_NUMTHREADS, m_vAnalysisSettings.m_iNumThreads);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iNumThreads, 1, 128);
+   DDX_Text(pDX, IDC_PLAYER, m_vEngineSettings.m_sPlayerName);
+   DDX_Text(pDX, IDC_ENGINE, m_vEngineSettings.m_sEnginePath);
+   DDX_Text(pDX, IDC_SEARCHDEPTH, m_vEngineSettings.m_iSearchDepth);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iSearchDepth, 1, 50);
+   DDX_Text(pDX, IDC_BOOKDEPTH, m_vEngineSettings.m_iBookDepth);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iBookDepth, 0, 30);
+   DDX_Text(pDX, IDC_NUMTHREADS, m_vEngineSettings.m_iNumThreads);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iNumThreads, 1, 128);
    DDX_Check(pDX, IDC_EXCLUDEFORCED, m_vAnalysisSettings.m_bExcludeForcedMoves);
-   DDX_Text(pDX, IDC_MINTIME, m_vAnalysisSettings.m_iMinTime);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iMinTime, 1, 60000);
-   DDX_Text(pDX, IDC_MAXTIME, m_vAnalysisSettings.m_iMaxTime);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iMaxTime, 1, 60000);
-   DDX_Text(pDX, IDC_HASHSIZE, m_vAnalysisSettings.m_iHashSize);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iHashSize, 1, 8192);
+   DDX_Text(pDX, IDC_MINTIME, m_vEngineSettings.m_iMinTime);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iMinTime, 1, 60000);
+   DDX_Text(pDX, IDC_MAXTIME, m_vEngineSettings.m_iMaxTime);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iMaxTime, 1, 60000);
+   DDX_Text(pDX, IDC_HASHSIZE, m_vEngineSettings.m_iHashSize);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iHashSize, 1, 8192);
    DDX_Text(pDX, IDC_FORCEDMOVECUTOFF, m_vAnalysisSettings.m_iForcedMoveCutoff);
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iForcedMoveCutoff, 25, 10000);
    DDX_Check(pDX, IDC_INCLUDEONLYUNCLEAR, m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions);
@@ -122,8 +122,8 @@ void CPGNSpyDlg::DoDataExchange(CDataExchange* pDX)
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iEqualPositionThreshold, 25, 10000);
    DDX_Text(pDX, IDC_LOSINGPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iLosingThreshold);
    DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iLosingThreshold, 25, 10000);
-   DDX_Text(pDX, IDC_VARIATIONS, m_vAnalysisSettings.m_iNumVariations);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iNumVariations, 1, 10);
+   DDX_Text(pDX, IDC_VARIATIONS, m_vEngineSettings.m_iNumVariations);
+   DDV_MinMaxInt(pDX, m_vEngineSettings.m_iNumVariations, 1, 10);
 }
 
 BEGIN_MESSAGE_MAP(CPGNSpyDlg, CDialog)
@@ -181,8 +181,10 @@ BOOL CPGNSpyDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
-   if (!m_vAnalysisSettings.LoadSettingsFromRegistry()) //load settings from file
-      m_vAnalysisSettings = CAnalysisSettings(); //failed to load, so restore defaults
+   if (!m_vEngineSettings.LoadSettingsFromRegistry())
+      m_vEngineSettings = CEngineSettings(); //failed to load, so restore defaults
+   if (!m_vAnalysisSettings.LoadSettingsFromRegistry())
+      m_vAnalysisSettings = CAnalysisSettings(); //failed to load, so restore defaults;
    UpdateData(FALSE);
 
    DisableInvalidSettings();
@@ -257,7 +259,7 @@ void CPGNSpyDlg::OnBnClickedBrowseengine()
    CFileDialog vFileDialog(TRUE,"exe","*.exe",OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT,"Chess Engines (*.exe)|*.exe|All files (*.*)|*.*||",this);
    if (vFileDialog.DoModal() != IDOK)
       return;
-   m_vAnalysisSettings.m_sEnginePath = vFileDialog.GetPathName();
+   m_vEngineSettings.m_sEnginePath = vFileDialog.GetPathName();
    UpdateData(FALSE);
 }
 
@@ -315,7 +317,7 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
    //file is converted; now process it
    CAnalysisDlg vAnalyserDlg;
    vAnalyserDlg.m_sConvertedPGN = sTemporaryFile;
-   vAnalyserDlg.m_vAnalysisSettings = m_vAnalysisSettings;
+   vAnalyserDlg.m_vEngineSettings = m_vEngineSettings;
    vAnalyserDlg.DoModal();
 
    //delete temporary file
@@ -327,7 +329,8 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
    //now launch the window to process and display the results
    CResultsDlg vResultsDlg;
    vResultsDlg.m_avGames.Copy(vAnalyserDlg.m_avGames);
-   vResultsDlg.m_vSettings = m_vAnalysisSettings;
+   vResultsDlg.m_vEngineSettings = m_vEngineSettings;
+   vResultsDlg.m_vAnalysisSettings = m_vAnalysisSettings;
    vResultsDlg.DoModal();
 }
 
@@ -336,7 +339,7 @@ void CPGNSpyDlg::OnBnClickedSavesettings()
    if (!ValidateSettings())
       return;
 
-   if (!m_vAnalysisSettings.SaveSettingsToRegistry())
+   if (!m_vEngineSettings.SaveSettingsToRegistry())
       MessageBox("Failed to save settings.", "PGN Spy", MB_ICONEXCLAMATION);
    else
       MessageBox("Settings saved.", "PGN Spy", MB_ICONINFORMATION);
@@ -347,7 +350,7 @@ bool CPGNSpyDlg::ValidateSettings()
    if (!UpdateData())
       return false;
 
-   if (m_vAnalysisSettings.m_iMinTime > m_vAnalysisSettings.m_iMaxTime)
+   if (m_vEngineSettings.m_iMinTime > m_vEngineSettings.m_iMaxTime)
    {
       MessageBox("The minimum time for analysis must not exceed the maximum time.", "PGN Spy", MB_ICONEXCLAMATION);
       return false;
@@ -359,7 +362,7 @@ bool CPGNSpyDlg::ValidateSettings()
       return false;
    }
 
-   if (!PathFileExists(m_vAnalysisSettings.m_sEnginePath))
+   if (!PathFileExists(m_vEngineSettings.m_sEnginePath))
    {
       MessageBox("The specified engine does not exist.", "PGN Spy", MB_ICONEXCLAMATION);
       return false;
@@ -367,7 +370,7 @@ bool CPGNSpyDlg::ValidateSettings()
 
    SYSTEM_INFO vSysInfo;
    GetSystemInfo(&vSysInfo);
-   if (m_vAnalysisSettings.m_iNumThreads > (int)vSysInfo.dwNumberOfProcessors)
+   if (m_vEngineSettings.m_iNumThreads > (int)vSysInfo.dwNumberOfProcessors)
    {
       MessageBox("You have entered more threads than the number of processors present in your system.", "PGN Spy", MB_ICONEXCLAMATION);
       return false;

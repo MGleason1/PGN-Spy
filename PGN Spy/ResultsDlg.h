@@ -51,7 +51,8 @@ public:
    void CalculateStats();
    CString m_sResults;
    CArray<CGame, CGame> m_avGames;
-   CAnalysisSettings m_vSettings;
+   CEngineSettings m_vEngineSettings;
+   CAnalysisSettings m_vAnalysisSettings;
    CStats m_vUndecidedPositions;
    CStats m_vLosingPositions;
 };

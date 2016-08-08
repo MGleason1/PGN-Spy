@@ -62,8 +62,6 @@ BOOL CResultsDlg::OnInitDialog()
 
    CalculateStats();
 
-   UpdateData(FALSE);
-
    return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -99,7 +97,7 @@ void CResultsDlg::OnBnClickedSavedata()
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
    sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tMove Played\tDepth Searched\tT-number";
-   for (int i = 0; i < m_vSettings.m_iNumVariations+1; i++)
+   for (int i = 0; i < m_vEngineSettings.m_iNumVariations+1; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
       sReport += sText;
@@ -116,7 +114,7 @@ void CResultsDlg::OnBnClickedSavedata()
 
          //got all game data, now get move data
          //move number and coordinates
-         sText.Format("%i\t", iPosition + m_vSettings.m_iBookDepth + 1);
+         sText.Format("%i\t", iPosition + m_vEngineSettings.m_iBookDepth + 1);
          sLine += sText + pPosition->m_avTopMoves[pPosition->m_iMovePlayed].m_sMove + "\t";
          //max depth searched
          int iMaxDepth = 0;
@@ -134,7 +132,7 @@ void CResultsDlg::OnBnClickedSavedata()
             sText.Format("%i\t", pPosition->m_avTopMoves[iMove].m_iScore);
             sLine += sText;
          }
-         for (; iMove < m_vSettings.m_iNumVariations + 1; iMove++)
+         for (; iMove < m_vEngineSettings.m_iNumVariations + 1; iMove++)
             sLine += "N/A\t";
          sReport += "\r\n" + sLine;
       }
@@ -157,8 +155,8 @@ void CResultsDlg::OnBnClickedSavedata()
 
 void CResultsDlg::CalculateStats()
 {
-   m_vUndecidedPositions.Initialize(m_vSettings);
-   m_vLosingPositions.Initialize(m_vSettings);
+   m_vUndecidedPositions.Initialize(m_vEngineSettings);
+   m_vLosingPositions.Initialize(m_vEngineSettings);
 
    //calculate results
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
@@ -166,10 +164,10 @@ void CResultsDlg::CalculateStats()
       for (int iPosition = 0; iPosition < m_avGames[iGame].m_avPositions.GetSize(); iPosition++)
       {
          CPosition *pPosition = &m_avGames[iGame].m_avPositions[iPosition];
-         if (pPosition->IsEqualPosition(m_vSettings.m_iEqualPositionThreshold))
-            m_vUndecidedPositions.AddPosition(*pPosition, m_vSettings);
-         if (pPosition->IsLosingPosition(m_vSettings.m_iEqualPositionThreshold, m_vSettings.m_iLosingThreshold))
-            m_vLosingPositions.AddPosition(*pPosition, m_vSettings);
+         if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
+            m_vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+         if (pPosition->IsLosingPosition(m_vAnalysisSettings.m_iEqualPositionThreshold, m_vAnalysisSettings.m_iLosingThreshold))
+            m_vLosingPositions.AddPosition(*pPosition, m_vAnalysisSettings);
       }
    }
 
@@ -182,4 +180,6 @@ void CResultsDlg::CalculateStats()
    m_sResults += m_vUndecidedPositions.GetResultsText() + "\r\n";
    m_sResults += "LOSING POSITIONS\r\n";
    m_sResults += m_vLosingPositions.GetResultsText();
+
+   UpdateData(FALSE);
 }

@@ -114,11 +114,6 @@ CString GetAnalyserFilePath()
    return theApp.m_sDataFolder + "uci-analyser.exe";
 }
 
-CString GetSettingsFilePath()
-{
-   return theApp.m_sDataFolder + "settings.xml";
-}
-
 CString GetConvertedPGNFilePath()
 {
    char sTempPath[500];

@@ -26,12 +26,10 @@ class CAnalysisSettings
 {
 public:
    CAnalysisSettings();
-   bool LoadSettingsFromFile();
-   bool SaveSettingsToFile();
    bool LoadSettingsFromRegistry();
    bool SaveSettingsToRegistry();
 
-   CString m_sPlayerName;
+   //analysis settings that are saved
    BOOL m_bExcludeForcedMoves;
    int m_iForcedMoveCutoff; //in centipawns, will exclude moves where the second move is this much worse than the best
    BOOL m_bIncludeOnlyUnclearPositions;
@@ -39,7 +37,20 @@ public:
    int m_iBlunderThreshold; //in centipawns, moves that lose more than this are considered blunders
    int m_iEqualPositionThreshold; //in centipawns, restricts analysis to positions where neither side is winning by more than this value
    int m_iLosingThreshold; //in centipawns, restricts analysis to positions where the side in question is losing by more than the equal position threshold, but by less than this value
-   int m_iBookDepth;
+
+   //temporary filters
+   CString m_sPlayerName;
+   int m_iBookDepth; //cannot be shallower than the engine setting
+};
+
+class CEngineSettings
+{
+public:
+   CEngineSettings();
+   bool LoadSettingsFromRegistry();
+   bool SaveSettingsToRegistry();
+
+   //engine settings
    CString m_sEnginePath;
    int m_iNumVariations;
    int m_iSearchDepth;
@@ -47,6 +58,10 @@ public:
    int m_iMinTime;
    int m_iNumThreads;
    int m_iHashSize; //in MB
+   int m_iBookDepth;
+
+   //analysis settings that are fed to the analyser
+   CString m_sPlayerName;
 };
 
 class CMove
@@ -114,7 +129,7 @@ public:
    double m_dAvgCentipawnLoss;
    double m_dCentipawnLossStdDeviation;
 
-   void Initialize(const CAnalysisSettings &vSettings);
+   void Initialize(const CEngineSettings &vSettings);
    void AddPosition(CPosition &vPosition, const CAnalysisSettings &vSettings);
    void FinaliseStats();
    CString GetResultsText();
