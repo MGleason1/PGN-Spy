@@ -59,7 +59,7 @@ bool runEngine(vector<string> files);
 void outputTag(const string& tagLine);
 void saveEvaluation(Evaluation *ev, const string& info);
 bool haveEvaluationForMove(const string &move);
-bool showEvaluationsForMove(const string &move);
+bool showEvaluationsForMove(const string &move, bool white);
 bool annotateMove(const string &playedMove);
 void showUsage(const char *programName);
 bool isResult(const string& move);
@@ -529,7 +529,7 @@ void sendGame(vector<string> &movelist, const string& fenstring, int bookDepth) 
             if (annotate) {
                 playedMoveEvaluated = annotateMove(playedMove);
             } else {
-                playedMoveEvaluated = showEvaluationsForMove(playedMove);
+                playedMoveEvaluated = showEvaluationsForMove(playedMove, white);
             }
 	    if(!playedMoveEvaluated) {
 		cerr << "Internal error: " << playedMove <<
@@ -618,12 +618,16 @@ bool haveEvaluationForMove(const string &move) {
  * given played move.
  * Return whether the played move was evaluated.
  */
-bool showEvaluationsForMove(const string &playedMove) {
+bool showEvaluationsForMove(const string &playedMove, bool white) {
     cout << "<move>" << endl;
     cout << "<played";
     // cout << " time = " << '"' << evaluations[0]->getTime() << '"' ;
     cout << '>';
     cout << playedMove << "</played>" << endl;
+
+    cout << "<white>";
+    cout << (white) ? "1" : "0";
+    cout << "</white>" << endl;
 
     // Whether the playedMove was one of those evaluated.
     bool playedMoveEvaluated = false;
