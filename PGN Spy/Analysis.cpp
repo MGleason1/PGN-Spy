@@ -25,6 +25,24 @@
 #include "PGN Spy.h"
 #include "Markup.h"
 
+void AddStringIfNotFound(CString sValue, CStringArray &rasArray, CArray<int, int> &raiCountArray)
+{
+   bool bFound = false;
+   ASSERT(raiCountArray.GetSize() == rasArray.GetSize());
+   for (int i = 0; i < rasArray.GetSize(); i++)
+   {
+      if (sValue.CompareNoCase(rasArray[i]) == 0)
+      {
+         raiCountArray[i]++; //increment counter
+         return;
+      }
+   }
+
+   //if we reach here, we didn't find it; add it
+   rasArray.Add(sValue);
+   raiCountArray.Add(1);
+}
+
 CAnalysisSettings::CAnalysisSettings()
 {
    m_bExcludeForcedMoves = true;
@@ -33,7 +51,12 @@ CAnalysisSettings::CAnalysisSettings()
    m_iUnclearPositionCutoff = 100;
    m_iEqualPositionThreshold = 200;
    m_iLosingThreshold = 500;
-   m_iBookDepth = 10;
+
+   //temporary filters
+   m_iMoveNumMin = 11;
+   m_iMoveNumMax = 10000;
+   m_bWhiteOnly = false;
+   m_bBlackOnly = false;
 }
 
 bool CAnalysisSettings::LoadSettingsFromRegistry()
@@ -51,7 +74,6 @@ bool CAnalysisSettings::LoadSettingsFromRegistry()
    m_iUnclearPositionCutoff = theApp.GetProfileInt("PGNSpy", "UnclearPositionCutoff", 100);
    m_iEqualPositionThreshold = theApp.GetProfileInt("PGNSpy", "EqualPositionThreshold", 200);
    m_iLosingThreshold = theApp.GetProfileInt("PGNSpy", "LosingThreshold", 500);
-   m_iBookDepth = theApp.GetProfileInt("PGNSpy", "BookDepth", 10);
    return true;
 }
 
@@ -63,7 +85,6 @@ bool CAnalysisSettings::SaveSettingsToRegistry()
    theApp.WriteProfileInt("PGNSpy", "UnclearPositionCutoff", m_iUnclearPositionCutoff);
    theApp.WriteProfileInt("PGNSpy", "EqualPositionThreshold", m_iEqualPositionThreshold);
    theApp.WriteProfileInt("PGNSpy", "LosingThreshold", m_iLosingThreshold);
-   theApp.WriteProfileInt("PGNSpy", "BookDepth", m_iBookDepth);
    return true;
 }
 
@@ -127,6 +148,7 @@ CMove::CMove()
 CPosition::CPosition()
 {
    m_iMovePlayed = 0;
+   m_bWhite = false;
 }
 
 CPosition::CPosition(const CPosition &rSrc)
@@ -137,6 +159,7 @@ CPosition::CPosition(const CPosition &rSrc)
 CPosition &CPosition::operator=(const CPosition &rSrc)
 {
    m_iMovePlayed = rSrc.m_iMovePlayed;
+   m_bWhite = rSrc.m_bWhite;
    m_avTopMoves.Copy(rSrc.m_avTopMoves);
    return *this;
 }
@@ -250,6 +273,7 @@ bool CGame::LoadGame(CString sGameText)
    {
       CPosition vPosition;
       CString sMovePlayed;
+      CString sText;
       if (!vGame.IntoElem())
          return false;
       if (!vGame.FindElem("played"))
@@ -257,6 +281,10 @@ bool CGame::LoadGame(CString sGameText)
       sMovePlayed = vGame.GetData();
       if (sMovePlayed.IsEmpty())
          return false;
+      if (!vGame.FindElem("white"))
+         return false;
+      sText = vGame.GetData();
+      vPosition.m_bWhite = atoi(sText) == 1;
       while (vGame.FindElem("evaluation"))
       {
          //find all moves and their evaluation
@@ -264,7 +292,6 @@ bool CGame::LoadGame(CString sGameText)
          vMove.m_sMove = vGame.GetAttrib("move");
          if (vMove.m_sMove.CompareNoCase(sMovePlayed) == 0)
             vPosition.m_iMovePlayed = vPosition.m_avTopMoves.GetSize();//new move will be inserted at this point, so using GetSize will be valid
-         CString sText;
          sText = vGame.GetAttrib("depth");
          vMove.m_iDepth = atoi(sText);
          sText = vGame.GetAttrib("time");
@@ -294,6 +321,11 @@ bool CGame::LoadGame(CString sGameText)
 
 CStats::CStats()
 {
+   ZeroAll();
+}
+
+void CStats::ZeroAll()
+{
    m_iNumVariations = 0;
    m_iNumPositions = 0;
    m_iTotalCentipawnLoss = 0;
@@ -311,6 +343,7 @@ CStats::CStats()
 
 void CStats::Initialize(const CEngineSettings &vSettings)
 {
+   ZeroAll();
    m_iNumVariations = vSettings.m_iNumVariations;
    m_aiTValues.SetSize(vSettings.m_iNumVariations + 1);
    m_aiTMoves.SetSize(vSettings.m_iNumVariations + 1);

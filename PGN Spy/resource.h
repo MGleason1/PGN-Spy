@@ -13,7 +13,9 @@
 #define IDC_BROWSEANALYSE               1006
 #define IDC_RUNANALYSIS                 1007
 #define IDC_PLAYER                      1008
+#define IDC_OPPONENT                    1009
 #define IDC_ENGINE                      1010
+#define IDC_EVENT                       1010
 #define IDC_BROWSEENGINE                1011
 #define IDC_SEARCHDEPTH                 1012
 #define IDC_BOOKDEPTH                   1013
@@ -21,9 +23,13 @@
 #define IDC_EXCLUDEFORCED               1015
 #define IDC_HELPPLAYER                  1016
 #define IDC_HELPDEPTH                   1017
+#define IDC_HELPOPPONENT                1017
 #define IDC_HELPBOOKDEPTH               1018
+#define IDC_HELPEVENT                   1018
 #define IDC_HELPTHREADS                 1019
+#define IDC_HELPMOVERANGEMAX            1019
 #define IDC_MINTIME                     1020
+#define IDC_HELPMOVERANGEMIN            1020
 #define IDC_MAXTIME                     1021
 #define IDC_HELPMINTIME                 1022
 #define IDC_HELPMAXTIME                 1023
@@ -49,8 +55,14 @@
 #define IDC_STATUS                      1045
 #define IDC_CREDITS                     1047
 #define IDC_DECREASETHREADS             1048
-#define IDC_BUTTON2                     1049
 #define IDC_INCREASETHREADS             1049
+#define IDC_MOVERANGEMIN                1051
+#define IDC_MOVERANGEMAX                1054
+#define IDC_WHITEMOVES                  1055
+#define IDC_BLACKMOVES                  1056
+#define IDC_ALLMOVES                    1057
+#define IDC_RECALCULATE                 1058
+#define IDC_SAVERESULTS                 1059
 
 // Next default values for new objects
 // 
@@ -58,7 +70,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1050
+#define _APS_NEXT_CONTROL_VALUE         1063
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

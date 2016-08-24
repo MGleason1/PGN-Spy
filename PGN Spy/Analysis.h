@@ -22,6 +22,8 @@
 
 #pragma once
 
+void AddStringIfNotFound(CString sValue, CStringArray &rasArray, CArray<int, int> &raiCountArray);
+
 class CAnalysisSettings
 {
 public:
@@ -34,13 +36,17 @@ public:
    int m_iForcedMoveCutoff; //in centipawns, will exclude moves where the second move is this much worse than the best
    BOOL m_bIncludeOnlyUnclearPositions;
    int m_iUnclearPositionCutoff; //in centipawns, will exclude moves where the Tn position is this much worse than the best
-   int m_iBlunderThreshold; //in centipawns, moves that lose more than this are considered blunders
    int m_iEqualPositionThreshold; //in centipawns, restricts analysis to positions where neither side is winning by more than this value
    int m_iLosingThreshold; //in centipawns, restricts analysis to positions where the side in question is losing by more than the equal position threshold, but by less than this value
 
    //temporary filters
-   CString m_sPlayerName;
-   int m_iBookDepth; //cannot be shallower than the engine setting
+   CString m_sPlayerName; //cannot be changed if player name is specified in engine settings
+   CString m_sOpponentName;
+   CString m_sEvent;
+   int m_iMoveNumMin; //must be greater than the engine setting
+   int m_iMoveNumMax;
+   bool m_bWhiteOnly;
+   bool m_bBlackOnly;
 };
 
 class CEngineSettings
@@ -87,6 +93,7 @@ public:
    int GetCentipawnLoss();
    CArray<CMove, CMove> m_avTopMoves;
    int m_iMovePlayed;
+   bool m_bWhite;
 };
 
 class CGame
@@ -129,6 +136,7 @@ public:
    double m_dAvgCentipawnLoss;
    double m_dCentipawnLossStdDeviation;
 
+   void ZeroAll();
    void Initialize(const CEngineSettings &vSettings);
    void AddPosition(CPosition &vPosition, const CAnalysisSettings &vSettings);
    void FinaliseStats();

@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Analysis.h"
+#include "afxwin.h"
 
 
 // CResultsDlg dialog
@@ -55,4 +56,23 @@ public:
    CAnalysisSettings m_vAnalysisSettings;
    CStats m_vUndecidedPositions;
    CStats m_vLosingPositions;
+   afx_msg void OnBnClickedForcedmovehelp();
+   afx_msg void OnBnClickedUnclearpositionhelp();
+   afx_msg void OnBnClickedEqualpositionhelp();
+   afx_msg void OnBnClickedHelpplayer();
+   afx_msg void OnBnClickedHelpopponent();
+   afx_msg void OnBnClickedHelpevent();
+   afx_msg void OnBnClickedHelpmoverangemin();
+   afx_msg void OnBnClickedHelpmoverangemax();
+   afx_msg void OnBnClickedLosingthresholdhelp();
+   CComboBox m_vPlayers;
+   CComboBox m_vOpponents;
+   CComboBox m_vEvents;
+   afx_msg void OnBnClickedSavesettings();
+   afx_msg void OnBnClickedRecalculate();
+   afx_msg void OnBnClickedSaveresults();
+   bool ValidateSettings();
+   void DisableInvalidSettings();
+   afx_msg void OnBnClickedExcludeforced();
+   afx_msg void OnBnClickedIncludeonlyunclear();
 };

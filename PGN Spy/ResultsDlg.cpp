@@ -48,20 +48,86 @@ void CResultsDlg::DoDataExchange(CDataExchange* pDX)
 {
    CDialogEx::DoDataExchange(pDX);
    DDX_Text(pDX, IDC_RESULTS, m_sResults);
+   DDX_Check(pDX, IDC_EXCLUDEFORCED, m_vAnalysisSettings.m_bExcludeForcedMoves);
+   DDX_Check(pDX, IDC_INCLUDEONLYUNCLEAR, m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions);
+   DDX_Text(pDX, IDC_FORCEDMOVECUTOFF, m_vAnalysisSettings.m_iForcedMoveCutoff);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iForcedMoveCutoff, 25, 10000);
+   DDX_Text(pDX, IDC_UNCLEARPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iUnclearPositionCutoff);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iUnclearPositionCutoff, 25, 10000);
+   DDX_Text(pDX, IDC_LOSINGPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iLosingThreshold);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iLosingThreshold, 25, 10000);
+   DDX_Text(pDX, IDC_EQUALPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iEqualPositionThreshold);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iEqualPositionThreshold, 25, 10000);
+   DDX_Text(pDX, IDC_MOVERANGEMIN, m_vAnalysisSettings.m_iMoveNumMin);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iMoveNumMin, 1, 200);
+   DDX_Text(pDX, IDC_MOVERANGEMAX, m_vAnalysisSettings.m_iMoveNumMax);
+   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iMoveNumMax, 1, 10000);
+   DDX_CBString(pDX, IDC_PLAYER, m_vAnalysisSettings.m_sPlayerName);
+   DDV_MaxChars(pDX, m_vAnalysisSettings.m_sPlayerName, 300);
+   DDX_CBString(pDX, IDC_OPPONENT, m_vAnalysisSettings.m_sOpponentName);
+   DDV_MaxChars(pDX, m_vAnalysisSettings.m_sOpponentName, 300);
+   DDX_CBString(pDX, IDC_EVENT, m_vAnalysisSettings.m_sEvent);
+   DDV_MaxChars(pDX, m_vAnalysisSettings.m_sEvent, 300);
+   DDX_Control(pDX, IDC_PLAYER, m_vPlayers);
+   DDX_Control(pDX, IDC_OPPONENT, m_vOpponents);
+   DDX_Control(pDX, IDC_EVENT, m_vEvents);
 }
 
 
 BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_ABOUT, &CResultsDlg::OnBnClickedAbout)
    ON_BN_CLICKED(IDC_SAVEDATA, &CResultsDlg::OnBnClickedSavedata)
+   ON_BN_CLICKED(IDC_FORCEDMOVEHELP, &CResultsDlg::OnBnClickedForcedmovehelp)
+   ON_BN_CLICKED(IDC_UNCLEARPOSITIONHELP, &CResultsDlg::OnBnClickedUnclearpositionhelp)
+   ON_BN_CLICKED(IDC_EQUALPOSITIONHELP, &CResultsDlg::OnBnClickedEqualpositionhelp)
+   ON_BN_CLICKED(IDC_HELPPLAYER, &CResultsDlg::OnBnClickedHelpplayer)
+   ON_BN_CLICKED(IDC_HELPOPPONENT, &CResultsDlg::OnBnClickedHelpopponent)
+   ON_BN_CLICKED(IDC_HELPEVENT, &CResultsDlg::OnBnClickedHelpevent)
+   ON_BN_CLICKED(IDC_HELPMOVERANGEMIN, &CResultsDlg::OnBnClickedHelpmoverangemin)
+   ON_BN_CLICKED(IDC_HELPMOVERANGEMAX, &CResultsDlg::OnBnClickedHelpmoverangemax)
+   ON_BN_CLICKED(IDC_LOSINGTHRESHOLDHELP, &CResultsDlg::OnBnClickedLosingthresholdhelp)
+   ON_BN_CLICKED(IDC_SAVESETTINGS, &CResultsDlg::OnBnClickedSavesettings)
+   ON_BN_CLICKED(IDC_RECALCULATE, &CResultsDlg::OnBnClickedRecalculate)
+   ON_BN_CLICKED(IDC_SAVERESULTS, &CResultsDlg::OnBnClickedSaveresults)
+   ON_BN_CLICKED(IDC_EXCLUDEFORCED, &CResultsDlg::OnBnClickedExcludeforced)
+   ON_BN_CLICKED(IDC_INCLUDEONLYUNCLEAR, &CResultsDlg::OnBnClickedIncludeonlyunclear)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
 {
    CDialog::OnInitDialog();
 
-   CalculateStats();
+   CStringArray asPlayers, asEvents;
+   CArray<int, int> aiPlayers, aiEvents;
+   for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
+   {
+      AddStringIfNotFound(m_avGames[iGame].m_sWhite, asPlayers, aiPlayers);
+      AddStringIfNotFound(m_avGames[iGame].m_sBlack, asPlayers, aiPlayers);
+      AddStringIfNotFound(m_avGames[iGame].m_sEvent, asEvents, aiEvents);
+   }
+   for (int i = 0; i < asPlayers.GetSize(); i++)
+      m_vPlayers.AddString(asPlayers[i]);
+   for (int i = 0; i < asPlayers.GetSize(); i++)
+      m_vOpponents.AddString(asPlayers[i]);
+   for (int i = 0; i < asEvents.GetSize(); i++)
+      m_vEvents.AddString(asEvents[i]);
 
+   if (!m_vAnalysisSettings.LoadSettingsFromRegistry())
+      m_vAnalysisSettings = CAnalysisSettings();
+   m_vAnalysisSettings.m_iMoveNumMin = m_vEngineSettings.m_iBookDepth + 1;
+   m_vAnalysisSettings.m_sPlayerName = m_vEngineSettings.m_sPlayerName;
+   if (!m_vEngineSettings.m_sPlayerName.IsEmpty())
+      m_vPlayers.SelectString(-1, m_vAnalysisSettings.m_sPlayerName);
+   CheckDlgButton(IDC_ALLMOVES, BST_CHECKED);
+   CheckDlgButton(IDC_WHITEMOVES, BST_UNCHECKED);
+   CheckDlgButton(IDC_BLACKMOVES, BST_UNCHECKED);
+
+   UpdateData(FALSE);
+
+   DisableInvalidSettings();
+
+   CalculateStats();
+   
    return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -161,9 +227,43 @@ void CResultsDlg::CalculateStats()
    //calculate results
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
    {
+      //exclude games without the right players involved
+      if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
+          m_vAnalysisSettings.m_sPlayerName.CompareNoCase(m_avGames[iGame].m_sWhite) != 0 &&
+          m_vAnalysisSettings.m_sPlayerName.CompareNoCase(m_avGames[iGame].m_sBlack) != 0)
+         continue;
+      if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
+          m_vAnalysisSettings.m_sOpponentName.CompareNoCase(m_avGames[iGame].m_sWhite) != 0 &&
+          m_vAnalysisSettings.m_sOpponentName.CompareNoCase(m_avGames[iGame].m_sBlack) != 0)
+         continue;
+      if (!m_vAnalysisSettings.m_sEvent.IsEmpty() &&
+          m_vAnalysisSettings.m_sEvent.CompareNoCase(m_avGames[iGame].m_sEvent) != 0)
+         continue;
+
+      int iMoveNum = m_vEngineSettings.m_iBookDepth;
       for (int iPosition = 0; iPosition < m_avGames[iGame].m_avPositions.GetSize(); iPosition++)
       {
          CPosition *pPosition = &m_avGames[iGame].m_avPositions[iPosition];
+         if (pPosition->m_bWhite)
+            iMoveNum++;
+         if (iMoveNum < m_vAnalysisSettings.m_iMoveNumMin || iMoveNum > m_vAnalysisSettings.m_iMoveNumMax)
+            continue;
+
+         //check player names
+         CString sPlayerName = (pPosition->m_bWhite) ? m_avGames[iGame].m_sWhite : m_avGames[iGame].m_sBlack;
+         CString sOpponentName = (pPosition->m_bWhite) ? m_avGames[iGame].m_sBlack : m_avGames[iGame].m_sWhite;
+         if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
+             m_vAnalysisSettings.m_sPlayerName.CompareNoCase(sPlayerName) != 0)
+            continue;
+         if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
+             m_vAnalysisSettings.m_sOpponentName.CompareNoCase(sOpponentName) != 0)
+            continue;
+
+         if (m_vAnalysisSettings.m_bWhiteOnly && !pPosition->m_bWhite)
+            continue;
+         if (m_vAnalysisSettings.m_bBlackOnly && pPosition->m_bWhite)
+            continue;
+
          if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
             m_vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
          if (pPosition->IsLosingPosition(m_vAnalysisSettings.m_iEqualPositionThreshold, m_vAnalysisSettings.m_iLosingThreshold))
@@ -182,4 +282,161 @@ void CResultsDlg::CalculateStats()
    m_sResults += m_vLosingPositions.GetResultsText();
 
    UpdateData(FALSE);
+}
+
+void CResultsDlg::OnBnClickedForcedmovehelp()
+{
+   CString sMessage = "For T1/T2/T3/etc. analysis, moves where the next-best move are evaluated to be worse than the "
+                      "move in question by more than the specified threshold will be excluded from analysis.  This avoids "
+                      "flagging obvious recaptures and other moves that a strong player would usually be expected to find.  "
+                      "Values are in centipawns.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedUnclearpositionhelp()
+{
+   CString sMessage = "For T1/T2/T3/etc. analysis, moves where the next-best move is evaluated to be worse than the "
+                      "first-choice move by more than the specified threshold will be excluded from analysis.  Values "
+                      "are in centipawns.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedEqualpositionhelp()
+{
+   CString sMessage = "Positions where neither side is ahead by more than the specified threshold will be analysed.  "
+                      "This is to help detect cheaters who stop cheating once they are ahead.\n\nThese results will be "
+                      "reported separately from those for losing positions.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedHelpplayer()
+{
+   CString sMessage = "If a player name is entered, statistics for the specified player will be reported.  Games excluding "
+                      "this player will be ignored.\n\nIf no player name is entered, aggregate statistics for all players "
+                      "will be reported.  This is useful for establishing baselines.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedHelpopponent()
+{
+   CString sMessage = "If a player name is entered, statistics for all moves played against the specified player will "
+                      "be reported.  Games excluding this player will be ignored.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedHelpevent()
+{
+   CString sMessage = "If an event name is entered, statistics for moves played during the specified event will be reported.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedHelpmoverangemin()
+{
+   CString sMessage = "Moves before the specified move number will be excluded from analysis.  This must be greater "
+                      "than the book depth specified in engine settings when the analysis was run.\n\n"
+                      "Note: this counts one move for each side as a single move.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedHelpmoverangemax()
+{
+   CString sMessage = "Moves after the specified move number will be excluded from analysis.\n\n"
+                      "Note: this counts one move for each side as a single move.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedLosingthresholdhelp()
+{
+   CString sMessage = "Positions where the player behind by more than the equal position threshold and less than the "
+                      "losing position threshold will be analysed.  This is to help detect cheaters who only cheat once "
+                      "they start to lose.\n\nThese results will be reported separately from those for equal positions.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedSavesettings()
+{
+   if (!ValidateSettings())
+      return;
+
+   if (!m_vAnalysisSettings.SaveSettingsToRegistry())
+      MessageBox("Failed to save settings.", "PGN Spy", MB_ICONEXCLAMATION);
+   else
+      MessageBox("Settings saved.", "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedRecalculate()
+{
+   if (!ValidateSettings())
+      return;
+
+   CalculateStats();
+}
+
+
+void CResultsDlg::OnBnClickedSaveresults()
+{
+   // TODO: Add your control notification handler code here
+}
+
+bool CResultsDlg::ValidateSettings()
+{
+   if (!UpdateData())
+      return false;
+
+   if (m_vAnalysisSettings.m_iMoveNumMin <= m_vEngineSettings.m_iBookDepth)
+   {
+      MessageBox("The move range minimum must be greater than the engine book depth.", "PGN Spy", MB_ICONEXCLAMATION);
+      return false;
+   }
+   if (m_vAnalysisSettings.m_iMoveNumMin > m_vAnalysisSettings.m_iMoveNumMax)
+   {
+      MessageBox("The move range minimum must not be greater than the move range maximum.", "PGN Spy", MB_ICONEXCLAMATION);
+      return false;
+   }
+   if (m_vAnalysisSettings.m_iEqualPositionThreshold > m_vAnalysisSettings.m_iLosingThreshold)
+   {
+      MessageBox("The equal position threshold must not exceed the losing position threshold.", "PGN Spy", MB_ICONEXCLAMATION);
+      return false;
+   }
+
+   m_vAnalysisSettings.m_bWhiteOnly = IsDlgButtonChecked(IDC_WHITEMOVES) == BST_CHECKED;
+   m_vAnalysisSettings.m_bBlackOnly = IsDlgButtonChecked(IDC_BLACKMOVES) == BST_CHECKED;
+
+   return true;
+}
+
+void CResultsDlg::DisableInvalidSettings()
+{
+   UpdateData();
+   //disable/enable controls as appropriate
+   GetDlgItem(IDC_UNCLEARPOSITIONTHRESHOLD)->EnableWindow(m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions);
+   GetDlgItem(IDC_FORCEDMOVECUTOFF)->EnableWindow(m_vAnalysisSettings.m_bExcludeForcedMoves);
+   GetDlgItem(IDC_PLAYER)->EnableWindow(m_vEngineSettings.m_sPlayerName.IsEmpty());//player setting should be disabled if specified in engine settings
+
+   //if controls are disabled, reset disabled values to ensure we don't get validation failures triggered by bad numbers in the disabled values
+   if (!m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions)
+      m_vAnalysisSettings.m_iUnclearPositionCutoff = 100;
+   if (!m_vAnalysisSettings.m_bExcludeForcedMoves)
+      m_vAnalysisSettings.m_iForcedMoveCutoff = 50;
+   UpdateData(FALSE);
+}
+
+void CResultsDlg::OnBnClickedExcludeforced()
+{
+   DisableInvalidSettings();
+}
+
+void CResultsDlg::OnBnClickedIncludeonlyunclear()
+{
+   DisableInvalidSettings();
 }

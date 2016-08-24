@@ -51,7 +51,6 @@ protected:
 public:
    CString m_sInputFile;
    CEngineSettings m_vEngineSettings;
-   CAnalysisSettings m_vAnalysisSettings;
    afx_msg void OnBnClickedBrowseanalyse();
    afx_msg void OnBnClickedBrowseengine();
    afx_msg void OnBnClickedRunanalysis();
@@ -70,7 +69,4 @@ public:
    afx_msg void OnBnClickedEqualpositionhelp();
    afx_msg void OnBnClickedLosingthresholdhelp();
    afx_msg void OnBnClickedNumvariationshelp();
-   afx_msg void OnBnClickedExcludeforced();
-   afx_msg void OnBnClickedIncludeonlyunclear();
-   void DisableInvalidSettings();
 };

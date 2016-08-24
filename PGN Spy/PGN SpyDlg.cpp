@@ -106,22 +106,12 @@ void CPGNSpyDlg::DoDataExchange(CDataExchange* pDX)
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iBookDepth, 0, 30);
    DDX_Text(pDX, IDC_NUMTHREADS, m_vEngineSettings.m_iNumThreads);
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iNumThreads, 1, 128);
-   DDX_Check(pDX, IDC_EXCLUDEFORCED, m_vAnalysisSettings.m_bExcludeForcedMoves);
    DDX_Text(pDX, IDC_MINTIME, m_vEngineSettings.m_iMinTime);
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iMinTime, 1, 60000);
    DDX_Text(pDX, IDC_MAXTIME, m_vEngineSettings.m_iMaxTime);
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iMaxTime, 1, 60000);
    DDX_Text(pDX, IDC_HASHSIZE, m_vEngineSettings.m_iHashSize);
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iHashSize, 1, 8192);
-   DDX_Text(pDX, IDC_FORCEDMOVECUTOFF, m_vAnalysisSettings.m_iForcedMoveCutoff);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iForcedMoveCutoff, 25, 10000);
-   DDX_Check(pDX, IDC_INCLUDEONLYUNCLEAR, m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions);
-   DDX_Text(pDX, IDC_UNCLEARPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iUnclearPositionCutoff);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iUnclearPositionCutoff, 25, 10000);
-   DDX_Text(pDX, IDC_EQUALPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iEqualPositionThreshold);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iEqualPositionThreshold, 25, 10000);
-   DDX_Text(pDX, IDC_LOSINGPOSITIONTHRESHOLD, m_vAnalysisSettings.m_iLosingThreshold);
-   DDV_MinMaxInt(pDX, m_vAnalysisSettings.m_iLosingThreshold, 25, 10000);
    DDX_Text(pDX, IDC_VARIATIONS, m_vEngineSettings.m_iNumVariations);
    DDV_MinMaxInt(pDX, m_vEngineSettings.m_iNumVariations, 1, 10);
 }
@@ -147,8 +137,6 @@ BEGIN_MESSAGE_MAP(CPGNSpyDlg, CDialog)
    ON_BN_CLICKED(IDC_EQUALPOSITIONHELP, &CPGNSpyDlg::OnBnClickedEqualpositionhelp)
    ON_BN_CLICKED(IDC_LOSINGTHRESHOLDHELP, &CPGNSpyDlg::OnBnClickedLosingthresholdhelp)
    ON_BN_CLICKED(IDC_NUMVARIATIONSHELP, &CPGNSpyDlg::OnBnClickedNumvariationshelp)
-   ON_BN_CLICKED(IDC_EXCLUDEFORCED, &CPGNSpyDlg::OnBnClickedExcludeforced)
-   ON_BN_CLICKED(IDC_INCLUDEONLYUNCLEAR, &CPGNSpyDlg::OnBnClickedIncludeonlyunclear)
 END_MESSAGE_MAP()
 
 
@@ -183,11 +171,7 @@ BOOL CPGNSpyDlg::OnInitDialog()
 
    if (!m_vEngineSettings.LoadSettingsFromRegistry())
       m_vEngineSettings = CEngineSettings(); //failed to load, so restore defaults
-   if (!m_vAnalysisSettings.LoadSettingsFromRegistry())
-      m_vAnalysisSettings = CAnalysisSettings(); //failed to load, so restore defaults;
    UpdateData(FALSE);
-
-   DisableInvalidSettings();
 
    return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -330,7 +314,6 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
    CResultsDlg vResultsDlg;
    vResultsDlg.m_avGames.Copy(vAnalyserDlg.m_avGames);
    vResultsDlg.m_vEngineSettings = m_vEngineSettings;
-   vResultsDlg.m_vAnalysisSettings = m_vAnalysisSettings;
    vResultsDlg.DoModal();
 }
 
@@ -353,12 +336,6 @@ bool CPGNSpyDlg::ValidateSettings()
    if (m_vEngineSettings.m_iMinTime > m_vEngineSettings.m_iMaxTime)
    {
       MessageBox("The minimum time for analysis must not exceed the maximum time.", "PGN Spy", MB_ICONEXCLAMATION);
-      return false;
-   }
-
-   if (m_vAnalysisSettings.m_iEqualPositionThreshold > m_vAnalysisSettings.m_iLosingThreshold)
-   {
-      MessageBox("The equal position threshold must not exceed the losing position threshold.", "PGN Spy", MB_ICONEXCLAMATION);
       return false;
    }
 
@@ -489,29 +466,4 @@ void CPGNSpyDlg::OnBnClickedNumvariationshelp()
                       "This is to help detect cheaters who regularly play a second-choice move, or who use a different "
                       "engine or engine settings.";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
-}
-
-void CPGNSpyDlg::OnBnClickedExcludeforced()
-{
-   DisableInvalidSettings();
-}
-
-void CPGNSpyDlg::OnBnClickedIncludeonlyunclear()
-{
-   DisableInvalidSettings();
-}
-
-void CPGNSpyDlg::DisableInvalidSettings()
-{
-   UpdateData();
-   //disable/enable controls as appropriate
-   GetDlgItem(IDC_UNCLEARPOSITIONTHRESHOLD)->EnableWindow(m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions);
-   GetDlgItem(IDC_FORCEDMOVECUTOFF)->EnableWindow(m_vAnalysisSettings.m_bExcludeForcedMoves);
-
-   //if controls are disabled, reset disabled values to ensure we don't get validation failures triggered by bad numbers in the disabled values
-   if (!m_vAnalysisSettings.m_bIncludeOnlyUnclearPositions)
-      m_vAnalysisSettings.m_iUnclearPositionCutoff = 100;
-   if (!m_vAnalysisSettings.m_bExcludeForcedMoves)
-      m_vAnalysisSettings.m_iForcedMoveCutoff = 50;
-   UpdateData(FALSE);
 }
