@@ -162,7 +162,7 @@ void CResultsDlg::OnBnClickedSavedata()
       return;
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tMove Played\tDepth Searched\tT-number";
+   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tPlayer\tMove Played\tDepth Searched\tT-number";
    for (int i = 0; i < m_vEngineSettings.m_iNumVariations+1; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
@@ -180,8 +180,10 @@ void CResultsDlg::OnBnClickedSavedata()
 
          //got all game data, now get move data
          //move number and coordinates
-         sText.Format("%i\t", iPosition + m_vEngineSettings.m_iBookDepth + 1);
-         sLine += sText + pPosition->m_avTopMoves[pPosition->m_iMovePlayed].m_sMove + "\t";
+         sText.Format("%i\t", (iPosition/2) + m_vEngineSettings.m_iBookDepth + 1);
+         sLine += sText;
+         sText = (pPosition->m_bWhite) ? "White" : "Black";
+         sLine += sText + "\t" + pPosition->m_avTopMoves[pPosition->m_iMovePlayed].m_sMove + "\t";
          //max depth searched
          int iMaxDepth = 0;
          for (int i = 0; i < pPosition->m_avTopMoves.GetSize(); i++)

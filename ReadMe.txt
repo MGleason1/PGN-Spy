@@ -19,7 +19,7 @@ http://www.pgnmentor.com/files.html#players - samples from various elite players
  including some historical ones.
 http://www.serverchess.com/worldch.htm - correspondence chess world championship
 tournaments; those from the late pre-computer era are perhaps more useful than the
-more recent events, in part due to the possibility of cheating in more recent events.
+more recent events, in part due to the possibility of engine use in more recent events.
 http://theweekinchess.com/chessnews/events - downloads from all major recent tournaments,
 including some at faster time controls.
 http://theweekinchess.com/twic - massive weekly downloads of many tournaments and games.
@@ -29,9 +29,9 @@ This software will scan a collection of games in pgn format, and calculate vario
 It will display results from two different data sets: 1) positions where neither side has
 a large advantage, and 2) positions where one side has an advantage but the game is not
 over yet.  Suspicious results in the first data set would be indicative of a cheater who
-uses an engine until he is ahead, and then perhaps plays normally.  Suspicious results
-in the second data set would be indicative of a cheater who uses an engine to try to
-recover a losing position.
+uses an engine in all positions, or until he is ahead, and then perhaps plays normally.
+Suspicious results in the second data set would be indicative of a cheater who uses an
+engine to try to recover a losing position.
 
 SETTINGS
 
