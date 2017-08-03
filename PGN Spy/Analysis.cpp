@@ -451,6 +451,13 @@ CString CStats::GetResultsText()
          }
          sResults += sLine + "\r\n";
       }
+      //=0 CP loss
+      {
+         double dFrac = ((double)(m_iNumPositions - m_i0CPLoss) / (double)m_iNumPositions);
+         double dStdError = sqrt(dFrac * (1 - dFrac) / m_iNumPositions) * 100;
+         sLine.Format("=0 CP loss: %i/%i; %.2f%% (std error %.2f)", m_iNumPositions - m_i0CPLoss, m_iNumPositions, dFrac*100.0, dStdError);
+         sResults += sLine + "\r\n";
+      }
       //>0 CP loss
       {
          double dFrac = ((double)m_i0CPLoss / (double)m_iNumPositions);
@@ -506,3 +513,148 @@ CString CStats::GetResultsText()
    }
    return sResults;
 }
+
+bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames)
+{
+   CMarkup vFile;
+   if (!vFile.Load(sFileName))
+      return false;
+   if (!vFile.FindElem("Games"))
+      return false;
+   vFile.IntoElem();
+
+   //loop through all games
+   while (vFile.FindElem("Game"))
+   {
+      CGame vGame;
+      vFile.IntoElem();
+
+      vFile.FindElem("Event");
+      vGame.m_sEvent = vFile.GetData();
+      vFile.FindElem("Date");
+      vGame.m_sDate = vFile.GetData();
+      vFile.FindElem("White");
+      vGame.m_sWhite = vFile.GetData();
+      vFile.FindElem("Black");
+      vGame.m_sBlack = vFile.GetData();
+      vFile.FindElem("Result");
+      vGame.m_sResult = vFile.GetData();
+      vFile.FindElem("TimeControl");
+      vGame.m_sTimeControl = vFile.GetData();
+      vFile.FindElem("Positions");
+      vFile.IntoElem();
+      while (vFile.FindElem("Position"))
+      {
+         CPosition vPosition;
+         vFile.IntoElem();
+
+         vFile.FindElem("White");
+         vPosition.m_bWhite = atoi(vFile.GetData()) == 1;
+         vFile.FindElem("MovePlayed");
+         vPosition.m_iMovePlayed = atoi(vFile.GetData());
+         vFile.FindElem("Moves");
+         vFile.IntoElem();
+         while (vFile.FindElem("Move"))
+         {
+            CMove vMove;
+            vFile.IntoElem();
+            vFile.FindElem("Move");
+            vMove.m_sMove = vFile.GetData();
+            vFile.FindElem("Depth");
+            vMove.m_iDepth = atoi(vFile.GetData());
+            vFile.FindElem("Time");
+            vMove.m_iTime = atoi(vFile.GetData());
+            vFile.FindElem("Score");
+            vMove.m_iScore = atoi(vFile.GetData());
+
+            vPosition.m_avTopMoves.Add(vMove);
+            vFile.OutOfElem();
+         }
+
+         vGame.m_avPositions.Add(vPosition);
+         vFile.OutOfElem();
+      }
+
+      raGames.Add(vGame);
+      vFile.OutOfElem();
+   }
+
+   return true;
+}
+
+bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
+{
+   if (raGames.GetSize() == 0)
+      return false;
+
+   CMarkup vFile;
+   vFile.AddElem("Games");
+   vFile.IntoElem();
+
+   for (int iGame = 0; iGame < raGames.GetSize(); iGame++)
+   {
+      vFile.AddElem("Game");
+      vFile.IntoElem();
+      vFile.AddElem("Event", raGames[iGame].m_sEvent);
+      vFile.AddElem("Date", raGames[iGame].m_sDate);
+      vFile.AddElem("White", raGames[iGame].m_sWhite);
+      vFile.AddElem("Black", raGames[iGame].m_sBlack);
+      vFile.AddElem("Result", raGames[iGame].m_sResult);
+      vFile.AddElem("TimeControl", raGames[iGame].m_sTimeControl);
+      vFile.AddElem("Positions");
+      vFile.IntoElem();
+      for (int iPosition = 0; iPosition < raGames[iGame].m_avPositions.GetSize(); iPosition++)
+      {
+         vFile.AddElem("Position");
+         vFile.IntoElem();
+         vFile.AddElem("White", raGames[iGame].m_avPositions[iPosition].m_bWhite ? 1 : 0);
+         vFile.AddElem("MovePlayed", raGames[iGame].m_avPositions[iPosition].m_iMovePlayed);
+         vFile.AddElem("Moves");
+         vFile.IntoElem();
+         for (int iMove = 0; iMove < raGames[iGame].m_avPositions[iPosition].m_avTopMoves.GetSize(); iMove++)
+         {
+            vFile.AddElem("Move");
+            vFile.IntoElem();
+            vFile.AddElem("Move", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_sMove);
+            vFile.AddElem("Depth", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_iDepth);
+            vFile.AddElem("Time", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_iTime);
+            vFile.AddElem("Score", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_iScore);
+
+            vFile.OutOfElem();
+         }
+         vFile.OutOfElem();
+      }
+      vFile.OutOfElem();
+   }
+
+   if (!vFile.Save(sFileName))
+      return false;
+   return true;
+}
+
+/*
+<games>
+   <game>
+      <event>event</event>
+      <date>date</date>
+      <white>white</white>
+      <black>black</black>
+      <result>result</result>
+      <timecontrol>timecontrol</timecontrol>
+      <positions>
+         <position>
+            <white>1</white>
+            <moveplayed>3<moveplayed>
+            <moves>
+               <move>
+                  <move>e2e4</move>
+                  <depth>19</depth>
+                  <time>20000</time>
+                  <score>35</score>
+               </move>
+            </moves>
+         </position>
+      </positions>
+   </game>
+</games>
+*/

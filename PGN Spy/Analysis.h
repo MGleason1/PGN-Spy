@@ -157,3 +157,6 @@ public:
    CString m_sBlack;
    CString m_sFileName;
 };
+
+bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames);
+bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames);
