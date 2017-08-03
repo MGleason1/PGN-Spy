@@ -56,6 +56,8 @@ public:
    CAnalysisSettings m_vAnalysisSettings;
    CStats m_vUndecidedPositions;
    CStats m_vLosingPositions;
+   CStats m_vWinningPositions;
+   CStats m_vPostLosingPositions;
    afx_msg void OnBnClickedForcedmovehelp();
    afx_msg void OnBnClickedUnclearpositionhelp();
    afx_msg void OnBnClickedEqualpositionhelp();
@@ -75,4 +77,5 @@ public:
    void DisableInvalidSettings();
    afx_msg void OnBnClickedExcludeforced();
    afx_msg void OnBnClickedIncludeonlyunclear();
+   afx_msg void OnBnClickedHelpinclude();
 };

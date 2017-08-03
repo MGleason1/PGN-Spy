@@ -71,6 +71,9 @@ void CResultsDlg::DoDataExchange(CDataExchange* pDX)
    DDX_Control(pDX, IDC_PLAYER, m_vPlayers);
    DDX_Control(pDX, IDC_OPPONENT, m_vOpponents);
    DDX_Control(pDX, IDC_EVENT, m_vEvents);
+   DDX_Check(pDX, IDC_INCLUDELOSING, m_vAnalysisSettings.m_bIncludeLosing);
+   DDX_Check(pDX, IDC_INCLUDEWINNING, m_vAnalysisSettings.m_bIncludeWinning);
+   DDX_Check(pDX, IDC_INCLUDEPOSTLOSING, m_vAnalysisSettings.m_bIncludePostLosing);
 }
 
 
@@ -91,6 +94,7 @@ BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_SAVERESULTS, &CResultsDlg::OnBnClickedSaveresults)
    ON_BN_CLICKED(IDC_EXCLUDEFORCED, &CResultsDlg::OnBnClickedExcludeforced)
    ON_BN_CLICKED(IDC_INCLUDEONLYUNCLEAR, &CResultsDlg::OnBnClickedIncludeonlyunclear)
+   ON_BN_CLICKED(IDC_HELPINCLUDE, &CResultsDlg::OnBnClickedHelpinclude)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
@@ -108,7 +112,10 @@ BOOL CResultsDlg::OnInitDialog()
    for (int i = 0; i < asPlayers.GetSize(); i++)
       m_vPlayers.AddString(asPlayers[i]);
    for (int i = 0; i < asPlayers.GetSize(); i++)
-      m_vOpponents.AddString(asPlayers[i]);
+   {
+      if (m_vEngineSettings.m_sPlayerName.CompareNoCase(asPlayers[i]) != 0)
+         m_vOpponents.AddString(asPlayers[i]);
+   }
    for (int i = 0; i < asEvents.GetSize(); i++)
       m_vEvents.AddString(asEvents[i]);
 
@@ -225,7 +232,10 @@ void CResultsDlg::CalculateStats()
 {
    m_vUndecidedPositions.Initialize(m_vEngineSettings);
    m_vLosingPositions.Initialize(m_vEngineSettings);
+   m_vWinningPositions.Initialize(m_vEngineSettings);
+   m_vPostLosingPositions.Initialize(m_vEngineSettings);
 
+   int iGamesInSubset = 0;
    //calculate results
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
    {
@@ -242,12 +252,15 @@ void CResultsDlg::CalculateStats()
           m_vAnalysisSettings.m_sEvent.CompareNoCase(m_avGames[iGame].m_sEvent) != 0)
          continue;
 
+      iGamesInSubset++;
       int iMoveNum = m_vEngineSettings.m_iBookDepth;
+      bool bFoundLosingPositionWhite = false;
+      bool bFoundLosingPositionBlack = false;
       for (int iPosition = 0; iPosition < m_avGames[iGame].m_avPositions.GetSize(); iPosition++)
       {
          CPosition *pPosition = &m_avGames[iGame].m_avPositions[iPosition];
-         if (pPosition->m_bWhite)
-            iMoveNum++;
+         if (pPosition->m_bWhite || !m_vEngineSettings.m_sPlayerName.IsEmpty())
+            iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
          if (iMoveNum < m_vAnalysisSettings.m_iMoveNumMin || iMoveNum > m_vAnalysisSettings.m_iMoveNumMax)
             continue;
 
@@ -269,19 +282,49 @@ void CResultsDlg::CalculateStats()
          if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
             m_vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
          if (pPosition->IsLosingPosition(m_vAnalysisSettings.m_iEqualPositionThreshold, m_vAnalysisSettings.m_iLosingThreshold))
+         {
             m_vLosingPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+            if (pPosition->m_bWhite)
+               bFoundLosingPositionWhite = true;
+            else
+               bFoundLosingPositionBlack = true;
+         }
+         if (pPosition->IsWinningPosition(m_vAnalysisSettings.m_iEqualPositionThreshold, m_vAnalysisSettings.m_iLosingThreshold))
+            m_vWinningPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+         if (!pPosition->IsExcludedPosition(m_vAnalysisSettings.m_iLosingThreshold) &&
+            (pPosition->m_bWhite && bFoundLosingPositionWhite) || (!pPosition->m_bWhite && bFoundLosingPositionBlack))
+         {
+            //if we've found a losing position and we're not now in a totally dead position, we've got a
+            //post-losing position, useful for catching someone who cheats to save a lost game.
+            m_vPostLosingPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+         }
       }
    }
 
    m_vUndecidedPositions.FinaliseStats();
    m_vLosingPositions.FinaliseStats();
+   m_vWinningPositions.FinaliseStats();
+   m_vPostLosingPositions.FinaliseStats();
 
    //Now dump results to text
-   m_sResults.Format("%i games\r\n\r\n", m_avGames.GetSize());
+   m_sResults.Format("%i games\r\n\r\n", iGamesInSubset);
    m_sResults += "UNDECIDED POSITIONS\r\n";
-   m_sResults += m_vUndecidedPositions.GetResultsText() + "\r\n";
-   m_sResults += "LOSING POSITIONS\r\n";
-   m_sResults += m_vLosingPositions.GetResultsText();
+   m_sResults += m_vUndecidedPositions.GetResultsText();
+   if (m_vAnalysisSettings.m_bIncludeLosing)
+   {
+      m_sResults += "\r\nLOSING POSITIONS\r\n";
+      m_sResults += m_vLosingPositions.GetResultsText();
+   }
+   if (m_vAnalysisSettings.m_bIncludeWinning)
+   {
+      m_sResults += "\r\nWINNING POSITIONS\r\n";
+      m_sResults += m_vWinningPositions.GetResultsText();
+   }
+   if (m_vAnalysisSettings.m_bIncludePostLosing)
+   {
+      m_sResults += "\r\nPOST-LOSING POSITIONS\r\n";
+      m_sResults += m_vPostLosingPositions.GetResultsText();
+   }
 
    UpdateData(FALSE);
 }
@@ -441,4 +484,16 @@ void CResultsDlg::OnBnClickedExcludeforced()
 void CResultsDlg::OnBnClickedIncludeonlyunclear()
 {
    DisableInvalidSettings();
+}
+
+
+void CResultsDlg::OnBnClickedHelpinclude()
+{
+   CString sMessage = "Losing positions are positions where the player in question is losing by more than the undecided "
+                      "position threshold but less than the losing position threshold.  Winning positions are positions "
+                      "where the player in question is winning by more than the undecided position threshold but less "
+                      "than the losing position threshold.  Post-losing positions are positions where the player in "
+                      "question was losing earlier in the game.  Positions where either player is losing by more than "
+                      "the losing position threshold will always be excluded.";
+   MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }

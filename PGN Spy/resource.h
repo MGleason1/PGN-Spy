@@ -63,6 +63,11 @@
 #define IDC_ALLMOVES                    1057
 #define IDC_RECALCULATE                 1058
 #define IDC_SAVERESULTS                 1059
+#define IDC_INCLUDELOSING               1064
+#define IDC_INCLUDEWINNING              1065
+#define IDC_INCLUDEPOSTLOSING           1067
+#define IDC_HELPINCLUDEPOSTLOSING       1070
+#define IDC_HELPINCLUDE                 1070
 
 // Next default values for new objects
 // 
@@ -70,7 +75,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1063
+#define _APS_NEXT_CONTROL_VALUE         1069
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

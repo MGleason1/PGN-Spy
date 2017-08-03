@@ -38,6 +38,9 @@ public:
    int m_iUnclearPositionCutoff; //in centipawns, will exclude moves where the Tn position is this much worse than the best
    int m_iEqualPositionThreshold; //in centipawns, restricts analysis to positions where neither side is winning by more than this value
    int m_iLosingThreshold; //in centipawns, restricts analysis to positions where the side in question is losing by more than the equal position threshold, but by less than this value
+   BOOL m_bIncludeLosing;
+   BOOL m_bIncludeWinning;
+   BOOL m_bIncludePostLosing;
 
    //temporary filters
    CString m_sPlayerName; //cannot be changed if player name is specified in engine settings
@@ -90,6 +93,8 @@ public:
    bool IsUnclearPosition(int iVariation, int iUnclearPositionThreshold);
    bool IsEqualPosition(int iEqualPositionThreshold);
    bool IsLosingPosition(int iEqualPositionThreshold, int iLosingPositionThreshold);
+   bool IsWinningPosition(int iEqualPositionThreshold, int iLosingPositionThreshold);
+   bool IsExcludedPosition(int iLosingPositionThreshold); //for positions where one side is totally lost
    int GetCentipawnLoss();
    CArray<CMove, CMove> m_avTopMoves;
    int m_iMovePlayed;

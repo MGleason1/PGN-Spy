@@ -51,6 +51,9 @@ CAnalysisSettings::CAnalysisSettings()
    m_iUnclearPositionCutoff = 100;
    m_iEqualPositionThreshold = 200;
    m_iLosingThreshold = 500;
+   m_bIncludeLosing = true;
+   m_bIncludeWinning = false;
+   m_bIncludePostLosing = false;
 
    //temporary filters
    m_iMoveNumMin = 11;
@@ -74,6 +77,9 @@ bool CAnalysisSettings::LoadSettingsFromRegistry()
    m_iUnclearPositionCutoff = theApp.GetProfileInt("PGNSpy", "UnclearPositionCutoff", 100);
    m_iEqualPositionThreshold = theApp.GetProfileInt("PGNSpy", "EqualPositionThreshold", 200);
    m_iLosingThreshold = theApp.GetProfileInt("PGNSpy", "LosingThreshold", 500);
+   m_bIncludeLosing = theApp.GetProfileInt("PGNSpy", "IncludeLosing", 1) == 1;
+   m_bIncludeWinning = theApp.GetProfileInt("PGNSpy", "IncludeWinning", 0) == 1;
+   m_bIncludePostLosing = theApp.GetProfileInt("PGNSpy", "IncludePostLosing", 0) == 1;
    return true;
 }
 
@@ -85,6 +91,9 @@ bool CAnalysisSettings::SaveSettingsToRegistry()
    theApp.WriteProfileInt("PGNSpy", "UnclearPositionCutoff", m_iUnclearPositionCutoff);
    theApp.WriteProfileInt("PGNSpy", "EqualPositionThreshold", m_iEqualPositionThreshold);
    theApp.WriteProfileInt("PGNSpy", "LosingThreshold", m_iLosingThreshold);
+   theApp.WriteProfileInt("PGNSpy", "IncludeLosing", m_bIncludeLosing ? 1 : 0);
+   theApp.WriteProfileInt("PGNSpy", "IncludeWinning", m_bIncludeWinning ? 1 : 0);
+   theApp.WriteProfileInt("PGNSpy", "IncludePostLosing", m_bIncludePostLosing ? 1 : 0);
    return true;
 }
 
@@ -194,6 +203,18 @@ bool CPosition::IsLosingPosition(int iEqualPositionThreshold, int iLosingPositio
    if (IsEqualPosition(iEqualPositionThreshold))
       return false;
    return m_avTopMoves[0].m_iScore < 0 && abs(m_avTopMoves[0].m_iScore) <= iLosingPositionThreshold;
+}
+
+bool CPosition::IsWinningPosition(int iEqualPositionThreshold, int iLosingPositionThreshold)
+{
+   if (IsEqualPosition(iEqualPositionThreshold))
+      return false;
+   return m_avTopMoves[0].m_iScore > 0 && abs(m_avTopMoves[0].m_iScore) <= iLosingPositionThreshold;
+}
+
+bool CPosition::IsExcludedPosition(int iLosingPositionThreshold)
+{
+   return abs(m_avTopMoves[0].m_iScore) > iLosingPositionThreshold;
 }
 
 int CPosition::GetCentipawnLoss()
