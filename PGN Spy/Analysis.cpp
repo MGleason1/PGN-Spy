@@ -60,6 +60,9 @@ CAnalysisSettings::CAnalysisSettings()
    m_iMoveNumMax = 10000;
    m_bWhiteOnly = false;
    m_bBlackOnly = false;
+   m_bIncludeWins = true;
+   m_bIncludeLosses = true;
+   m_bIncludeDraws = true;
 }
 
 bool CAnalysisSettings::LoadSettingsFromRegistry()
@@ -514,14 +517,37 @@ CString CStats::GetResultsText()
    return sResults;
 }
 
-bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames)
+bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames, CEngineSettings &rvEngineSettings)
 {
+   raGames.RemoveAll();
    CMarkup vFile;
    if (!vFile.Load(sFileName))
       return false;
    if (!vFile.FindElem("Games"))
       return false;
    vFile.IntoElem();
+
+   //engine settings
+   if (!vFile.FindElem("EngineSettings"))
+      return false;
+   vFile.IntoElem();
+   vFile.FindElem("EnginePath");
+   rvEngineSettings.m_sEnginePath = vFile.GetData();
+   vFile.FindElem("NumVariations");
+   rvEngineSettings.m_iNumVariations = atoi(vFile.GetData());
+   vFile.FindElem("SearchDepth");
+   rvEngineSettings.m_iSearchDepth = atoi(vFile.GetData());
+   vFile.FindElem("MinTime");
+   rvEngineSettings.m_iMinTime = atoi(vFile.GetData());
+   vFile.FindElem("MaxTime");
+   rvEngineSettings.m_iMaxTime = atoi(vFile.GetData());
+   vFile.FindElem("HashSize");
+   rvEngineSettings.m_iHashSize = atoi(vFile.GetData());
+   vFile.FindElem("BookDepth");
+   rvEngineSettings.m_iBookDepth = atoi(vFile.GetData());
+   vFile.FindElem("PlayerName");
+   rvEngineSettings.m_sPlayerName = vFile.GetData();
+   vFile.OutOfElem();
 
    //loop through all games
    while (vFile.FindElem("Game"))
@@ -541,6 +567,8 @@ bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames)
       vGame.m_sResult = vFile.GetData();
       vFile.FindElem("TimeControl");
       vGame.m_sTimeControl = vFile.GetData();
+
+      //loop through all positions
       vFile.FindElem("Positions");
       vFile.IntoElem();
       while (vFile.FindElem("Position"))
@@ -552,6 +580,8 @@ bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames)
          vPosition.m_bWhite = atoi(vFile.GetData()) == 1;
          vFile.FindElem("MovePlayed");
          vPosition.m_iMovePlayed = atoi(vFile.GetData());
+
+         //loop through all moves
          vFile.FindElem("Moves");
          vFile.IntoElem();
          while (vFile.FindElem("Move"))
@@ -568,21 +598,23 @@ bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames)
             vMove.m_iScore = atoi(vFile.GetData());
 
             vPosition.m_avTopMoves.Add(vMove);
-            vFile.OutOfElem();
+            vFile.OutOfElem(); //</Move>
          }
 
          vGame.m_avPositions.Add(vPosition);
-         vFile.OutOfElem();
+         vFile.OutOfElem(); //</Moves>
+         vFile.OutOfElem(); //</Position>
       }
 
+      vFile.OutOfElem(); //</Positions>
       raGames.Add(vGame);
-      vFile.OutOfElem();
+      vFile.OutOfElem(); //</Game>
    }
 
    return true;
 }
 
-bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
+bool SaveGameArrayToFile(CString sFileName, const CArray<CGame, CGame> &raGames, CEngineSettings vEngineSettings)
 {
    if (raGames.GetSize() == 0)
       return false;
@@ -591,6 +623,20 @@ bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
    vFile.AddElem("Games");
    vFile.IntoElem();
 
+   //engine settings
+   vFile.AddElem("EngineSettings");
+   vFile.IntoElem();
+   vFile.AddElem("EnginePath", vEngineSettings.m_sEnginePath);
+   vFile.AddElem("NumVariations", vEngineSettings.m_iNumVariations);
+   vFile.AddElem("SearchDepth", vEngineSettings.m_iSearchDepth);
+   vFile.AddElem("MinTime", vEngineSettings.m_iMinTime);
+   vFile.AddElem("MaxTime", vEngineSettings.m_iMaxTime);
+   vFile.AddElem("HashSize", vEngineSettings.m_iHashSize);
+   vFile.AddElem("BookDepth", vEngineSettings.m_iBookDepth);
+   vFile.AddElem("PlayerName", vEngineSettings.m_sPlayerName);
+   vFile.OutOfElem();
+
+   //loop through all games
    for (int iGame = 0; iGame < raGames.GetSize(); iGame++)
    {
       vFile.AddElem("Game");
@@ -601,6 +647,8 @@ bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
       vFile.AddElem("Black", raGames[iGame].m_sBlack);
       vFile.AddElem("Result", raGames[iGame].m_sResult);
       vFile.AddElem("TimeControl", raGames[iGame].m_sTimeControl);
+
+      //loop through all positions
       vFile.AddElem("Positions");
       vFile.IntoElem();
       for (int iPosition = 0; iPosition < raGames[iGame].m_avPositions.GetSize(); iPosition++)
@@ -609,6 +657,8 @@ bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
          vFile.IntoElem();
          vFile.AddElem("White", raGames[iGame].m_avPositions[iPosition].m_bWhite ? 1 : 0);
          vFile.AddElem("MovePlayed", raGames[iGame].m_avPositions[iPosition].m_iMovePlayed);
+
+         //loop through all moves
          vFile.AddElem("Moves");
          vFile.IntoElem();
          for (int iMove = 0; iMove < raGames[iGame].m_avPositions[iPosition].m_avTopMoves.GetSize(); iMove++)
@@ -620,11 +670,13 @@ bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
             vFile.AddElem("Time", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_iTime);
             vFile.AddElem("Score", raGames[iGame].m_avPositions[iPosition].m_avTopMoves[iMove].m_iScore);
 
-            vFile.OutOfElem();
+            vFile.OutOfElem(); //</Move>
          }
-         vFile.OutOfElem();
+         vFile.OutOfElem(); //</Moves>
+         vFile.OutOfElem(); //</Position>
       }
-      vFile.OutOfElem();
+      vFile.OutOfElem(); //</Positions>
+      vFile.OutOfElem(); //</Game>
    }
 
    if (!vFile.Save(sFileName))
@@ -634,6 +686,16 @@ bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames)
 
 /*
 <games>
+   <enginesettings>
+      <enginepath>path</enginepath>
+      <numvariations>3</numvariations>
+      <searchdepth>20</searchdepth>
+      <maxtime>20000</maxtime>
+      <mintime>10000</mintime>
+      <hashsize>512</hashsize>
+      <bookdepth>10</bookdepth>
+      <playername></playername>
+   </enginesettings>
    <game>
       <event>event</event>
       <date>date</date>

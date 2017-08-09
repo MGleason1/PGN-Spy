@@ -137,6 +137,7 @@ BEGIN_MESSAGE_MAP(CPGNSpyDlg, CDialog)
    ON_BN_CLICKED(IDC_EQUALPOSITIONHELP, &CPGNSpyDlg::OnBnClickedEqualpositionhelp)
    ON_BN_CLICKED(IDC_LOSINGTHRESHOLDHELP, &CPGNSpyDlg::OnBnClickedLosingthresholdhelp)
    ON_BN_CLICKED(IDC_NUMVARIATIONSHELP, &CPGNSpyDlg::OnBnClickedNumvariationshelp)
+   ON_BN_CLICKED(IDC_LOADRESULTS, &CPGNSpyDlg::OnBnClickedLoadresults)
 END_MESSAGE_MAP()
 
 
@@ -471,4 +472,23 @@ void CPGNSpyDlg::OnBnClickedNumvariationshelp()
                       "This is to help detect cheaters who regularly play a second-choice move, or who use a different "
                       "engine or engine settings.";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+void CPGNSpyDlg::OnBnClickedLoadresults()
+{
+   CFileDialog vFileDialog(TRUE, "xml", "*.xml", OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT, "PGN Spy files (*.xml)|*.xml|All files (*.*)|*.*||", this);
+   if (vFileDialog.DoModal() != IDOK)
+      return;
+   CArray <CGame, CGame> avGames;
+   CEngineSettings vEngineSettings;
+   if (!LoadGameArrayFromFile(vFileDialog.GetPathName(), avGames, vEngineSettings))
+   {
+      MessageBox(_T("Failed to load game file."), _T("PGN Spy"), MB_ICONEXCLAMATION);
+      return;
+   }
+
+   CResultsDlg vResultsDlg;
+   vResultsDlg.m_avGames.Copy(avGames);
+   vResultsDlg.m_vEngineSettings = vEngineSettings;
+   vResultsDlg.DoModal();
 }

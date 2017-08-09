@@ -50,6 +50,9 @@ public:
    int m_iMoveNumMax;
    bool m_bWhiteOnly;
    bool m_bBlackOnly;
+   BOOL m_bIncludeWins;
+   BOOL m_bIncludeLosses;
+   BOOL m_bIncludeDraws;
 };
 
 class CEngineSettings
@@ -158,5 +161,5 @@ public:
    CString m_sFileName;
 };
 
-bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames);
-bool SaveGameToFile(CString sFileName, const CArray<CGame, CGame> &raGames);
+bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames, CEngineSettings &rvEngineSettings);
+bool SaveGameArrayToFile(CString sFileName, const CArray<CGame, CGame> &raGames, CEngineSettings vEngineSettings);

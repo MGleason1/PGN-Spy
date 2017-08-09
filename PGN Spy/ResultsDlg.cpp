@@ -74,6 +74,9 @@ void CResultsDlg::DoDataExchange(CDataExchange* pDX)
    DDX_Check(pDX, IDC_INCLUDELOSING, m_vAnalysisSettings.m_bIncludeLosing);
    DDX_Check(pDX, IDC_INCLUDEWINNING, m_vAnalysisSettings.m_bIncludeWinning);
    DDX_Check(pDX, IDC_INCLUDEPOSTLOSING, m_vAnalysisSettings.m_bIncludePostLosing);
+   DDX_Check(pDX, IDC_INCLUDEWINS, m_vAnalysisSettings.m_bIncludeWins);
+   DDX_Check(pDX, IDC_INCLUDELOSSES, m_vAnalysisSettings.m_bIncludeLosses);
+   DDX_Check(pDX, IDC_INCLUDEDRAWS, m_vAnalysisSettings.m_bIncludeDraws);
 }
 
 
@@ -252,6 +255,37 @@ void CResultsDlg::CalculateStats()
           m_vAnalysisSettings.m_sEvent.CompareNoCase(m_avGames[iGame].m_sEvent) != 0)
          continue;
 
+      if (!m_vAnalysisSettings.m_bIncludeDraws && m_avGames[iGame].m_sResult.CompareNoCase("1/2-1/2") == 0)
+         continue;
+
+      bool bExcludeWhite = m_vAnalysisSettings.m_bBlackOnly;
+      bool bExcludeBlack = m_vAnalysisSettings.m_bWhiteOnly;
+      if (!m_vAnalysisSettings.m_bIncludeLosses)
+      {
+         if (m_avGames[iGame].m_sResult.CompareNoCase("1-0") == 0)
+            bExcludeBlack = true;
+         else if (m_avGames[iGame].m_sResult.CompareNoCase("0-1") == 0)
+            bExcludeWhite = true;
+      }
+      if (!m_vAnalysisSettings.m_bIncludeWins)
+      {
+         if (m_avGames[iGame].m_sResult.CompareNoCase("1-0") == 0)
+            bExcludeWhite = true;
+         else if (m_avGames[iGame].m_sResult.CompareNoCase("0-1") == 0)
+            bExcludeBlack = true;
+      }
+
+      if (bExcludeWhite && bExcludeBlack)
+         continue;
+
+      if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty())
+      {
+         if (bExcludeWhite && m_avGames[iGame].m_sWhite.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
+            continue;
+         if (bExcludeBlack && m_avGames[iGame].m_sBlack.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
+            continue;
+      }
+
       iGamesInSubset++;
       int iMoveNum = m_vEngineSettings.m_iBookDepth;
       bool bFoundLosingPositionWhite = false;
@@ -263,6 +297,8 @@ void CResultsDlg::CalculateStats()
             iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
          if (iMoveNum < m_vAnalysisSettings.m_iMoveNumMin || iMoveNum > m_vAnalysisSettings.m_iMoveNumMax)
             continue;
+         if ((bExcludeWhite && pPosition->m_bWhite) || (bExcludeBlack && !pPosition->m_bWhite))
+            continue;
 
          //check player names
          CString sPlayerName = (pPosition->m_bWhite) ? m_avGames[iGame].m_sWhite : m_avGames[iGame].m_sBlack;
@@ -272,11 +308,6 @@ void CResultsDlg::CalculateStats()
             continue;
          if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
              m_vAnalysisSettings.m_sOpponentName.CompareNoCase(sOpponentName) != 0)
-            continue;
-
-         if (m_vAnalysisSettings.m_bWhiteOnly && !pPosition->m_bWhite)
-            continue;
-         if (m_vAnalysisSettings.m_bBlackOnly && pPosition->m_bWhite)
             continue;
 
          if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
@@ -430,7 +461,14 @@ void CResultsDlg::OnBnClickedRecalculate()
 
 void CResultsDlg::OnBnClickedSaveresults()
 {
-   // TODO: Add your control notification handler code here
+   CFileDialog vFileDialog(FALSE, _T("xml"), _T("*.xml"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("PGN Spy files (*.xml)|*.xml|All files (*.*)|*.*||"), this);
+   if (vFileDialog.DoModal() != IDOK)
+      return;
+   CString sFilePath = vFileDialog.GetPathName();
+   if (SaveGameArrayToFile(sFilePath, m_avGames, m_vEngineSettings))
+      MessageBox(_T("Results saved."), _T("PGN Spy"), MB_ICONINFORMATION);
+   else
+      MessageBox(_T("Failed to save results."), _T("PGN Spy"), MB_ICONEXCLAMATION);
 }
 
 bool CResultsDlg::ValidateSettings()
