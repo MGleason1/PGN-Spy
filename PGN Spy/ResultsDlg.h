@@ -75,7 +75,12 @@ public:
    afx_msg void OnBnClickedSaveresults();
    bool ValidateSettings();
    void DisableInvalidSettings();
+   void LoadPlayerAndEventLists();
    afx_msg void OnBnClickedExcludeforced();
    afx_msg void OnBnClickedIncludeonlyunclear();
    afx_msg void OnBnClickedHelpinclude();
+   afx_msg void OnBnClickedPerGameExport();
+   afx_msg void OnBnClickedLoadAndMergeResults();
+   bool IncludeGameInStats(const CGame &vGame, bool &bExcludeWhite, bool &bExcludeBlack);
+   bool IncludePositionInStats(const CGame &vGame, const CPosition &vPosition, int iMoveNum, bool bExcludeWhite, bool bExcludeBlack);
 };

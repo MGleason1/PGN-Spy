@@ -98,42 +98,15 @@ BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_EXCLUDEFORCED, &CResultsDlg::OnBnClickedExcludeforced)
    ON_BN_CLICKED(IDC_INCLUDEONLYUNCLEAR, &CResultsDlg::OnBnClickedIncludeonlyunclear)
    ON_BN_CLICKED(IDC_HELPINCLUDE, &CResultsDlg::OnBnClickedHelpinclude)
+   ON_BN_CLICKED(IDC_PERGAMEEXPORT, &CResultsDlg::OnBnClickedPerGameExport)
+   ON_BN_CLICKED(IDC_LOADANDMERGERESULTS, &CResultsDlg::OnBnClickedLoadAndMergeResults)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
 {
    CDialog::OnInitDialog();
 
-   CStringArray asPlayers, asEvents;
-   CArray<int, int> aiPlayers, aiEvents;
-   for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
-   {
-      AddStringIfNotFound(m_avGames[iGame].m_sWhite, asPlayers, aiPlayers);
-      AddStringIfNotFound(m_avGames[iGame].m_sBlack, asPlayers, aiPlayers);
-      AddStringIfNotFound(m_avGames[iGame].m_sEvent, asEvents, aiEvents);
-   }
-   for (int i = 0; i < asPlayers.GetSize(); i++)
-      m_vPlayers.AddString(asPlayers[i]);
-   for (int i = 0; i < asPlayers.GetSize(); i++)
-   {
-      if (m_vEngineSettings.m_sPlayerName.CompareNoCase(asPlayers[i]) != 0)
-         m_vOpponents.AddString(asPlayers[i]);
-   }
-   for (int i = 0; i < asEvents.GetSize(); i++)
-      m_vEvents.AddString(asEvents[i]);
-
-   if (!m_vAnalysisSettings.LoadSettingsFromRegistry())
-      m_vAnalysisSettings = CAnalysisSettings();
-   m_vAnalysisSettings.m_iMoveNumMin = m_vEngineSettings.m_iBookDepth + 1;
-   m_vAnalysisSettings.m_sPlayerName = m_vEngineSettings.m_sPlayerName;
-   if (!m_vEngineSettings.m_sPlayerName.IsEmpty())
-      m_vPlayers.SelectString(-1, m_vAnalysisSettings.m_sPlayerName);
-   CheckDlgButton(IDC_ALLMOVES, BST_CHECKED);
-   CheckDlgButton(IDC_WHITEMOVES, BST_UNCHECKED);
-   CheckDlgButton(IDC_BLACKMOVES, BST_UNCHECKED);
-
-   UpdateData(FALSE);
-
+   LoadPlayerAndEventLists();
    DisableInvalidSettings();
 
    CalculateStats();
@@ -147,16 +120,16 @@ BOOL CResultsDlg::OnInitDialog()
 void CResultsDlg::OnBnClickedAbout()
 {
    CString sMessage;
-   sMessage = "T1/T2/T3/etc: These stats display information about how often a player's moves matched the top\n"
+   sMessage = "T1/T2/T3/etc: These stats display information about how often a player's moves matched the top "
               "one, two, three, etc., engine moves.  A high number could be an indicator of possible engine use.\n"
               "\n"
-              ">N CP Loss: This indicates how often a player's moves were worse than the top engine move by the\n"
+              ">N CP Loss: This indicates how often a player's moves were worse than the top engine move by the "
               "specified value (in centipawns).  A low number could be an indicator of possible engine use.\n"
               "\n"
-              "CP loss: This indicates how much worse a player's moves were when compared to the top engine move.\n"
+              "CP loss: This indicates how much worse a player's moves were when compared to the top engine move. "
               "A low number could be an indicator of possible engine use.  Values are in centipawns (1/100 of a pawn).\n"
               "\n"
-              "These values MUST NOT be taken as evidence of cheating on their own, without proper statistical analysis,\n"
+              "These values MUST NOT be taken as evidence of cheating on their own, without proper statistical analysis, "
               "comparison to appropriate benchmarks, and consideration of other evidence.\n"
               "\n"
               "Binomial confidence intervals can be calculated at :"
@@ -231,6 +204,74 @@ void CResultsDlg::OnBnClickedSavedata()
    ShellExecute(NULL, "open", sFilePath, NULL, NULL, SW_MAXIMIZE);
 }
 
+bool CResultsDlg::IncludeGameInStats(const CGame &vGame, bool &bExcludeWhite, bool &bExcludeBlack)
+{
+   bExcludeWhite = m_vAnalysisSettings.m_bBlackOnly;
+   bExcludeBlack = m_vAnalysisSettings.m_bWhiteOnly;
+
+   //exclude games without the right players involved
+   if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
+      m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGame.m_sWhite) != 0 &&
+      m_vAnalysisSettings.m_sPlayerName.CompareNoCase(vGame.m_sBlack) != 0)
+      return false;
+   if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
+      m_vAnalysisSettings.m_sOpponentName.CompareNoCase(vGame.m_sWhite) != 0 &&
+      m_vAnalysisSettings.m_sOpponentName.CompareNoCase(vGame.m_sBlack) != 0)
+      return false;
+   if (!m_vAnalysisSettings.m_sEvent.IsEmpty() &&
+      m_vAnalysisSettings.m_sEvent.CompareNoCase(vGame.m_sEvent) != 0)
+      return false;
+
+   if (!m_vAnalysisSettings.m_bIncludeDraws && vGame.m_sResult.CompareNoCase("1/2-1/2") == 0)
+      return false;
+
+   if (!m_vAnalysisSettings.m_bIncludeLosses)
+   {
+      if (vGame.m_sResult.CompareNoCase("1-0") == 0)
+         bExcludeBlack = true;
+      else if (vGame.m_sResult.CompareNoCase("0-1") == 0)
+         bExcludeWhite = true;
+   }
+   if (!m_vAnalysisSettings.m_bIncludeWins)
+   {
+      if (vGame.m_sResult.CompareNoCase("1-0") == 0)
+         bExcludeWhite = true;
+      else if (vGame.m_sResult.CompareNoCase("0-1") == 0)
+         bExcludeBlack = true;
+   }
+
+   if (bExcludeWhite && bExcludeBlack)
+      return false;
+
+   if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty())
+   {
+      if (bExcludeWhite && vGame.m_sWhite.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
+         return false;
+      if (bExcludeBlack && vGame.m_sBlack.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
+         return false;
+   }
+   return true;
+}
+
+bool CResultsDlg::IncludePositionInStats(const CGame &vGame, const CPosition &vPosition, int iMoveNum, bool bExcludeWhite, bool bExcludeBlack)
+{
+   if (iMoveNum < m_vAnalysisSettings.m_iMoveNumMin || iMoveNum > m_vAnalysisSettings.m_iMoveNumMax)
+      return false;
+   if ((bExcludeWhite && vPosition.m_bWhite) || (bExcludeBlack && !vPosition.m_bWhite))
+      return false;
+
+   //check player names
+   CString sPlayerName = (vPosition.m_bWhite) ? vGame.m_sWhite : vGame.m_sBlack;
+   CString sOpponentName = (vPosition.m_bWhite) ? vGame.m_sBlack : vGame.m_sWhite;
+   if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
+      m_vAnalysisSettings.m_sPlayerName.CompareNoCase(sPlayerName) != 0)
+      return false;
+   if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
+      m_vAnalysisSettings.m_sOpponentName.CompareNoCase(sOpponentName) != 0)
+      return false;
+   return true;
+}
+
 void CResultsDlg::CalculateStats()
 {
    m_vUndecidedPositions.Initialize(m_vEngineSettings);
@@ -242,49 +283,9 @@ void CResultsDlg::CalculateStats()
    //calculate results
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
    {
-      //exclude games without the right players involved
-      if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
-          m_vAnalysisSettings.m_sPlayerName.CompareNoCase(m_avGames[iGame].m_sWhite) != 0 &&
-          m_vAnalysisSettings.m_sPlayerName.CompareNoCase(m_avGames[iGame].m_sBlack) != 0)
+      bool bExcludeWhite, bExcludeBlack;
+      if (!IncludeGameInStats(m_avGames[iGame], bExcludeWhite, bExcludeBlack))
          continue;
-      if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
-          m_vAnalysisSettings.m_sOpponentName.CompareNoCase(m_avGames[iGame].m_sWhite) != 0 &&
-          m_vAnalysisSettings.m_sOpponentName.CompareNoCase(m_avGames[iGame].m_sBlack) != 0)
-         continue;
-      if (!m_vAnalysisSettings.m_sEvent.IsEmpty() &&
-          m_vAnalysisSettings.m_sEvent.CompareNoCase(m_avGames[iGame].m_sEvent) != 0)
-         continue;
-
-      if (!m_vAnalysisSettings.m_bIncludeDraws && m_avGames[iGame].m_sResult.CompareNoCase("1/2-1/2") == 0)
-         continue;
-
-      bool bExcludeWhite = m_vAnalysisSettings.m_bBlackOnly;
-      bool bExcludeBlack = m_vAnalysisSettings.m_bWhiteOnly;
-      if (!m_vAnalysisSettings.m_bIncludeLosses)
-      {
-         if (m_avGames[iGame].m_sResult.CompareNoCase("1-0") == 0)
-            bExcludeBlack = true;
-         else if (m_avGames[iGame].m_sResult.CompareNoCase("0-1") == 0)
-            bExcludeWhite = true;
-      }
-      if (!m_vAnalysisSettings.m_bIncludeWins)
-      {
-         if (m_avGames[iGame].m_sResult.CompareNoCase("1-0") == 0)
-            bExcludeWhite = true;
-         else if (m_avGames[iGame].m_sResult.CompareNoCase("0-1") == 0)
-            bExcludeBlack = true;
-      }
-
-      if (bExcludeWhite && bExcludeBlack)
-         continue;
-
-      if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty())
-      {
-         if (bExcludeWhite && m_avGames[iGame].m_sWhite.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
-            continue;
-         if (bExcludeBlack && m_avGames[iGame].m_sBlack.CompareNoCase(m_vAnalysisSettings.m_sPlayerName) == 0)
-            continue;
-      }
 
       iGamesInSubset++;
       int iMoveNum = m_vEngineSettings.m_iBookDepth;
@@ -295,19 +296,7 @@ void CResultsDlg::CalculateStats()
          CPosition *pPosition = &m_avGames[iGame].m_avPositions[iPosition];
          if (pPosition->m_bWhite || !m_vEngineSettings.m_sPlayerName.IsEmpty())
             iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
-         if (iMoveNum < m_vAnalysisSettings.m_iMoveNumMin || iMoveNum > m_vAnalysisSettings.m_iMoveNumMax)
-            continue;
-         if ((bExcludeWhite && pPosition->m_bWhite) || (bExcludeBlack && !pPosition->m_bWhite))
-            continue;
-
-         //check player names
-         CString sPlayerName = (pPosition->m_bWhite) ? m_avGames[iGame].m_sWhite : m_avGames[iGame].m_sBlack;
-         CString sOpponentName = (pPosition->m_bWhite) ? m_avGames[iGame].m_sBlack : m_avGames[iGame].m_sWhite;
-         if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty() &&
-             m_vAnalysisSettings.m_sPlayerName.CompareNoCase(sPlayerName) != 0)
-            continue;
-         if (!m_vAnalysisSettings.m_sOpponentName.IsEmpty() &&
-             m_vAnalysisSettings.m_sOpponentName.CompareNoCase(sOpponentName) != 0)
+         if (!IncludePositionInStats(m_avGames[iGame], *pPosition, iMoveNum, bExcludeWhite, bExcludeBlack))
             continue;
 
          if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
@@ -338,7 +327,10 @@ void CResultsDlg::CalculateStats()
    m_vPostLosingPositions.FinaliseStats();
 
    //Now dump results to text
-   m_sResults.Format("%i games\r\n\r\n", iGamesInSubset);
+   if (!m_vAnalysisSettings.m_sPlayerName.IsEmpty())
+      m_sResults.Format("%s, %i games\r\n\r\n", m_vAnalysisSettings.m_sPlayerName, iGamesInSubset);
+   else
+      m_sResults.Format("%i games\r\n\r\n", iGamesInSubset);
    m_sResults += "UNDECIDED POSITIONS\r\n";
    m_sResults += m_vUndecidedPositions.GetResultsText();
    if (m_vAnalysisSettings.m_bIncludeLosing)
@@ -514,6 +506,42 @@ void CResultsDlg::DisableInvalidSettings()
    UpdateData(FALSE);
 }
 
+void CResultsDlg::LoadPlayerAndEventLists()
+{
+   m_vPlayers.ResetContent();
+   m_vOpponents.ResetContent();
+   m_vEvents.ResetContent();
+   CStringArray asPlayers, asEvents;
+   CArray<int, int> aiPlayers, aiEvents;
+   for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
+   {
+      AddStringIfNotFound(m_avGames[iGame].m_sWhite, asPlayers, aiPlayers);
+      AddStringIfNotFound(m_avGames[iGame].m_sBlack, asPlayers, aiPlayers);
+      AddStringIfNotFound(m_avGames[iGame].m_sEvent, asEvents, aiEvents);
+   }
+   for (int i = 0; i < asPlayers.GetSize(); i++)
+      m_vPlayers.AddString(asPlayers[i]);
+   for (int i = 0; i < asPlayers.GetSize(); i++)
+   {
+      if (m_vEngineSettings.m_sPlayerName.CompareNoCase(asPlayers[i]) != 0)
+         m_vOpponents.AddString(asPlayers[i]);
+   }
+   for (int i = 0; i < asEvents.GetSize(); i++)
+      m_vEvents.AddString(asEvents[i]);
+
+   if (!m_vAnalysisSettings.LoadSettingsFromRegistry())
+      m_vAnalysisSettings = CAnalysisSettings();
+   m_vAnalysisSettings.m_iMoveNumMin = m_vEngineSettings.m_iBookDepth + 1;
+   m_vAnalysisSettings.m_sPlayerName = m_vEngineSettings.m_sPlayerName;
+   if (!m_vEngineSettings.m_sPlayerName.IsEmpty())
+      m_vPlayers.SelectString(-1, m_vAnalysisSettings.m_sPlayerName);
+   CheckDlgButton(IDC_ALLMOVES, BST_CHECKED);
+   CheckDlgButton(IDC_WHITEMOVES, BST_UNCHECKED);
+   CheckDlgButton(IDC_BLACKMOVES, BST_UNCHECKED);
+
+   UpdateData(FALSE);
+}
+
 void CResultsDlg::OnBnClickedExcludeforced()
 {
    DisableInvalidSettings();
@@ -534,4 +562,137 @@ void CResultsDlg::OnBnClickedHelpinclude()
                       "question was losing earlier in the game.  Positions where either player is losing by more than "
                       "the losing position threshold will always be excluded.";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedPerGameExport()
+{
+   //Required stats:
+   //number of undecided positions
+   //T(n) num
+   //T(n) denom
+   //=0 CP loss num
+   //>10 CP loss num
+   //>25 CP loss num
+   //>50 CP loss num
+   //>100 CP loss num
+   //>200 CP loss num
+   //>500 CP loss num
+   //CP loss mean
+   CFileDialog vFileDialog(FALSE, _T("tab"), _T("*.tab"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Tab-delimited files (*.tab)|*.tab|All files (*.*)|*.*||"), this);
+   if (vFileDialog.DoModal() != IDOK)
+      return;
+   CString sFilePath = vFileDialog.GetPathName();
+
+   CString sReport, sLine, sText;
+   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control";
+   for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
+   {
+      sText.Format("\tT%i moves\tT%i positions", i + 1, i + 1);
+      sReport += sText;
+   }
+   sReport += "\tUndecided positions\t=0 CP loss num\t>10 CP loss num\t>25 CP loss num\t>50 CP loss num\t>100 CP loss num\t>200 CP loss num\t>500 CP loss num\tCP loss mean";
+   int iGamesInSubset = 0;
+   for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
+   {
+      CGame *pGame = &m_avGames[iGame];
+      bool bExcludeWhite, bExcludeBlack;
+      if (!IncludeGameInStats(*pGame, bExcludeWhite, bExcludeBlack))
+         continue;
+      iGamesInSubset++;
+      CStats vUndecidedPositions;
+      vUndecidedPositions.Initialize(m_vEngineSettings);
+
+      int iMoveNum = m_vEngineSettings.m_iBookDepth;
+      for (int iPosition = 0; iPosition < pGame->m_avPositions.GetSize(); iPosition++)
+      {
+         CPosition *pPosition = &pGame->m_avPositions[iPosition];
+         if (pPosition->m_bWhite || !m_vEngineSettings.m_sPlayerName.IsEmpty())
+            iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
+         if (!IncludePositionInStats(*pGame, *pPosition, iMoveNum, bExcludeWhite, bExcludeBlack))
+            continue;
+         if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
+            vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+      }
+      vUndecidedPositions.FinaliseStats();
+
+      //first get general game data
+      sLine = pGame->m_sEvent;
+      sLine += "\t" + pGame->m_sDate;
+      sLine += "\t" + pGame->m_sWhite;
+      sLine += "\t" + pGame->m_sBlack;
+      sLine += "\t" + pGame->m_sResult;
+      sLine += "\t" + pGame->m_sTimeControl;
+
+      //now get T-stats
+      for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
+      {
+         sText.Format("\t%i\t%i", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i]);
+         sLine += sText;
+      }
+
+      //get CP loss values
+      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i10CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i25CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i50CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i100CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i200CPLoss);
+      sLine += sText;
+      sText.Format("\t%i", vUndecidedPositions.m_i500CPLoss);
+      sLine += sText;
+      sText.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
+      sLine += sText;
+
+      sReport += "\r\n" + sLine;
+   }
+
+   CFile vFile;
+   if (!vFile.Open(sFilePath, CFile::modeCreate | CFile::modeWrite))
+   {
+      MessageBox("Failed to create output file.", "PGN Spy", MB_ICONEXCLAMATION);
+      return;
+   }
+
+   vFile.Write(sReport.GetBuffer(), sReport.GetLength());
+   sReport.ReleaseBuffer();
+   vFile.Close();
+   MessageBox("File saved.", "PGN Spy", MB_ICONINFORMATION);
+
+   ShellExecute(NULL, "open", sFilePath, NULL, NULL, SW_MAXIMIZE);
+}
+
+
+void CResultsDlg::OnBnClickedLoadAndMergeResults()
+{
+   CFileDialog vFileDialog(TRUE, "xml", "*.xml", OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT, "PGN Spy files (*.xml)|*.xml|All files (*.*)|*.*||", this);
+   if (vFileDialog.DoModal() != IDOK)
+      return;
+   CArray <CGame, CGame> avGames;
+   CEngineSettings vOtherEngineSettings;
+   if (!LoadGameArrayFromFile(vFileDialog.GetPathName(), avGames, vOtherEngineSettings))
+   {
+      MessageBox(_T("Failed to load game file."), _T("PGN Spy"), MB_ICONEXCLAMATION);
+      return;
+   }
+   CString sWarning;
+   CEngineSettings vCompatibleSettings = m_vEngineSettings.MakeCompatible(vOtherEngineSettings, sWarning);
+   if (!sWarning.IsEmpty())
+   {
+      CString sMessage = "Engine setting compatibility warnings were encountered.  Do you wish to continue?\r\n\r\n" + sWarning;
+      if (MessageBox(sMessage, "PGN Spy", MB_ICONEXCLAMATION | MB_OKCANCEL) == IDCANCEL)
+         return;
+   }
+   m_vEngineSettings = vCompatibleSettings;
+   m_avGames.Append(avGames);
+   LoadPlayerAndEventLists();
+   CalculateStats();
+   MessageBox("Analysis results successfully loaded and merged.", "PGN Spy", MB_ICONINFORMATION);
 }

@@ -61,6 +61,7 @@ public:
    CEngineSettings();
    bool LoadSettingsFromRegistry();
    bool SaveSettingsToRegistry();
+   CEngineSettings MakeCompatible(const CEngineSettings vOtherEngineSettings, CString &rsWarning) const;
 
    //engine settings
    CString m_sEnginePath;
@@ -138,7 +139,6 @@ public:
    int m_i50CPLoss;
    int m_i100CPLoss;
    int m_i200CPLoss;
-   int m_i300CPLoss;
    int m_i500CPLoss;
 
    double m_dAvgCentipawnLoss;

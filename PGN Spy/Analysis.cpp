@@ -150,6 +150,67 @@ bool CEngineSettings::SaveSettingsToRegistry()
    return true;
 }
 
+CEngineSettings CEngineSettings::MakeCompatible(const CEngineSettings vOtherEngineSettings, CString &rsWarning) const
+{
+   CEngineSettings vEngineSettings = *this;
+   rsWarning = "";
+
+   //A mismatch on this setting should be resolved by blanking out the setting, but doesn't require a warning
+   if (m_sPlayerName.CompareNoCase(vOtherEngineSettings.m_sPlayerName) != 0)
+   {
+      vEngineSettings.m_sPlayerName = "";
+   }
+
+   //A mismatch here needs resolved; we will only have partial data for the larger number of variations, so
+   //simply ignore that data
+   if (m_iNumVariations != vOtherEngineSettings.m_iNumVariations)
+   {
+      if (!rsWarning.IsEmpty())
+         rsWarning += "\r\n";
+      rsWarning = "The number of variations does not match.  Only the lower number will be preserved.";
+      vEngineSettings.m_iNumVariations = min(m_iNumVariations, vOtherEngineSettings.m_iNumVariations);
+   }
+
+   //the user should be warned about mismatches on the following settings, but otherwise we can ignore it
+   if (m_iSearchDepth != vOtherEngineSettings.m_iSearchDepth || m_iMaxTime != vOtherEngineSettings.m_iMaxTime || m_iMinTime != vOtherEngineSettings.m_iMinTime)
+   {
+      if (!rsWarning.IsEmpty())
+         rsWarning += "\r\n";
+      rsWarning += "The search depth and/or time settings do not match.";
+   }
+   if (m_iHashSize != vOtherEngineSettings.m_iHashSize)
+   {
+      if (!rsWarning.IsEmpty())
+         rsWarning += "\r\n";
+      rsWarning += "The hash size setting does not match.";
+   }
+   if (m_iBookDepth != vOtherEngineSettings.m_iBookDepth)
+   {
+      if (!rsWarning.IsEmpty())
+         rsWarning += "\r\n";
+      rsWarning += "The book depth setting does not match.";
+   }
+   if (m_sEnginePath.CompareNoCase(vOtherEngineSettings.m_sEnginePath) != 0)
+   {
+      CString sEngineName, sEngineNameOther;
+      int iLastSlash = m_sEnginePath.ReverseFind('\\');
+      if (iLastSlash != -1)
+         sEngineName = m_sEnginePath.Right(m_sEnginePath.GetLength() - iLastSlash - 1);
+      iLastSlash = vOtherEngineSettings.m_sEnginePath.ReverseFind('\\');
+      if (iLastSlash != -1)
+         sEngineNameOther = vOtherEngineSettings.m_sEnginePath.Right(vOtherEngineSettings.m_sEnginePath.GetLength() - iLastSlash - 1);
+
+      if (sEngineName.CompareNoCase(sEngineNameOther) != 0)
+      {
+         if (!rsWarning.IsEmpty())
+            rsWarning += "\r\n";
+         rsWarning += "The engine does not match.";
+      }
+   }
+   return vEngineSettings;
+}
+
+
 CMove::CMove()
 {
    m_iDepth = 0;
@@ -332,7 +393,13 @@ bool CGame::LoadGame(CString sGameText)
                vMove.m_iScore = -1000;
          }
          else
+         {
             vMove.m_iScore = atoi(sText);
+            if (vMove.m_iScore > 1000)
+               vMove.m_iScore = 1000;
+            else if (vMove.m_iScore < -1000)
+               vMove.m_iScore = -1000;
+         }
          vPosition.m_avTopMoves.Add(vMove);
       }
       if (!vGame.OutOfElem())
