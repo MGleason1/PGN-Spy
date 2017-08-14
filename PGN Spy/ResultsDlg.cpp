@@ -159,7 +159,8 @@ void CResultsDlg::OnBnClickedSavedata()
       {
          //first get general game data
          CPosition *pPosition = &pGame->m_avPositions[iPosition];
-         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
+         //the \' before the result is so Excel won't be stupid and treat 1-0 as a date - 1/1/2000
+         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t\'" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
 
          //got all game data, now get move data
          //move number and coordinates
@@ -585,13 +586,13 @@ void CResultsDlg::OnBnClickedPerGameExport()
    CString sFilePath = vFileDialog.GetPathName();
 
    CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control";
+   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tUndecided positions";
    for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
    {
-      sText.Format("\tT%i moves\tT%i positions", i + 1, i + 1);
+      sText.Format("\tT%i moves\tT%i positions\tT%i%%", i + 1, i + 1, i + 1);
       sReport += sText;
    }
-   sReport += "\tUndecided positions\t=0 CP loss num\t>10 CP loss num\t>25 CP loss num\t>50 CP loss num\t>100 CP loss num\t>200 CP loss num\t>500 CP loss num\tCP loss mean";
+   sReport += "\t=0 CP loss num\t>0 CP loss num\t>10 CP loss num\t>25 CP loss num\t>50 CP loss num\t>100 CP loss num\t>200 CP loss num\t>500 CP loss num\tCP loss mean";
    int iGamesInSubset = 0;
    for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
    {
@@ -621,18 +622,23 @@ void CResultsDlg::OnBnClickedPerGameExport()
       sLine += "\t" + pGame->m_sDate;
       sLine += "\t" + pGame->m_sWhite;
       sLine += "\t" + pGame->m_sBlack;
-      sLine += "\t" + pGame->m_sResult;
+      sLine += "\t\'" + pGame->m_sResult; //the \' is so that Excel doesn't interpret 1-0 as a date - 1/1/2000
       sLine += "\t" + pGame->m_sTimeControl;
+      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions);
+      sLine += sText;
 
       //now get T-stats
       for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
       {
-         sText.Format("\t%i\t%i", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i]);
+         double dTVal = 0;
+         if (vUndecidedPositions.m_aiTMoves[i] > 0)
+            dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
+         sText.Format("\t%i\t%i\t%.2f%%", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i], dTVal);
          sLine += sText;
       }
 
       //get CP loss values
-      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions);
+      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss);
       sLine += sText;
       sText.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
       sLine += sText;
