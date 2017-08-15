@@ -487,7 +487,10 @@ void CStats::AddPosition(CPosition &vPosition, const CAnalysisSettings &vSetting
 
 void CStats::FinaliseStats()
 {
-   m_dAvgCentipawnLoss = (double)m_iTotalCentipawnLoss / (double)m_iNumPositions;
+   if (m_iNumPositions > 0)
+      m_dAvgCentipawnLoss = (double)m_iTotalCentipawnLoss / (double)m_iNumPositions;
+   else
+      m_dAvgCentipawnLoss = 0;
 
    double dTotalVariance = 0;
    for (int i = 0; i < m_iNumPositions; i++)
@@ -496,7 +499,11 @@ void CStats::FinaliseStats()
       dTotalVariance += dDiffFromMean * dDiffFromMean;
    }
 
-   double dVariance = dTotalVariance / (double)m_iNumPositions;
+   double dVariance;
+   if (m_iNumPositions > 0)
+      dVariance = dTotalVariance / (double)m_iNumPositions;
+   else
+      dVariance = 0;
    m_dCentipawnLossStdDeviation = sqrt(dVariance);
 }
 
