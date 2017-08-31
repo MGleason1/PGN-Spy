@@ -30,6 +30,12 @@
 
 #include "utils.h"
 
+DWORD WINAPI EngineMonitor(_In_ LPVOID lpParameter);
+bool g_bEngineClosed = false;
+int g_iResponseCount = 0;
+bool g_bWaitingForResponse = false;
+Engine *g_eEngineForMonitor = NULL;
+
 void Engine::clearHash(void) {
    stringstream ss;
    ss << "setoption name clear hash";
@@ -140,6 +146,10 @@ bool Engine::checkIsReady(void) {
 }
 
 void Engine::quitEngine(void) {
+    CloseHandle(hEngineMonitor);
+    g_bEngineClosed = true;
+    g_eEngineForMonitor = NULL;
+
     send("quit");
 }
 
@@ -234,7 +244,10 @@ string Engine::getResponse(bool& eof) {
          } while (bytesAvailable == 0);
 #endif
          DWORD bytesRead;
+         g_bWaitingForResponse = true;
          DWORD success = ReadFile(readFromEngine, buffer, MAXBUFF, &bytesRead, NULL);
+         g_bWaitingForResponse = false;
+         g_iResponseCount++;
          buffer[bytesRead] = '\0';
          eof = !success || bytesRead == 0;
 #endif
@@ -423,14 +436,79 @@ bool Engine::startEngine(const string& engineName) {
 		// Some applications might keep these handles to monitor the status
 		// of the child process, for example. 
 
-		CloseHandle(piProcInfo.hProcess);
+//		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
-		return true;
 	}
+
+   SECURITY_ATTRIBUTES saThreadAttrib;
+   saThreadAttrib.bInheritHandle = TRUE;
+   saThreadAttrib.nLength = sizeof(SECURITY_ATTRIBUTES);
+   saThreadAttrib.lpSecurityDescriptor = NULL;
+   DWORD dwThreadID;
+//   Sleep(30000); //to allow attaching the debugger
+   hEngineMonitor = CreateThread(&saThreadAttrib, 0, &EngineMonitor, piProcInfo.hProcess, 0, &dwThreadID);
 
 #ifdef _DEBUG
    communications = "";
 #endif
 
 #endif
+   return true;
+}
+
+DWORD WINAPI EngineMonitor(_In_ LPVOID lpParameter)
+{
+//   Sleep(30000); //to allow attaching the debugger
+   int iPrevResponseCount = 0;
+   HANDLE hEngineProcess = lpParameter;
+   int iEngineLockedCount = 0;
+   while (!g_bEngineClosed)
+   {
+      if (WaitForSingleObject(hEngineProcess, 5000) == WAIT_OBJECT_0)
+      {
+         //sleep for two seconds in case the engine closed legitimately; if so, this will give
+         //the main thread plenty of time to set g_bEngineClosed
+         Sleep(2000);
+         break;
+      }
+      else if (g_bWaitingForResponse && iPrevResponseCount == g_iResponseCount)
+      {
+         //if we've been waiting for a response from the engine, wait until it's been locked for 60 seconds
+         //before we assume it's unresponsive and kill it
+         iEngineLockedCount++;
+         if (iEngineLockedCount > 20)
+            g_eEngineForMonitor->quitEngine();
+      }
+      else
+      {
+         //Engine is responding normally, reset locked count
+         iEngineLockedCount = 0;
+      }
+      iPrevResponseCount = g_iResponseCount;
+
+      HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+      DWORD dwBytesAvailable = 0;
+      PeekNamedPipe(hStdIn, NULL, NULL, NULL, &dwBytesAvailable, NULL);
+      if (dwBytesAvailable > 0)
+      {
+         static char buffer[500] = "";
+         DWORD dwBytesToRead = (dwBytesAvailable > 500) ? 500 : dwBytesAvailable;
+         DWORD bytesRead;
+         DWORD success = ReadFile(hStdIn, buffer, dwBytesToRead, &bytesRead, NULL);
+         if (strstr(buffer, "cancel") != NULL)
+         {
+            if (!g_bEngineClosed)
+               TerminateProcess(hEngineProcess, 0);
+//                g_eEngineForMonitor->quitEngine();
+            ExitProcess(0);
+         }
+      }
+   }
+   CloseHandle(hEngineProcess);
+   if (!g_bEngineClosed)
+   {
+      //engine closed unexpectedly; exit process instead of letting the main process hang waiting for a response
+      ExitProcess(1);
+   }
+   return 0;
 }

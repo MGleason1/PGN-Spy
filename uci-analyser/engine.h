@@ -97,6 +97,7 @@ private:
     int searchDepth;
     int searchMaxTime;
     int searchMinTime;
+    HANDLE hEngineMonitor;
 
     bool startEngine(const string&);
 };

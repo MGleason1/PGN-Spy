@@ -399,7 +399,10 @@ bool CAnalysisDlg::ProcessGames()
       {
          if (m_ahProcesses[i])
          {
-            TerminateProcess(m_ahProcesses[i], 1);//shut down the analyser; the engine should close itself after a bit
+            CFile vInFile(m_ahChildStdInWrite[i]);
+            vInFile.Write("cancel", 6);
+
+//            TerminateProcess(m_ahProcesses[i], 1);//shut down the analyser; the engine should close itself after a bit
             CloseHandle(m_ahProcesses[i]);
             CloseHandle(m_ahChildStdInRead[i]);
             CloseHandle(m_ahChildStdInWrite[i]);
@@ -533,7 +536,7 @@ bool CAnalysisDlg::LaunchAnalyser(CGamePGN vGamePGN, int iCurThread)
    PROCESS_INFORMATION vProcessInfo;
    STARTUPINFO vStartupInfo = { 0 };
    vStartupInfo.cb = sizeof(STARTUPINFO);
-   vStartupInfo.hStdInput = m_ahChildStdInWrite[iCurThread];
+   vStartupInfo.hStdInput = m_ahChildStdInRead[iCurThread];
    vStartupInfo.hStdOutput = m_ahChildStdOutWrite[iCurThread];
    vStartupInfo.hStdError = m_ahChildStdErrWrite[iCurThread];
    vStartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
