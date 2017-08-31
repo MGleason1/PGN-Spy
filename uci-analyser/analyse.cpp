@@ -835,6 +835,11 @@ void obtainEvaluations() {
         reply = engine->getResponse(eof);
         if (!eof) {
             // Break up the reply.
+           if (reply.find("upperbound") != string::npos || reply.find("lowerbound") != string::npos)
+           {
+              //skip upperbound and lowerbound lines
+              continue;
+           }
             tokens.clear();
             tokenise(reply, tokens);
             if (tokens.size() > 0) {
