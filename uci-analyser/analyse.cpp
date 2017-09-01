@@ -44,7 +44,7 @@ static const char *VERSION = "2014.06.02";
 // The length of algebraic moves expected by a UCI engine.
 #define ALGEBRAIC_MOVELEN 4
 
-void extractInfo(string& info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck);
+void extractInfo(string& info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool engineStopped, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck);
 bool readGame(istream &movestream, vector<string> &movelist,
               string& fenstring, int& bookDepth);
 void sendGame(vector<string> &movelist, const string& fenstring, int bookDepth);
@@ -554,7 +554,7 @@ void sendGame(vector<string> &movelist, const string& fenstring, int bookDepth) 
  * Extract the information from an info line returned
  * by the engine.
  */
-void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck) {
+void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int searchMaxTime, int searchMinTime, bool engineStopped, bool &reachedDepth, bool &beingMated, bool &engineCouldBeStuck) {
     reachedDepth = false;
     ASSERT_IS("info", infoTokens[0]);
     if (info.find("multipv ") != string::npos) {
@@ -588,10 +588,15 @@ void extractInfo(string &info, vector<string> infoTokens, int searchDepth, int s
             bool engineStuck = engineCouldBeStuck && depth > 50; //if we've at depth 50 and never been given another variation, assume engine's stuck and bail out
             if (!engineStuck && depth > 30 && time < 1000)
                engineStuck = true; //if we reach depth 30 in under a second, we probably have some very forced lines, which tends to mean we get stuck
-            if (time < searchMinTime && !beingMated && !engineStuck)
-                return; //keep searching at least until we hit min time - unless we're mated by force or engine's stuck
-            if (depth < searchDepth && time <= searchMaxTime && !beingMated && !engineStuck)
-                return; //keep searching until we hit either search depth or max time - unless we're mated by force or engine's stuck
+            if (!engineStopped)
+            {
+                //if the engine hasn't been stopped, don't save results until the right time/depth settings are reached
+                //if the engine has been stopped, save results even if this line hasn't reached the right depth
+                if (time < searchMinTime && !beingMated && !engineStuck)
+                    return; //keep searching at least until we hit min time - unless we're mated by force or engine's stuck
+                if (depth < searchDepth && time <= searchMaxTime && !beingMated && !engineStuck)
+                    return; //keep searching until we hit either search depth or max time - unless we're mated by force or engine's stuck
+            }
             reachedDepth = true;
             Evaluation *ev = new Evaluation(infoTokens, info);
             saveEvaluation(ev, info);
@@ -834,19 +839,20 @@ void obtainEvaluations() {
     do {
         reply = engine->getResponse(eof);
         if (!eof) {
+            //skip currmovenumber lines
+            if (reply.find("currmovenumber") != string::npos)
+                continue;
+            if ((reply.find("upperbound") != string::npos || reply.find("lowerbound") != string::npos) && reply.find("mate") != string::npos)
+                //skip upperbound and lowerbound lines
+                continue;
             // Break up the reply.
-           if (reply.find("upperbound") != string::npos || reply.find("lowerbound") != string::npos)
-           {
-              //skip upperbound and lowerbound lines
-              continue;
-           }
             tokens.clear();
             tokenise(reply, tokens);
             if (tokens.size() > 0) {
                 string tokenType = tokens[0];
                 if (tokenType == "info") {
                     bool reachedDepth = false;
-                    extractInfo(reply, tokens, searchDepth, searchMaxTime, searchMinTime, reachedDepth, beingMated, engineCouldBeStuck);
+                    extractInfo(reply, tokens, searchDepth, searchMaxTime, searchMinTime, engineStopped, reachedDepth, beingMated, engineCouldBeStuck);
                     if ((reachedDepth || beingMated) && !engineStopped)
                     {
                         engineStopped = true;
