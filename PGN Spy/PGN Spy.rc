@@ -76,7 +76,7 @@ CAPTION "About PGN Spy"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "PGN Spy Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "PGN Spy Version 1.1",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2017 Michael J. Gleason",IDC_STATIC,40,25,125,8
     DEFPUSHBUTTON   "OK",IDOK,258,7,50,16,WS_GROUP
     LTEXT           "Static",IDC_CREDITS,40,37,268,55
@@ -198,8 +198,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -215,12 +215,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "FileDescription", "PGN Spy"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "PGN Spy.exe"
             VALUE "LegalCopyright", "(c) 2017 Michael J. Gleason"
             VALUE "OriginalFilename", "PGN Spy.exe"
             VALUE "ProductName", "PGN Spy"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
