@@ -26,46 +26,13 @@ http://theweekinchess.com/twic - massive weekly downloads of many tournaments an
 
 This software will scan a collection of games in pgn format, and calculate various statistics.
 
-It will display results from two different data sets: 1) positions where neither side has
-a large advantage, and 2) positions where one side has an advantage but the game is not
-over yet.  Suspicious results in the first data set would be indicative of a cheater who
-uses an engine in all positions, or until he is ahead, and then perhaps plays normally.
-Suspicious results in the second data set would be indicative of a cheater who uses an
-engine to try to recover a losing position.
-
-SETTINGS
-
-Note: all thresholds should be entered in centipawns - 1/100th of a pawn.  Thus, 50 centipawns
-is 1/2 of a pawn.
+ANALYSIS SETTINGS
 
 Input File - select the collection of games you want to analyse.  They should be in pgn format.
 
 Player to investigate - enter the name of the player whose moves you want to analyse.  Ensure
 the name is spelled the same way as in the pgn file.  If you leave this blank, all moves from
 all players will be analysed; this is useful for establishing baselines from elite tournaments.
-
-Exclude Forced Moves/Forced Move Threshold - This option is intended to minimize false positives
-in highly tactical samples by eliminating positions with only one reasonable move from T1/T2/T3/etc.
-statistics.  If this is enabled, if the second best move is worse than the best move by the specified
-threshold, the position will be excluded from T1 results.  If the third-best move is worse than the
-best move by the specified threshold, the position will be exclude from T2 results; the logic is
-similar for T3/T4/T5, etc.
-
-Include only unclear positions/Unclear position threshold - this option is also intended to minimize
-false positives in highly tactical samples.  If the second best move is worse than the best move by
-the specified threshold, the position will be excluded from T1 results.  If the third best move is
-worse than the best move by the specified threshold, the position will be excluded from T2 results.
-This is similar to the forced move setting; however, the force moved setting compares each move to
-the next-best option (i.e. comparing the 2nd move to the 3rd move, comparing the 3rd move to the 4th
-move); the unclear position setting compares each move to the best option.
-
-Undecided position threshold - positions that are evaluated such that neither side has an advantage
-greater than the specified threshold are reported in the results for undecided positions.  Positions
-where one side or the other has a large advantage are excluded.
-
-Losing position threshold - positions that are evaluated such that the player in question is losing by
-more than the undecided position threshold but less than the losing position threshold are reported in
-the results for losing positions.  All other positions are excluded.
 
 Book depth - the number of opening moves to exclude from analysis.  Strong players will often have a
 large number of moves memorised in certain openings.  Additionally, in correspondence chess, the
@@ -99,6 +66,34 @@ is one move for each side.
 Engine - select a UCI-compatible engine.  Most strong engines are UCI-compatible.  Stockfish is a
 very strong UCI-compatible engine that is available for free: http://stockfishchess.org/download/
 
+POST-ANALYSIS FILTER SETTINGS
+
+Note: all thresholds should be entered in centipawns - 1/100th of a pawn.  Thus, 50 centipawns
+is 1/2 of a pawn.
+
+Exclude Forced Moves/Forced Move Threshold - This option is intended to minimize false positives
+in highly tactical samples by eliminating positions with only one reasonable move from T1/T2/T3/etc.
+statistics.  If this is enabled, if the second best move is worse than the best move by the specified
+threshold, the position will be excluded from T1 results.  If the third-best move is worse than the
+best move by the specified threshold, the position will be exclude from T2 results; the logic is
+similar for T3/T4/T5, etc.
+
+Include only unclear positions/Unclear position threshold - this option is also intended to minimize
+false positives in highly tactical samples.  If the second best move is worse than the best move by
+the specified threshold, the position will be excluded from T1 results.  If the third best move is
+worse than the best move by the specified threshold, the position will be excluded from T2 results.
+This is similar to the forced move setting; however, the force moved setting compares each move to
+the next-best option (i.e. comparing the 2nd move to the 3rd move, comparing the 3rd move to the 4th
+move); the unclear position setting compares each move to the best option.
+
+Undecided position threshold - positions that are evaluated such that neither side has an advantage
+greater than the specified threshold are reported in the results for undecided positions.  Positions
+where one side or the other has a large advantage are excluded.
+
+Losing position threshold - positions that are evaluated such that the player in question is losing by
+more than the undecided position threshold but less than the losing position threshold are reported in
+the results for losing positions.  All other positions are excluded.
+
 RESULTS
 
 Undecided positions - positions where neither side is winning by more than the "Undecided positions threshold"
@@ -108,6 +103,13 @@ results in this category.
 Losing positions - positions where the player in question is losing by more than the undecided positions
 threshold but less than the losing positions threshold are included in this category.  A player who
 cheats to try to save a lost position may have suspicious results in this category.
+
+Winning positions - positions where the player in question is ahead by more than the undecided positions threshold
+but less than the losing positions threshold are included in this category.
+
+Post-losing positions - all positions where neither side is ahead by more than the losing positions threshold
+and where the player in question has at an earlier point in the game been behind by more than the undecided
+positions threshold are included in this category.
 
 Positions - the number of positions included in this category.
 

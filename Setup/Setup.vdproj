@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_09C13F15758F4E5B9947234A5F07BB5A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0D7AE1368B8743C78244FBAAE77F0815"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -28,18 +22,6 @@
         "Entry"
         {
         "MsmKey" = "8:_2BE538929E0147DF93F666FE61CC1DAC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_317B261DB27745379BC63AF67C8E6875"
-        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4AF52385E97042CF8D7C3CADD683BE06"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -57,20 +39,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_52D337C17D264CA5B0AA31E8F412D8CE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_659F1DA154404367A4F6B0C67306587A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_65E2011ABEE0BB5EEAF62FFB9CD1DC96"
-        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
+        "MsmKey" = "8:_6FAB8EE90A0A4CEEBEECE0C17C1E9A77"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_74E8AA55970DFD49EE85A5CAAB685669"
-        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
+        "MsmKey" = "8:_75E3D6551BAE49C282E69ED8F616D628"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -93,7 +81,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_ADF0030D85B941E59668D15B3C50E3E6"
+        "MsmKey" = "8:_9C6ED04F12404578890DAF0A37BEB722"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -105,8 +93,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BED37366D782C7445D6F4CE60C91890D"
-        "OwnerKey" = "8:_890F35534BC04477BF10F6A68E0C8C7A"
+        "MsmKey" = "8:_DEC447B1F47047EBA93A74DD763C95C3"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -202,26 +190,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09C13F15758F4E5B9947234A5F07BB5A"
-            {
-            "SourcePath" = "8:..\\..\\Data sets\\Blitz\\grand chess tour 5 2 blitz paris 2016.pgn"
-            "TargetName" = "8:grand chess tour 5 2 blitz paris 2016.pgn"
-            "Tag" = "8:"
-            "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D7AE1368B8743C78244FBAAE77F0815"
             {
             "SourcePath" = "8:..\\..\\Data sets\\Bullet\\Hikaru 1 0 Bullet.pgn"
@@ -262,12 +230,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4AF52385E97042CF8D7C3CADD683BE06"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DF96AF194524E48A724A5D06AD2152A"
             {
-            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish 7 x64.exe"
-            "TargetName" = "8:stockfish 7 x64.exe"
+            "SourcePath" = "8:..\\ReadMe.txt"
+            "TargetName" = "8:ReadMe.txt"
             "Tag" = "8:"
-            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
+            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -282,12 +250,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DF96AF194524E48A724A5D06AD2152A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_52D337C17D264CA5B0AA31E8F412D8CE"
             {
-            "SourcePath" = "8:..\\ReadMe.txt"
-            "TargetName" = "8:ReadMe.txt"
+            "SourcePath" = "8:..\\..\\Data sets\\Blitz\\Needs Run\\grand chess tour 5 2 blitz paris 2016.pgn"
+            "TargetName" = "8:grand chess tour 5 2 blitz paris 2016.pgn"
             "Tag" = "8:"
-            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -322,12 +290,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65E2011ABEE0BB5EEAF62FFB9CD1DC96"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FAB8EE90A0A4CEEBEECE0C17C1E9A77"
             {
-            "SourcePath" = "8:VCRUNTIME140D.dll"
-            "TargetName" = "8:VCRUNTIME140D.dll"
+            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish 7 x64.exe"
+            "TargetName" = "8:stockfish 7 x64.exe"
             "Tag" = "8:"
-            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -339,15 +307,15 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74E8AA55970DFD49EE85A5CAAB685669"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75E3D6551BAE49C282E69ED8F616D628"
             {
-            "SourcePath" = "8:gdiplus.dll"
-            "TargetName" = "8:gdiplus.dll"
+            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish_8_x64.exe"
+            "TargetName" = "8:stockfish_8_x64.exe"
             "Tag" = "8:"
-            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -359,7 +327,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_896A1A449A48465B9D1C353DD6413E67"
@@ -402,9 +370,9 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ADF0030D85B941E59668D15B3C50E3E6"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9C6ED04F12404578890DAF0A37BEB722"
             {
-            "SourcePath" = "8:..\\..\\Data sets\\Rapid\\grand chess tour 25 10 rapid paris 2016.pgn"
+            "SourcePath" = "8:..\\..\\Data sets\\Rapid\\Needs Run\\grand chess tour 25 10 rapid paris 2016.pgn"
             "TargetName" = "8:grand chess tour 25 10 rapid paris 2016.pgn"
             "Tag" = "8:"
             "Folder" = "8:_B5FAECCB2BE748938874FC8A42A69FD5"
@@ -422,12 +390,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BED37366D782C7445D6F4CE60C91890D"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DEC447B1F47047EBA93A74DD763C95C3"
             {
-            "SourcePath" = "8:ucrtbased.dll"
-            "TargetName" = "8:ucrtbased.dll"
+            "SourcePath" = "8:..\\..\\Binaries for release\\stockfish_8_x32.exe"
+            "TargetName" = "8:stockfish_8_x32.exe"
             "Tag" = "8:"
-            "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
+            "Folder" = "8:_C744AF8EC6924541806B1038B44D6241"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -439,7 +407,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3A0907CB85B4F209554E22EA0E3643D"
@@ -552,7 +520,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PGN Spy"
         "ProductCode" = "8:{584A7593-B064-4716-978F-4D03ACB67643}"
-        "PackageCode" = "8:{9FB48A99-4E36-4AC9-8043-74940B3F1F47}"
+        "PackageCode" = "8:{1FF08A00-6EBE-4A20-B8B2-BCD027A4DD3E}"
         "UpgradeCode" = "8:{00D42D50-2D9E-42A0-B420-DD266245F089}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1124,20 +1092,6 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_317B261DB27745379BC63AF67C8E6875"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc140_debugmfc_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
             "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4C844B718A084A1C9DBEFF21515C9747"
             {
             "UseDynamicProperties" = "11:TRUE"
@@ -1171,7 +1125,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_890F35534BC04477BF10F6A68E0C8C7A"
             {
-            "SourcePath" = "8:..\\Debug\\PGN Spy.exe"
+            "SourcePath" = "8:..\\Release\\PGN Spy.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6BF4778150664D6598B870BFF223BF01"
