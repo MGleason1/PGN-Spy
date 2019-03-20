@@ -394,6 +394,9 @@ bool CAnalysisDlg::ProcessGames()
 
    if (m_bCancelled)
    {
+	  
+
+
       //close all active handles
       for (int i = 0; i < m_vEngineSettings.m_iNumThreads; i++)
       {
@@ -636,4 +639,10 @@ void CAnalysisDlg::OnBnClickedIncreasethreads()
    m_sStatusHistory = sStatusLine + m_sStatusHistory;
    m_bStatusChanged = true;
    UpdateThreadControlButtons();
+}
+
+void CAnalysisDlg::CloseEngineThreads() {
+	//When the process is canceled, the running engine threads need to be cancelled
+	//If the threads are not cancelled, if the application is closed and re-opened 
+	//the CPU usage will exceed 100% on most processors
 }

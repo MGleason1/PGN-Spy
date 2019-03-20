@@ -74,4 +74,5 @@ public:
    bool ProcessOutput(CString sOutput);
    afx_msg void OnBnClickedDecreasethreads();
    afx_msg void OnBnClickedIncreasethreads();
+   void CloseEngineThreads();
 };
