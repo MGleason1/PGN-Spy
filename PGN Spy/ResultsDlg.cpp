@@ -100,6 +100,7 @@ BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_HELPINCLUDE, &CResultsDlg::OnBnClickedHelpinclude)
    ON_BN_CLICKED(IDC_PERGAMEEXPORT, &CResultsDlg::OnBnClickedPerGameExport)
    ON_BN_CLICKED(IDC_LOADANDMERGERESULTS, &CResultsDlg::OnBnClickedLoadAndMergeResults)
+	ON_BN_CLICKED(IDC_SAVEEXCELDATA, &CResultsDlg::OnBnClickedSaveexceldata)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
@@ -136,7 +137,6 @@ void CResultsDlg::OnBnClickedAbout()
               "\nhttp://statpages.info/confint.html#Binomial";
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }
-
 
 void CResultsDlg::OnBnClickedSavedata()
 {
@@ -701,4 +701,14 @@ void CResultsDlg::OnBnClickedLoadAndMergeResults()
    LoadPlayerAndEventLists();
    CalculateStats();
    MessageBox("Analysis results successfully loaded and merged.", "PGN Spy", MB_ICONINFORMATION);
+}
+
+
+void CResultsDlg::OnBnClickedSaveexceldata()
+{
+	//Saves the games to an excel spreadsheet
+	CFileDialog vFileDialog(FALSE, _T("csv"), _T("*.csv"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Spread Sheet File (*.csv)|*.csv|All files (*.*)|*.*||"), this);
+	if (vFileDialog.DoModal() != IDOK)
+		return;
+	CString sFilePath = vFileDialog.GetPathName();
 }
