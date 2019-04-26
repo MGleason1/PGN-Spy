@@ -67,6 +67,7 @@ public:
    afx_msg void OnBnClickedHelpmoverangemin();
    afx_msg void OnBnClickedHelpmoverangemax();
    afx_msg void OnBnClickedLosingthresholdhelp();
+   CString generateCsvRow(CStats &vUndecidedPositions, CString rating);
    CComboBox m_vPlayers;
    CComboBox m_vOpponents;
    CComboBox m_vEvents;

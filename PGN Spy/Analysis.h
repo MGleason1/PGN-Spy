@@ -129,7 +129,6 @@ class CStats
 public:
    CStats();
    int m_iNumVariations;
-
    int m_iNumPositions;
    CArray<int, int> m_aiTValues; //T1/T2/T3/etc. totals
    CArray<int, int> m_aiTMoves; //T1/T2/T3/etc. totals

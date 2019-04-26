@@ -722,21 +722,19 @@ void CResultsDlg::OnBnClickedSaveexceldata()
 	//in a more concrete statistical analysis
 	std::ofstream myfile;
 	myfile.open(sFilePath);
-	myfile << "White Rating, Black Rating, T1,T2,T3,=0 CP loss,>0 CP loss,>10 CP loss,>25 CP loss,>50 CP loss,>100 CP loss,>200 CP loss,>500 CP loss,Mean CP loss \n";
+	myfile << "Rating, T1,T2,T3,=0 CP loss,>0 CP loss,>10 CP loss,>25 CP loss,>50 CP loss,>100 CP loss,>200 CP loss,>500 CP loss,Mean CP loss,Total Undecided Positions \n";
 	
 	for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
 	{
-		CString gameStats;
-		CString gameStatsOutput = "";
-		
-
 		CGame *pGame = &m_avGames[iGame];
 		bool bExcludeWhite, bExcludeBlack;
 		if (!IncludeGameInStats(*pGame, bExcludeWhite, bExcludeBlack))
 			continue;
 
-		CStats vUndecidedPositions;
-		vUndecidedPositions.Initialize(m_vEngineSettings);
+		CStats vWhiteUndecidedPositions;
+		CStats vBlackUndecidedPositions;
+		vWhiteUndecidedPositions.Initialize(m_vEngineSettings);
+		vBlackUndecidedPositions.Initialize(m_vEngineSettings);
 
 		int iMoveNum = m_vEngineSettings.m_iBookDepth;
 		for (int iPosition = 0; iPosition < pGame->m_avPositions.GetSize(); iPosition++)
@@ -746,59 +744,66 @@ void CResultsDlg::OnBnClickedSaveexceldata()
 				iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
 			if (!IncludePositionInStats(*pGame, *pPosition, iMoveNum, bExcludeWhite, bExcludeBlack))
 				continue;
-			if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
-				vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
-		}
-		vUndecidedPositions.FinaliseStats();
-
-		//used to decide whether or not to add a game to the stats
-		bool addLine = true;
-		//Get the ratings of each player
-		gameStats.Format("%s,", pGame->m_sWhiteElo); 
-		gameStatsOutput += gameStats;
-		gameStats.Format("%s,", pGame->m_sBlackElo); 
-		gameStatsOutput += gameStats;
-
-		//get T-stats
-		for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
-		{
-			double dTVal = 0;
-			if (vUndecidedPositions.m_aiTMoves[i] > 0)
-				dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
-
-			if (dTVal == 0) {
-				//addLine = false;
+			if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold)) {
+				if (pPosition->m_bWhite) {
+					vWhiteUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+				}
+				else {
+					vBlackUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+				}
+				
 			}
-
-			gameStats.Format("%.2f%%", dTVal);
-			gameStatsOutput += gameStats + ",";
+				
 		}
-		
-		gameStats.Format("\t%i", vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i10CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i25CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i50CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i100CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i200CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%i", vUndecidedPositions.m_i500CPLoss);
-		gameStatsOutput += gameStats + ",";
-		gameStats.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
-		gameStatsOutput += gameStats;
+		vWhiteUndecidedPositions.FinaliseStats();
+		vBlackUndecidedPositions.FinaliseStats();
 
-		if (addLine) {
-			myfile << gameStatsOutput + "\n";
-		}
-		
+		myfile << generateCsvRow(vWhiteUndecidedPositions, pGame->m_sWhiteElo) + "\n";
+		myfile << generateCsvRow(vBlackUndecidedPositions, pGame->m_sBlackElo) + "\n";
 	}
 	
 	myfile.close();
 	MessageBox("CSV file saved", "PGN Spy", MB_ICONINFORMATION);
+}
+
+CString CResultsDlg::generateCsvRow(CStats &vUndecidedPositions, CString rating) {
+	//Generate a row for the CSV File
+	//get T-stats
+	CString gameStatsOutput = "";
+	CString gameStats;
+
+	gameStats.Format("%s,", rating);
+	gameStatsOutput += gameStats;
+
+	for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
+	{
+		double dTVal = 0;
+		if (vUndecidedPositions.m_aiTMoves[i] > 0)
+			dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
+
+		gameStats.Format("%.2f%%", dTVal);
+		gameStatsOutput += gameStats + ",";
+	}
+	
+	gameStats.Format("\t%f", (vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss) / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i0CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i10CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i25CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i50CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i100CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i200CPLoss / (double) vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%f", vUndecidedPositions.m_i500CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
+	gameStatsOutput += gameStats + ",";
+	gameStats.Format("\t%i", vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	return gameStatsOutput;
 }
