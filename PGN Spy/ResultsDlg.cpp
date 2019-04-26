@@ -722,14 +722,13 @@ void CResultsDlg::OnBnClickedSaveexceldata()
 	//in a more concrete statistical analysis
 	std::ofstream myfile;
 	myfile.open(sFilePath);
-	myfile << "Rating,T1,T2,T3,=0 CP loss,>0 CP loss,>10 CP loss,>25 CP loss,>50 CP loss,>100 CP loss,>200 CP loss,>500 CP loss,Mean CP loss,std. deviation\n";
+	myfile << "White Rating, Black Rating, T1,T2,T3,=0 CP loss,>0 CP loss,>10 CP loss,>25 CP loss,>50 CP loss,>100 CP loss,>200 CP loss,>500 CP loss,Mean CP loss \n";
 	
 	for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
 	{
 		CString gameStats;
 		CString gameStatsOutput = "";
-		gameStats.Format("%d,", 1600); //initialize with a rating
-		gameStatsOutput += gameStats;
+		
 
 		CGame *pGame = &m_avGames[iGame];
 		bool bExcludeWhite, bExcludeBlack;
@@ -752,29 +751,29 @@ void CResultsDlg::OnBnClickedSaveexceldata()
 		}
 		vUndecidedPositions.FinaliseStats();
 
-		//first get general game data
-		/*
-		sLine = pGame->m_sEvent;
-		sLine += "\t" + pGame->m_sDate;
-		sLine += "\t" + pGame->m_sWhite;
-		sLine += "\t" + pGame->m_sBlack;
-		sLine += "\t\'" + pGame->m_sResult; //the \' is so that Excel doesn't interpret 1-0 as a date - 1/1/2000
-		sLine += "\t" + pGame->m_sTimeControl;
-		sText.Format("\t%i", vUndecidedPositions.m_iNumPositions);
-		sLine += sText;
-		*/
-		//now get T-stats
+		//used to decide whether or not to add a game to the stats
+		bool addLine = true;
+		//Get the ratings of each player
+		gameStats.Format("%s,", pGame->m_sWhiteElo); 
+		gameStatsOutput += gameStats;
+		gameStats.Format("%s,", pGame->m_sBlackElo); 
+		gameStatsOutput += gameStats;
+
+		//get T-stats
 		for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
 		{
 			double dTVal = 0;
 			if (vUndecidedPositions.m_aiTMoves[i] > 0)
 				dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
 
+			if (dTVal == 0) {
+				//addLine = false;
+			}
+
 			gameStats.Format("%.2f%%", dTVal);
 			gameStatsOutput += gameStats + ",";
-			//sText.Format("\t%i\t%i\t%.2f%%", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i], dTVal);
-			//sLine += sText;
 		}
+		
 		gameStats.Format("\t%i", vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss);
 		gameStatsOutput += gameStats + ",";
 		gameStats.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
@@ -793,30 +792,11 @@ void CResultsDlg::OnBnClickedSaveexceldata()
 		gameStatsOutput += gameStats + ",";
 		gameStats.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
 		gameStatsOutput += gameStats;
-		/*
-		//get CP loss values
-		sText.Format("\t%i", vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i10CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i25CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i50CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i100CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i200CPLoss);
-		sLine += sText;
-		sText.Format("\t%i", vUndecidedPositions.m_i500CPLoss);
-		sLine += sText;
-		sText.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
-		sLine += sText;
 
-		sReport += "\r\n" + sLine;
-		*/
-		myfile << gameStatsOutput + "\n";
+		if (addLine) {
+			myfile << gameStatsOutput + "\n";
+		}
+		
 	}
 	
 	myfile.close();

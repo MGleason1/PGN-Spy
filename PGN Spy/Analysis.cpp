@@ -300,6 +300,8 @@ CGame &CGame::operator=(const CGame &rSrc)
    m_sBlack = rSrc.m_sBlack;
    m_sResult = rSrc.m_sResult;
    m_sTimeControl = rSrc.m_sTimeControl;
+   m_sWhiteElo = rSrc.m_sWhiteElo;
+   m_sBlackElo = rSrc.m_sBlackElo;
    m_avPositions.Copy(rSrc.m_avPositions);
 
    return *this;
@@ -329,18 +331,22 @@ bool CGame::LoadGame(CString sGameText)
    {
       CString sName = vGame.GetAttrib("name");
       CString sValue = vGame.GetAttrib("value");
-      if (sName.CompareNoCase("Event") == 0)
-         m_sEvent = sValue;
-      else if (sName.CompareNoCase("Date") == 0)
-         m_sDate = sValue;
-      else if (sName.CompareNoCase("White") == 0)
-         m_sWhite = sValue;
-      else if (sName.CompareNoCase("Black") == 0)
-         m_sBlack = sValue;
-      else if (sName.CompareNoCase("Result") == 0)
-         m_sResult = sValue;
-      else if (sName.CompareNoCase("TimeControl") == 0)
-         m_sTimeControl = sValue;
+	  if (sName.CompareNoCase("Event") == 0)
+		  m_sEvent = sValue;
+	  else if (sName.CompareNoCase("Date") == 0)
+		  m_sDate = sValue;
+	  else if (sName.CompareNoCase("White") == 0)
+		  m_sWhite = sValue;
+	  else if (sName.CompareNoCase("Black") == 0)
+		  m_sBlack = sValue;
+	  else if (sName.CompareNoCase("Result") == 0)
+		  m_sResult = sValue;
+	  else if (sName.CompareNoCase("TimeControl") == 0)
+		  m_sTimeControl = sValue;
+	  else if (sName.CompareNoCase("WhiteElo") == 0)
+		  m_sWhiteElo = sValue;
+	  else if (sName.CompareNoCase("BlackElo") == 0)
+		  m_sBlackElo = sValue;
       else
       {
          //ignore tag
@@ -641,7 +647,10 @@ bool LoadGameArrayFromFile(CString sFileName, CArray<CGame, CGame> &raGames, CEn
       vGame.m_sResult = vFile.GetData();
       vFile.FindElem("TimeControl");
       vGame.m_sTimeControl = vFile.GetData();
-
+	  vFile.FindElem("WhiteElo");
+	  vGame.m_sWhiteElo = vFile.GetData();
+	  vFile.FindElem("BlackElo");
+	  vGame.m_sBlackElo = vFile.GetData();
       //loop through all positions
       vFile.FindElem("Positions");
       vFile.IntoElem();
@@ -721,7 +730,8 @@ bool SaveGameArrayToFile(CString sFileName, const CArray<CGame, CGame> &raGames,
       vFile.AddElem("Black", raGames[iGame].m_sBlack);
       vFile.AddElem("Result", raGames[iGame].m_sResult);
       vFile.AddElem("TimeControl", raGames[iGame].m_sTimeControl);
-
+	  vFile.AddElem("WhiteElo", raGames[iGame].m_sWhiteElo);
+	  vFile.AddElem("BlackElo", raGames[iGame].m_sBlackElo);
       //loop through all positions
       vFile.AddElem("Positions");
       vFile.IntoElem();

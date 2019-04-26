@@ -120,6 +120,8 @@ public:
    CString m_sBlack;
    CString m_sResult;
    CString m_sTimeControl;
+   CString m_sWhiteElo;
+   CString m_sBlackElo;
 };
 
 class CStats
