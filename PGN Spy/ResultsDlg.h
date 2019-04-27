@@ -85,4 +85,5 @@ public:
    bool IncludeGameInStats(const CGame &vGame, bool &bExcludeWhite, bool &bExcludeBlack);
    bool IncludePositionInStats(const CGame &vGame, const CPosition &vPosition, int iMoveNum, bool bExcludeWhite, bool bExcludeBlack);
    afx_msg void OnBnClickedSaveexceldata();
+   afx_msg void OnBnClickedAboutbenchmarks();
 };

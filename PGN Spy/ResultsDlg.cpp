@@ -102,6 +102,7 @@ BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_PERGAMEEXPORT, &CResultsDlg::OnBnClickedPerGameExport)
    ON_BN_CLICKED(IDC_LOADANDMERGERESULTS, &CResultsDlg::OnBnClickedLoadAndMergeResults)
 	ON_BN_CLICKED(IDC_SAVEEXCELDATA, &CResultsDlg::OnBnClickedSaveexceldata)
+	ON_BN_CLICKED(IDC_AboutBenchmarks, &CResultsDlg::OnBnClickedAboutbenchmarks)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
@@ -806,4 +807,14 @@ CString CResultsDlg::generateCsvRow(CStats &vUndecidedPositions, CString rating)
 	gameStats.Format("\t%i", vUndecidedPositions.m_iNumPositions);
 	gameStatsOutput += gameStats;
 	return gameStatsOutput;
+}
+
+
+void CResultsDlg::OnBnClickedAboutbenchmarks()
+{
+	CString sMessage = "When you generate benchmarks you create a csv spreadsheet with each row representing /n" 
+		"one player in the game. The idea is with good enough benchmarks and a large sample size of a cheater's /n"
+		"games it is possible to map the sample to an approximate FIDE rating, which is more accurate than simply /n"
+		"making an estimate";
+	MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }

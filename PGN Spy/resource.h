@@ -67,6 +67,8 @@
 #define IDC_SAVEEXCELDATA               1063
 #define IDC_INCLUDELOSING               1064
 #define IDC_INCLUDEWINNING              1065
+#define IDC_SAVEEXCELDATA2              1066
+#define IDC_AboutBenchmarks             1066
 #define IDC_INCLUDEPOSTLOSING           1067
 #define IDC_LOADRESULTS                 1069
 #define IDC_HELPINCLUDE                 1070
