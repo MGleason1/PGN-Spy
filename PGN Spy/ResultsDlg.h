@@ -67,7 +67,7 @@ public:
    afx_msg void OnBnClickedHelpmoverangemin();
    afx_msg void OnBnClickedHelpmoverangemax();
    afx_msg void OnBnClickedLosingthresholdhelp();
-   CString generateCsvRow(CStats &vUndecidedPositions);
+   CString generatePlayerGameStats(CStats &vUndecidedPositions);
    CComboBox m_vPlayers;
    CComboBox m_vOpponents;
    CComboBox m_vEvents;
@@ -84,6 +84,4 @@ public:
    afx_msg void OnBnClickedLoadAndMergeResults();
    bool IncludeGameInStats(const CGame &vGame, bool &bExcludeWhite, bool &bExcludeBlack);
    bool IncludePositionInStats(const CGame &vGame, const CPosition &vPosition, int iMoveNum, bool bExcludeWhite, bool bExcludeBlack);
-   afx_msg void OnBnClickedSaveexceldata();
-   afx_msg void OnBnClickedAboutbenchmarks();
 };

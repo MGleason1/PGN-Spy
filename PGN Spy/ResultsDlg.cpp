@@ -101,8 +101,6 @@ BEGIN_MESSAGE_MAP(CResultsDlg, CDialogEx)
    ON_BN_CLICKED(IDC_HELPINCLUDE, &CResultsDlg::OnBnClickedHelpinclude)
    ON_BN_CLICKED(IDC_PERGAMEEXPORT, &CResultsDlg::OnBnClickedPerGameExport)
    ON_BN_CLICKED(IDC_LOADANDMERGERESULTS, &CResultsDlg::OnBnClickedLoadAndMergeResults)
-	ON_BN_CLICKED(IDC_SAVEEXCELDATA, &CResultsDlg::OnBnClickedSaveexceldata)
-	ON_BN_CLICKED(IDC_AboutBenchmarks, &CResultsDlg::OnBnClickedAboutbenchmarks)
 END_MESSAGE_MAP()
 
 BOOL CResultsDlg::OnInitDialog()
@@ -645,8 +643,8 @@ void CResultsDlg::OnBnClickedPerGameExport()
 	  blackHeader += sLine +  sText + "\t" + pGame->m_sBlackElo;
 
 	  //Now get the stats (T-stats, CP loss, etc.)
-      sReport += "\r\n" + whiteHeader + generateCsvRow(vWhiteUndecidedPositions);
-      sReport += "\r\n" + blackHeader + generateCsvRow(vBlackUndecidedPositions);
+      sReport += "\r\n" + whiteHeader + generatePlayerGameStats(vWhiteUndecidedPositions);
+      sReport += "\r\n" + blackHeader + generatePlayerGameStats(vBlackUndecidedPositions);
    }
 
    CFile vFile;
@@ -664,7 +662,7 @@ void CResultsDlg::OnBnClickedPerGameExport()
    ShellExecute(NULL, "open", sFilePath, NULL, NULL, SW_MAXIMIZE);
 }
 
-CString CResultsDlg::generateCsvRow(CStats& vUndecidedPositions) {
+CString CResultsDlg::generatePlayerGameStats(CStats& vUndecidedPositions) {
 	//Generate a row for the CSV File
 	//get T-stats
 	CString gameStatsOutput = "";
@@ -730,76 +728,3 @@ void CResultsDlg::OnBnClickedLoadAndMergeResults()
 }
 
 
-void CResultsDlg::OnBnClickedSaveexceldata()
-{
-	//Deprecated function
-	//Similar logic to the the save results function, except it is written to a .csv file (for statistical analysis)
-	CFileDialog vFileDialog(FALSE, _T("csv"), _T("*.csv"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Spread Sheet File (*.csv)|*.csv|All files (*.*)|*.*||"), this);
-	if (vFileDialog.DoModal() != IDOK)
-		return;
-	CString sFilePath = vFileDialog.GetPathName();
-
-	//Logic 
-	//For each position in the analysis
-	//Store the rating, T1/T2/T3, and CP Loss for each position
-	//Add that to a row in the spreadsheet
-	//Save the spreadsheet
-	//The data can then be used to analyze how players of different ratings perform in terms of PGN-Spy
-	//in a more concrete statistical analysis
-	std::ofstream myfile;
-	myfile.open(sFilePath);
-	myfile << "Rating, T1,T2,T3,=0 CP loss,>0 CP loss,>10 CP loss,>25 CP loss,>50 CP loss,>100 CP loss,>200 CP loss,>500 CP loss,Mean CP loss,Total Undecided Positions \n";
-	
-	for (int iGame = 0; iGame < m_avGames.GetSize(); iGame++)
-	{
-		CGame *pGame = &m_avGames[iGame];
-		bool bExcludeWhite, bExcludeBlack;
-		if (!IncludeGameInStats(*pGame, bExcludeWhite, bExcludeBlack))
-			continue;
-
-		CStats vWhiteUndecidedPositions;
-		CStats vBlackUndecidedPositions;
-		vWhiteUndecidedPositions.Initialize(m_vEngineSettings);
-		vBlackUndecidedPositions.Initialize(m_vEngineSettings);
-
-		int iMoveNum = m_vEngineSettings.m_iBookDepth;
-		for (int iPosition = 0; iPosition < pGame->m_avPositions.GetSize(); iPosition++)
-		{
-			CPosition *pPosition = &pGame->m_avPositions[iPosition];
-			if (pPosition->m_bWhite || !m_vEngineSettings.m_sPlayerName.IsEmpty())
-				iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
-			if (!IncludePositionInStats(*pGame, *pPosition, iMoveNum, bExcludeWhite, bExcludeBlack))
-				continue;
-			if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold)) {
-				if (pPosition->m_bWhite) {
-					vWhiteUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
-				}
-				else {
-					vBlackUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
-				}
-				
-			}
-				
-		}
-		vWhiteUndecidedPositions.FinaliseStats();
-		vBlackUndecidedPositions.FinaliseStats();
-
-		myfile << generateCsvRow(vWhiteUndecidedPositions) + "\n";
-		myfile << generateCsvRow(vBlackUndecidedPositions) + "\n";
-	}
-	
-	myfile.close();
-	MessageBox("CSV file saved", "PGN Spy", MB_ICONINFORMATION);
-}
-
-
-
-
-void CResultsDlg::OnBnClickedAboutbenchmarks()
-{
-	CString sMessage = "When you generate benchmarks you create a csv spreadsheet with each row representing /n" 
-		"one player in the game. The idea is with good enough benchmarks and a large sample size of a cheater's /n"
-		"games it is possible to map the sample to an approximate FIDE rating, which is more accurate than simply /n"
-		"making an estimate";
-	MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
-}
