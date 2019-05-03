@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     for (; argnum < argc && strncmp(argv[argnum], "--", 2) == 0;) {
         string arg(argv[argnum]);
         argnum++;
-
+    
         if (arg == "--annotate") {
             annotate = true;
         } else if (arg == "--blackonly") {

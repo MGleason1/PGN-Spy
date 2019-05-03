@@ -313,7 +313,7 @@ void CPGNSpyDlg::OnBnClickedRunanalysis()
       MessageBox("No results to display.", "PGN Spy", MB_ICONEXCLAMATION);
       return;
    }
-   if (vAnalyserDlg.m_bCancelled)
+   if (vAnalyserDlg.m_bCancelled && !vAnalyserDlg.m_bSavePartialAnalysis)
       return;
    
    //now launch the window to process and display the results

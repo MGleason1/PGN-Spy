@@ -114,6 +114,10 @@ void CAnalysisDlg::OnBnClickedCancel()
 {
    if (IDNO == MessageBox("Are you sure you wish to cancel?", "PGN Spy", MB_ICONQUESTION | MB_YESNO))
       return;
+   
+   if (IDYES == MessageBox("Would you like to save your analysis before cancelling?", "PGN Spy", MB_ICONQUESTION | MB_YESNO))
+	   m_bSavePartialAnalysis = true;
+   
    m_bCancelled = true;
 
    CDialogEx::OnCancel();
@@ -394,6 +398,7 @@ bool CAnalysisDlg::ProcessGames()
 
    if (m_bCancelled)
    {
+	  
       //close all active handles
       for (int i = 0; i < m_vEngineSettings.m_iNumThreads; i++)
       {
@@ -402,7 +407,7 @@ bool CAnalysisDlg::ProcessGames()
             CFile vInFile(m_ahChildStdInWrite[i]);
             vInFile.Write("cancel", 6);
 
-//            TerminateProcess(m_ahProcesses[i], 1);//shut down the analyser; the engine should close itself after a bit
+            TerminateProcess(m_ahProcesses[i], 1);//shut down the analyser; the engine should close itself after a bit
             CloseHandle(m_ahProcesses[i]);
             CloseHandle(m_ahChildStdInRead[i]);
             CloseHandle(m_ahChildStdInWrite[i]);
@@ -418,7 +423,7 @@ bool CAnalysisDlg::ProcessGames()
    for (int i = 0; i < avGamePGNs.GetSize(); i++)
       DeleteFile(avGamePGNs[i].m_sFileName);
 
-   if (!m_bCancelled)
+   if (!m_bCancelled || m_bSavePartialAnalysis)
       m_bShowResults = true;
 
    CString sMessage;
@@ -637,3 +642,4 @@ void CAnalysisDlg::OnBnClickedIncreasethreads()
    m_bStatusChanged = true;
    UpdateThreadControlButtons();
 }
+

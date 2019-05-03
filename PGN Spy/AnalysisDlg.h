@@ -63,6 +63,7 @@ public:
    CString m_sStatusHistory;
    bool m_bShowResults;
    bool m_bCancelled;
+   bool m_bSavePartialAnalysis;
    bool m_bStatusChanged;
    int m_iTargetThreads;
    int m_iMaxThreads;
@@ -74,4 +75,5 @@ public:
    bool ProcessOutput(CString sOutput);
    afx_msg void OnBnClickedDecreasethreads();
    afx_msg void OnBnClickedIncreasethreads();
+   void CloseEngineThreads();
 };

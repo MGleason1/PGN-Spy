@@ -27,7 +27,8 @@
 #include "PGN Spy.h"
 #include "ResultsDlg.h"
 #include "afxdialogex.h"
-
+#include <iostream>
+#include <fstream>
 
 // CResultsDlg dialog
 
@@ -137,7 +138,6 @@ void CResultsDlg::OnBnClickedAbout()
    MessageBox(sMessage, "PGN Spy", MB_ICONINFORMATION);
 }
 
-
 void CResultsDlg::OnBnClickedSavedata()
 {
    CFileDialog vFileDialog(FALSE, _T("tab"), _T("*.tab"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("Tab-delimited files (*.tab)|*.tab|All files (*.*)|*.*||"), this);
@@ -145,7 +145,7 @@ void CResultsDlg::OnBnClickedSavedata()
       return;
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tPlayer\tMove Played\tDepth Searched\tT-number";
+   sReport = "Event\tDate\tWhite\tBlack\tWhite Rating\tBlack Rating\tResult\tTime Control\tMove #\tPlayer\tMove Played\tDepth Searched\tT-number";
    for (int i = 0; i < m_vEngineSettings.m_iNumVariations+1; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
@@ -160,7 +160,7 @@ void CResultsDlg::OnBnClickedSavedata()
          //first get general game data
          CPosition *pPosition = &pGame->m_avPositions[iPosition];
          //the \' before the result is so Excel won't be stupid and treat 1-0 as a date - 1/1/2000
-         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t\'" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
+         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t" + pGame->m_sWhiteElo + "\t" + pGame->m_sBlackElo + "\t\'" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
 
          //got all game data, now get move data
          //move number and coordinates
@@ -585,8 +585,8 @@ void CResultsDlg::OnBnClickedPerGameExport()
       return;
    CString sFilePath = vFileDialog.GetPathName();
 
-   CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tUndecided positions";
+   CString sReport, sText;
+   sReport = "Event\tDate\tPlayer\tColour\tResult\tTime Control\tUndecided positions\tRating";
    for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
    {
       sText.Format("\tT%i moves\tT%i positions\tT%i%%", i + 1, i + 1, i + 1);
@@ -601,8 +601,11 @@ void CResultsDlg::OnBnClickedPerGameExport()
       if (!IncludeGameInStats(*pGame, bExcludeWhite, bExcludeBlack))
          continue;
       iGamesInSubset++;
-      CStats vUndecidedPositions;
-      vUndecidedPositions.Initialize(m_vEngineSettings);
+
+	  CStats vWhiteUndecidedPositions;
+	  CStats vBlackUndecidedPositions;
+	  vWhiteUndecidedPositions.Initialize(m_vEngineSettings);
+	  vBlackUndecidedPositions.Initialize(m_vEngineSettings);
 
       int iMoveNum = m_vEngineSettings.m_iBookDepth;
       for (int iPosition = 0; iPosition < pGame->m_avPositions.GetSize(); iPosition++)
@@ -612,52 +615,36 @@ void CResultsDlg::OnBnClickedPerGameExport()
             iMoveNum++; //increment move if we're looking at a white move, or if engine only analysed one player's games
          if (!IncludePositionInStats(*pGame, *pPosition, iMoveNum, bExcludeWhite, bExcludeBlack))
             continue;
-         if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold))
-            vUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
-      }
-      vUndecidedPositions.FinaliseStats();
+		 if (pPosition->IsEqualPosition(m_vAnalysisSettings.m_iEqualPositionThreshold)) {
+			 if (pPosition->m_bWhite) {
+				 vWhiteUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+			 }
+			 else {
+				 vBlackUndecidedPositions.AddPosition(*pPosition, m_vAnalysisSettings);
+			 }
 
-      //first get general game data
-      sLine = pGame->m_sEvent;
-      sLine += "\t" + pGame->m_sDate;
-      sLine += "\t" + pGame->m_sWhite;
-      sLine += "\t" + pGame->m_sBlack;
-      sLine += "\t\'" + pGame->m_sResult; //the \' is so that Excel doesn't interpret 1-0 as a date - 1/1/2000
+		 }
+      }
+      vWhiteUndecidedPositions.FinaliseStats();
+      vBlackUndecidedPositions.FinaliseStats();
+
+      //first get header information
+	  CString sLine, whiteHeader, blackHeader;
+	  whiteHeader = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\tWhite";
+	  blackHeader = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sBlack + "\tBlack";
+
+      sLine = "\t\'" + pGame->m_sResult; //the \' is so that Excel doesn't interpret 1-0 as a date - 1/1/2000
       sLine += "\t" + pGame->m_sTimeControl;
-      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions);
-      sLine += sText;
 
-      //now get T-stats
-      for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
-      {
-         double dTVal = 0;
-         if (vUndecidedPositions.m_aiTMoves[i] > 0)
-            dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
-         sText.Format("\t%i\t%i\t%.2f%%", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i], dTVal);
-         sLine += sText;
-      }
+      sText.Format("\t%i", vWhiteUndecidedPositions.m_iNumPositions);
+	  whiteHeader += sLine +  sText + "\t" + pGame->m_sWhiteElo;
 
-      //get CP loss values
-      sText.Format("\t%i", vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i0CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i10CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i25CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i50CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i100CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i200CPLoss);
-      sLine += sText;
-      sText.Format("\t%i", vUndecidedPositions.m_i500CPLoss);
-      sLine += sText;
-      sText.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
-      sLine += sText;
+      sText.Format("\t%i", vBlackUndecidedPositions.m_iNumPositions);
+	  blackHeader += sLine +  sText + "\t" + pGame->m_sBlackElo;
 
-      sReport += "\r\n" + sLine;
+	  //Now get the stats (T-stats, CP loss, etc.)
+      sReport += "\r\n" + whiteHeader + generatePlayerGameStats(vWhiteUndecidedPositions);
+      sReport += "\r\n" + blackHeader + generatePlayerGameStats(vBlackUndecidedPositions);
    }
 
    CFile vFile;
@@ -675,12 +662,49 @@ void CResultsDlg::OnBnClickedPerGameExport()
    ShellExecute(NULL, "open", sFilePath, NULL, NULL, SW_MAXIMIZE);
 }
 
+CString CResultsDlg::generatePlayerGameStats(CStats& vUndecidedPositions) {
+	//Generate a row for the CSV File
+	//get T-stats
+	CString gameStatsOutput = "";
+	CString gameStats;
+
+	//now get T-stats
+	for (int i = 0; i < m_vEngineSettings.m_iNumVariations; i++)
+	{
+		double dTVal = 0;
+		if (vUndecidedPositions.m_aiTMoves[i] > 0)
+			dTVal = ((double)vUndecidedPositions.m_aiTValues[i] / (double)vUndecidedPositions.m_aiTMoves[i]) * 100.0;
+		gameStats.Format("\t%i\t%i\t%.2f%%", vUndecidedPositions.m_aiTValues[i], vUndecidedPositions.m_aiTMoves[i], dTVal);
+		gameStatsOutput += gameStats;
+	}
+
+	//get CP loss values
+	gameStats.Format("\t%f", (vUndecidedPositions.m_iNumPositions - vUndecidedPositions.m_i0CPLoss) / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i0CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i10CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i25CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i50CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i100CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i200CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%f", vUndecidedPositions.m_i500CPLoss / (double)vUndecidedPositions.m_iNumPositions);
+	gameStatsOutput += gameStats;
+	gameStats.Format("\t%.2f", vUndecidedPositions.m_dAvgCentipawnLoss);
+	gameStatsOutput += gameStats;
+	return gameStatsOutput;
+}
 
 void CResultsDlg::OnBnClickedLoadAndMergeResults()
 {
    CFileDialog vFileDialog(TRUE, "xml", "*.xml", OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT, "PGN Spy files (*.xml)|*.xml|All files (*.*)|*.*||", this);
    if (vFileDialog.DoModal() != IDOK)
-      return;
+      return;                      
    CArray <CGame, CGame> avGames;
    CEngineSettings vOtherEngineSettings;
    if (!LoadGameArrayFromFile(vFileDialog.GetPathName(), avGames, vOtherEngineSettings))
@@ -702,3 +726,5 @@ void CResultsDlg::OnBnClickedLoadAndMergeResults()
    CalculateStats();
    MessageBox("Analysis results successfully loaded and merged.", "PGN Spy", MB_ICONINFORMATION);
 }
+
+
