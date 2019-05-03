@@ -145,7 +145,7 @@ void CResultsDlg::OnBnClickedSavedata()
       return;
    CString sFilePath = vFileDialog.GetPathName();
    CString sReport, sLine, sText;
-   sReport = "Event\tDate\tWhite\tBlack\tResult\tTime Control\tMove #\tPlayer\tMove Played\tDepth Searched\tT-number";
+   sReport = "Event\tDate\tWhite\tBlack\tWhite Rating\tBlack Rating\tResult\tTime Control\tMove #\tPlayer\tMove Played\tDepth Searched\tT-number";
    for (int i = 0; i < m_vEngineSettings.m_iNumVariations+1; i++)
    {
       sText.Format("\tT%i move eval", i + 1);
@@ -160,7 +160,7 @@ void CResultsDlg::OnBnClickedSavedata()
          //first get general game data
          CPosition *pPosition = &pGame->m_avPositions[iPosition];
          //the \' before the result is so Excel won't be stupid and treat 1-0 as a date - 1/1/2000
-         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t\'" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
+         sLine = pGame->m_sEvent + "\t" + pGame->m_sDate + "\t" + pGame->m_sWhite + "\t" + pGame->m_sBlack + "\t" + pGame->m_sWhiteElo + "\t" + pGame->m_sBlackElo + "\t\'" + pGame->m_sResult + "\t" + pGame->m_sTimeControl + "\t";
 
          //got all game data, now get move data
          //move number and coordinates
